@@ -1,0 +1,13 @@
+
+{
+  "name": "BizLeaderPrep",
+  "description": "The elite, AI-driven study platform for FBLA and DECA competition mastery. Master your events with professional-grade competitive analytics.",
+  "requestFramePermissions": [],
+  "icons": [
+    {
+      "src": "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=128&auto=format&fit=crop",
+      "sizes": "128x128",
+      "type": "image/png"
+    }
+  ]
+}
