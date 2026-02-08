@@ -136,9 +136,10 @@ const App: React.FC = () => {
   };
 
   if (isLoading) {
+    const spinnerBorder = virtualPath === '/fblaprephub' ? 'border-rh-green' : virtualPath === '/decaprephub' ? 'border-rh-cyan' : 'border-rh-yellow';
     return (
       <div className="min-h-screen bg-rh-black flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-rh-green border-t-transparent rounded-full animate-spin"></div>
+        <div className={`w-8 h-8 border-2 ${spinnerBorder} border-t-transparent rounded-full animate-spin`}></div>
       </div>
     );
   }
@@ -149,6 +150,7 @@ const App: React.FC = () => {
         onLogin={handleLogin} 
         onCancel={() => setView('landing')} 
         defaultView={authInitialView}
+        orgType={orgType}
       />
     );
   }

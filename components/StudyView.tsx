@@ -36,6 +36,7 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
   const brandTextClass = orgType === 'FBLA' ? 'text-rh-green' : orgType === 'DECA' ? 'text-rh-cyan' : 'text-rh-yellow';
   const brandBgClass = orgType === 'FBLA' ? 'bg-rh-green' : orgType === 'DECA' ? 'bg-rh-cyan' : 'bg-rh-yellow';
   const brandBorderClass = orgType === 'FBLA' ? 'border-rh-green' : orgType === 'DECA' ? 'border-rh-cyan' : 'border-rh-yellow';
+  const brandBorderHoverClass = orgType === 'FBLA' ? 'hover:border-rh-green/50' : orgType === 'DECA' ? 'hover:border-rh-cyan/50' : 'hover:border-rh-yellow/50';
   const brandShadowClass = orgType === 'FBLA' ? 'shadow-[0_0_40px_rgba(0,200,5,0.2)]' : orgType === 'DECA' ? 'shadow-[0_0_40px_rgba(0,166,224,0.2)]' : 'shadow-[0_0_40px_rgba(255,218,0,0.2)]';
 
   useEffect(() => {
@@ -134,7 +135,7 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
            <div className="mb-8">
              <div className="text-[10px] font-black text-rh-gray uppercase tracking-[0.3em] mb-2">Study Complete</div>
              <h2 className="text-5xl font-bold tracking-tighter mb-4">Session Results</h2>
-             <div className={`text-6xl font-bold tracking-tighter ${accuracy >= 70 ? 'text-rh-green' : 'text-red-500'}`}>
+             <div className={`text-6xl font-bold tracking-tighter ${accuracy >= 70 ? brandTextClass : 'text-red-500'}`}>
                {accuracy.toFixed(1)}%
              </div>
            </div>
@@ -146,7 +147,7 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
               </div>
               <div className="bg-white/5 p-6 rounded-3xl border border-white/5">
                 <div className="text-[10px] font-black text-rh-gray uppercase mb-1">Knowledge Growth</div>
-                <div className="text-2xl font-bold text-rh-green">Active</div>
+                <div className={`text-2xl font-bold ${brandTextClass}`}>Active</div>
               </div>
            </div>
 
@@ -183,14 +184,14 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
         <h1 className="text-3xl md:text-5xl font-bold tracking-tighter mb-4 text-center">Select Study Path</h1>
         <p className="text-rh-gray mb-12 text-center max-w-lg">Choose your preferred method for mastering {eventName}.</p>
         <div className="grid md:grid-cols-2 gap-6 w-full max-w-4xl">
-          <button onClick={() => setMode('flashcard')} className={`group relative bg-rh-dark border border-white/5 p-10 rounded-[32px] hover:bg-white/5 hover:${brandBorderClass}/50 transition-all text-left overflow-hidden`}>
+          <button onClick={() => setMode('flashcard')} className={`group relative bg-rh-dark border border-white/5 p-10 rounded-[32px] hover:bg-white/5 ${brandBorderHoverClass} transition-all text-left overflow-hidden`}>
             <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
                <svg className="w-32 h-32" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/></svg>
             </div>
             <h3 className="text-2xl font-bold text-white mb-2 relative z-10">Flashcards</h3>
             <p className="text-rh-gray text-sm font-medium relative z-10">Quick-fire memorization of official terms and concepts.</p>
           </button>
-          <button onClick={() => setMode('test')} className={`group relative bg-rh-dark border border-white/5 p-10 rounded-[32px] hover:bg-white/5 hover:${brandBorderClass}/50 transition-all text-left overflow-hidden`}>
+          <button onClick={() => setMode('test')} className={`group relative bg-rh-dark border border-white/5 p-10 rounded-[32px] hover:bg-white/5 ${brandBorderHoverClass} transition-all text-left overflow-hidden`}>
              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
                <svg className="w-32 h-32" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
             </div>
@@ -214,7 +215,7 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
         <div className="flex space-x-8 items-center">
            <div className="flex flex-col items-end">
               <span className="text-[10px] font-black text-rh-gray uppercase tracking-widest">Streak</span>
-              <span className={`text-xl font-bold tracking-tighter ${streak > 0 ? 'text-rh-green' : 'text-white'}`}>{streak} 🔥</span>
+              <span className={`text-xl font-bold tracking-tighter ${streak > 0 ? brandTextClass : 'text-white'}`}>{streak} 🔥</span>
            </div>
            <div className="flex flex-col items-end">
               <span className={`text-[10px] font-black uppercase ${brandTextClass} tracking-[0.2em]`}>{mode === 'flashcard' ? 'Flashcards' : 'Practice Test'}</span>
@@ -262,7 +263,7 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
           <>
             <div className="relative w-full aspect-[4/3] group" style={{ perspective: '1000px' }}>
               <div onClick={() => !isLimitReached && setIsFlipped(!isFlipped)} className={`relative w-full h-full cursor-pointer transition-all duration-500 [transform-style:preserve-3d] ${isFlipped ? '[transform:rotateY(180deg)]' : ''}`}>
-                <div className={`absolute inset-0 bg-rh-dark border border-white/5 rounded-3xl p-10 flex flex-col items-center justify-center text-center shadow-2xl hover:${brandBorderClass}/30 transition-colors [backface-visibility:hidden]`}>
+                <div className={`absolute inset-0 bg-rh-dark border border-white/5 rounded-3xl p-10 flex flex-col items-center justify-center text-center shadow-2xl ${orgType === 'FBLA' ? 'hover:border-rh-green/30' : orgType === 'DECA' ? 'hover:border-rh-cyan/30' : 'hover:border-rh-yellow/30'} transition-colors [backface-visibility:hidden]`}>
                   <span className="absolute top-8 left-8 text-[10px] font-bold text-rh-gray uppercase tracking-widest">Question {currentIndex + 1}</span>
                   <h3 className="text-2xl md:text-3xl font-bold tracking-tight leading-snug px-4">{currentCard.question}</h3>
                   <span className={`absolute bottom-8 text-[10px] font-bold ${brandTextClass} uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity`}>Click to reveal</span>

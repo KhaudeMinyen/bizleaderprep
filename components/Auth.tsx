@@ -1,17 +1,27 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase, isSupabaseConfigured } from '../supabaseClient';
+import type { OrgType } from '../App';
 
 interface AuthProps {
   onLogin: () => void;
   onCancel: () => void;
   defaultView?: 'login' | 'signup';
+  orgType?: OrgType;
 }
 
 type AuthView = 'login' | 'signup' | 'forgot_password';
 
-const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login' }) => {
+const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login', orgType = 'NONE' }) => {
   const [view, setView] = useState<AuthView>(defaultView);
+  const brandBgClass = orgType === 'FBLA' ? 'bg-rh-green' : orgType === 'DECA' ? 'bg-rh-cyan' : 'bg-rh-yellow';
+  const brandTextClass = orgType === 'FBLA' ? 'text-rh-green' : orgType === 'DECA' ? 'text-rh-cyan' : 'text-rh-yellow';
+  const brandBorderClass = orgType === 'FBLA' ? 'border-rh-green' : orgType === 'DECA' ? 'border-rh-cyan' : 'border-rh-yellow';
+  const brandShadowClass = orgType === 'FBLA' ? 'shadow-[0_0_40px_rgba(0,200,5,0.4)]' : orgType === 'DECA' ? 'shadow-[0_0_40px_rgba(0,166,224,0.4)]' : 'shadow-[0_0_40px_rgba(255,218,0,0.4)]';
+  const brandFocusClass = orgType === 'FBLA' ? 'focus:border-rh-green' : orgType === 'DECA' ? 'focus:border-rh-cyan' : 'focus:border-rh-yellow';
+  const brandSuccessBgClass = orgType === 'FBLA' ? 'bg-rh-green/10 border-rh-green/50 text-rh-green' : orgType === 'DECA' ? 'bg-rh-cyan/10 border-rh-cyan/50 text-rh-cyan' : 'bg-rh-yellow/10 border-rh-yellow/50 text-rh-yellow';
+  const brandButtonShadowClass = orgType === 'FBLA' ? 'shadow-[0_10px_30px_rgba(0,200,5,0.2)]' : orgType === 'DECA' ? 'shadow-[0_10px_30px_rgba(0,166,224,0.2)]' : 'shadow-[0_10px_30px_rgba(255,218,0,0.2)]';
+  const brandHoverClass = orgType === 'FBLA' ? 'hover:bg-rh-green' : orgType === 'DECA' ? 'hover:bg-rh-cyan' : 'hover:bg-rh-yellow';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -84,7 +94,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login' })
        <div className="w-full max-w-md">
          {/* Branding */}
          <div className="text-center mb-10">
-           <div className="w-14 h-14 bg-rh-green rounded-xl rotate-45 flex items-center justify-center mx-auto mb-8 shadow-[0_0_40px_rgba(0,200,5,0.4)]">
+           <div className={`w-14 h-14 ${brandBgClass} rounded-xl rotate-45 flex items-center justify-center mx-auto mb-8 ${brandShadowClass}`}>
               <div className="w-5 h-5 bg-black rounded-full"></div>
             </div>
             <h1 className="text-4xl font-bold tracking-tighter text-white mb-3">
@@ -135,7 +145,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login' })
                </div>
              )}
              {successMsg && (
-                <div className="bg-rh-green/10 border border-rh-green/50 p-4 rounded-2xl text-rh-green text-[10px] font-black uppercase tracking-widest text-center">
+                <div className={`${brandSuccessBgClass} border p-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-center`}>
                   {successMsg}
                 </div>
              )}
@@ -144,7 +154,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login' })
                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-rh-gray mb-3 ml-1">Account Email</label>
                <input 
                   type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-black/40 border border-white/5 rounded-2xl px-5 py-4 text-white focus:border-rh-green outline-none transition-all placeholder:text-gray-700"
+                  className={`w-full bg-black/40 border border-white/5 rounded-2xl px-5 py-4 text-white ${brandFocusClass} outline-none transition-all placeholder:text-gray-700`}
                   placeholder="name@email.com"
                />
              </div>
@@ -157,13 +167,13 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login' })
                   </div>
                   <input 
                      type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
-                     className="w-full bg-black/40 border border-white/5 rounded-2xl px-5 py-4 text-white focus:border-rh-green outline-none transition-all placeholder:text-gray-700"
+                     className={`w-full bg-black/40 border border-white/5 rounded-2xl px-5 py-4 text-white ${brandFocusClass} outline-none transition-all placeholder:text-gray-700`}
                      placeholder="••••••••"
                   />
                 </div>
              )}
 
-             <button type="submit" disabled={isLoading} className="w-full bg-rh-green text-black font-black uppercase tracking-[0.2em] text-[11px] py-5 rounded-2xl hover:scale-[1.01] transition-all shadow-[0_10px_30px_rgba(0,200,5,0.2)]">
+             <button type="submit" disabled={isLoading} className={`w-full ${brandBgClass} text-black font-black uppercase tracking-[0.2em] text-[11px] py-5 rounded-2xl hover:scale-[1.01] transition-all ${brandButtonShadowClass}`}>
                 {isLoading ? 'Processing...' : (view === 'login' ? 'Sign In' : (view === 'signup' ? 'Create Account' : 'Reset'))}
              </button>
            </form>
@@ -195,7 +205,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login' })
                  {/* Section for Linking New Projects */}
                  <div className="bg-white/5 border border-white/10 p-5 rounded-3xl">
                    <h4 className="text-white text-[10px] font-black uppercase mb-3 tracking-widest flex items-center">
-                     <span className="w-1.5 h-1.5 bg-rh-green rounded-full mr-2"></span>
+                     <span className={`w-1.5 h-1.5 ${brandBgClass} rounded-full mr-2`}></span>
                      How to Link a New Project
                    </h4>
                    <p className="text-gray-300 text-xs leading-relaxed mb-4">
@@ -204,17 +214,17 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login' })
                    <a 
                      href="https://supabase.com/dashboard/project/pvusqaabryhcsmwwhfot/auth/providers" 
                      target="_blank" 
-                     className="inline-block bg-white text-black font-black text-[9px] uppercase px-4 py-2 rounded-lg tracking-widest hover:bg-rh-green transition-colors"
+                     className={`inline-block bg-white text-black font-black text-[9px] uppercase px-4 py-2 rounded-lg tracking-widest ${brandHoverClass} transition-colors`}
                    >
                      Supabase → Auth → Google
                    </a>
                  </div>
 
                  <div>
-                   <h4 className="text-rh-green text-[10px] font-black uppercase mb-3 tracking-widest">Verify Redirect URI</h4>
+                   <h4 className={`${brandTextClass} text-[10px] font-black uppercase mb-3 tracking-widest`}>Verify Redirect URI</h4>
                    <p className="text-gray-400 text-xs mb-3 leading-relaxed">Ensure this link is saved in your (new) Google OAuth project under <strong>"Authorized redirect URIs"</strong>:</p>
                    <div className="bg-black/60 p-4 rounded-xl border border-white/10 select-all group cursor-pointer">
-                     <code className="text-[10px] text-rh-green font-mono break-all leading-relaxed">
+                     <code className={`text-[10px] ${brandTextClass} font-mono break-all leading-relaxed`}>
                        {`${supabaseUrl}/auth/v1/callback`}
                      </code>
                    </div>
