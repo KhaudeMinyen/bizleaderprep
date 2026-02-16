@@ -90,7 +90,7 @@ const App: React.FC = () => {
       if (!mounted) return;
       if (event === 'SIGNED_IN' && session) {
         setIsLoggedIn(true);
-        setView('portfolio');
+        navigateTo('/');
         setIsLoading(false);
       } else if (event === 'SIGNED_OUT') {
         setIsLoggedIn(false);
@@ -132,7 +132,7 @@ const App: React.FC = () => {
 
   const handleLogin = () => {
     setIsLoggedIn(true);
-    setView('portfolio');
+    navigateTo('/');
   };
 
   if (isLoading) {
@@ -166,6 +166,7 @@ const App: React.FC = () => {
         limit={FLASHCARD_LIMIT}
         onAnswer={incrementUsage}
         onLoginRequest={() => setView('auth')}
+        isLoggedIn={isLoggedIn}
       />
     );
   }
@@ -176,19 +177,29 @@ const App: React.FC = () => {
   return (
     <div className={`min-h-screen bg-rh-black text-white selection:${isFBLA ? 'bg-rh-green' : isDECA ? 'bg-rh-cyan' : 'bg-rh-yellow'} selection:text-black font-sans`}>
       <nav className="px-6 py-4 flex justify-between items-center bg-black/50 backdrop-blur-md sticky top-0 z-[100]">
-        <div className="flex flex-col items-start">
           <div 
-            className="flex items-center space-x-2 cursor-pointer mb-1" 
-            onClick={() => navigateTo('/')}
+            className="flex flex-col items-start"
           >
-            <div className={`w-6 h-6 ${brandColor} rounded-sm rotate-45 flex items-center justify-center transition-colors duration-500`}>
-              <div className="w-2 h-2 bg-black rounded-full"></div>
+            <div 
+              className="flex items-center space-x-2 cursor-pointer mb-1" 
+              onClick={() => navigateTo(orgType === 'NONE' ? '/' : virtualPath)}
+            >
+              <div className={`w-6 h-6 ${brandColor} rounded-sm rotate-45 flex items-center justify-center transition-colors duration-500`}>
+                <div className="w-2 h-2 bg-black rounded-full"></div>
+              </div>
+              <span className="font-black tracking-tight text-xl uppercase">
+                {orgType === 'NONE' ? 'BIZLEADERPREP' : `${orgType} PREPHUB`}
+              </span>
             </div>
-            <span className="font-black tracking-tight text-xl uppercase">
-              {orgType === 'NONE' ? 'BIZLEADERPREP' : `${orgType} PREPHUB`}
-            </span>
+            {orgType !== 'NONE' && (
+              <button 
+                onClick={() => navigateTo('/')}
+                className="text-[10px] font-bold text-rh-gray hover:text-white uppercase tracking-widest transition-colors ml-8"
+              >
+                Back to hub
+              </button>
+            )}
           </div>
-        </div>
         
         <div className="flex items-center space-x-6">
           {orgType !== 'NONE' && (

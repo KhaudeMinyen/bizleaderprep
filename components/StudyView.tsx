@@ -14,11 +14,12 @@ interface StudyViewProps {
   limit: number;
   onAnswer: () => void;
   onLoginRequest: () => void;
+  isLoggedIn: boolean;
 }
 
 type StudyMode = 'selection' | 'flashcard' | 'test' | 'summary';
 
-const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onBack, flashcardsUsed, limit, onAnswer, onLoginRequest }) => {
+const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onBack, flashcardsUsed, limit, onAnswer, onLoginRequest, isLoggedIn }) => {
   const [mode, setMode] = useState<StudyMode>('selection');
   const [cards, setCards] = useState<QuestionData[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -27,7 +28,6 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
   
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
-  const [streak, setStreak] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
 
   const isLimitReached = flashcardsUsed >= limit;
@@ -44,42 +44,41 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
       setIsLoading(true);
       try {
         const staticQuestions = getQuestionsForEvent(eventName, division);
-        if (staticQuestions.length > 0) {
-          setCards(staticQuestions);
-          setIsLoading(false);
-          return;
-        }
+        let baseQuestions = staticQuestions.length > 0 ? staticQuestions : [];
 
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-        const response = await ai.models.generateContent({
-          model: 'gemini-3-flash-preview',
-          contents: `Generate 5 high-quality competitive multiple choice study questions for the FBLA ${division} event: "${eventName}". 
-          The questions must be difficult and follow official FBLA competition guidelines for the 2025 season.
-          Return ONLY a JSON array of objects with "question", "options" (array of 4 strings), and "answer" (the exact correct answer text) keys.`,
-          config: {
-            responseMimeType: 'application/json',
-            responseSchema: {
-              type: Type.ARRAY,
-              items: {
-                type: Type.OBJECT,
-                properties: {
-                  question: { type: Type.STRING },
-                  options: { 
-                    type: Type.ARRAY,
-                    items: { type: Type.STRING }
+        if (baseQuestions.length === 0) {
+          const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+          const response = await ai.models.generateContent({
+            model: 'gemini-3-flash-preview',
+            contents: `Generate 5 high-quality competitive multiple choice study questions for the FBLA ${division} event: "${eventName}". 
+            The questions must be difficult and follow official FBLA competition guidelines for the 2025 season.
+            Return ONLY a JSON array of objects with "question", "options" (array of 4 strings), and "answer" (the exact correct answer text) keys.`,
+            config: {
+              responseMimeType: 'application/json',
+              responseSchema: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    question: { type: Type.STRING },
+                    options: { 
+                      type: Type.ARRAY,
+                      items: { type: Type.STRING }
+                    },
+                    answer: { type: Type.STRING }
                   },
-                  answer: { type: Type.STRING }
-                },
-                required: ['question', 'options', 'answer']
+                  required: ['question', 'options', 'answer']
+                }
               }
             }
-          }
-        });
+          });
 
-        if (response.text) {
-          const generated = JSON.parse(response.text);
-          setCards(generated);
+          if (response.text) {
+            baseQuestions = JSON.parse(response.text);
+          }
         }
+
+        setCards(baseQuestions.slice(0, 5));
       } catch (err) {
         console.error("StudyView fetch error:", err);
       } finally {
@@ -110,10 +109,7 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
     setIsAnswered(true);
     
     if (option === currentCard.answer) {
-      setStreak(s => s + 1);
       setCorrectCount(c => c + 1);
-    } else {
-      setStreak(0);
     }
   };
 
@@ -140,14 +136,10 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
              </div>
            </div>
            
-           <div className="grid grid-cols-2 gap-4 mb-10">
+           <div className="grid grid-cols-1 gap-4 mb-10">
               <div className="bg-white/5 p-6 rounded-3xl border border-white/5">
-                <div className="text-[10px] font-black text-rh-gray uppercase mb-1">Max Streak</div>
-                <div className="text-2xl font-bold text-white">{streak} 🔥</div>
-              </div>
-              <div className="bg-white/5 p-6 rounded-3xl border border-white/5">
-                <div className="text-[10px] font-black text-rh-gray uppercase mb-1">Knowledge Growth</div>
-                <div className={`text-2xl font-bold ${brandTextClass}`}>Active</div>
+                <div className="text-[10px] font-black text-rh-gray uppercase mb-1">Items Mastered</div>
+                <div className="text-2xl font-bold text-white">{correctCount} / {cards.length}</div>
               </div>
            </div>
 
@@ -158,16 +150,25 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
               >
                 Back to Study Plan
               </button>
-              <button 
-                onClick={() => {
-                  setCurrentIndex(0);
-                  setCorrectCount(0);
-                  setMode('test');
-                }}
-                className="w-full bg-white/5 text-white font-bold py-4 rounded-2xl text-xs uppercase tracking-widest hover:bg-white/10"
-              >
-                Retry Assessment
-              </button>
+              {(supabase.auth.getSession() as any).session || isLoggedIn ? (
+                <button 
+                  onClick={() => {
+                    setCurrentIndex(0);
+                    setCorrectCount(0);
+                    setMode('test');
+                  }}
+                  className="w-full bg-white/5 text-white font-bold py-4 rounded-2xl text-xs uppercase tracking-widest hover:bg-white/10"
+                >
+                  Retry Assessment
+                </button>
+              ) : (
+                <button 
+                  onClick={onLoginRequest}
+                  className={`w-full ${brandBgClass} text-black font-black py-5 rounded-2xl text-xs uppercase tracking-widest ${brandShadowClass} hover:scale-[1.02] transition-transform`}
+                >
+                  Sign Up to Retry
+                </button>
+              )}
            </div>
         </div>
       </div>
@@ -214,10 +215,6 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
         </button>
         <div className="flex space-x-8 items-center">
            <div className="flex flex-col items-end">
-              <span className="text-[10px] font-black text-rh-gray uppercase tracking-widest">Streak</span>
-              <span className={`text-xl font-bold tracking-tighter ${streak > 0 ? brandTextClass : 'text-white'}`}>{streak} 🔥</span>
-           </div>
-           <div className="flex flex-col items-end">
               <span className={`text-[10px] font-black uppercase ${brandTextClass} tracking-[0.2em]`}>{mode === 'flashcard' ? 'Flashcards' : 'Practice Test'}</span>
               <span className="text-lg font-bold tracking-tighter text-right">{eventName}</span>
            </div>
@@ -242,17 +239,21 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
         {isLimitReached ? (
            <div className="relative w-full aspect-[4/3] z-10">
             <div className="absolute inset-0 bg-rh-dark border border-white/10 rounded-[40px] p-12 flex flex-col items-center justify-center text-center shadow-2xl animate-fade-in-up">
-              <h3 className="text-3xl font-bold tracking-tighter mb-6">Study Limit Reached</h3>
+              <h3 className="text-3xl font-bold tracking-tighter mb-6">{isLoggedIn ? 'Under Construction' : 'Study Limit Reached'}</h3>
               <p className="text-rh-gray mb-10 leading-relaxed font-medium">
-                You've reached your free study limit for the 2025-26 season preview. Continue your mastery by creating a free account.
+                {isLoggedIn 
+                  ? "You've mastered the preview items! The remaining question bank is currently under construction for the 2025-26 season."
+                  : "You've reached your free study limit for the 2025-26 season preview. Continue your mastery by creating a free account."}
               </p>
               <div className="space-y-4 w-full">
-                <button 
-                  onClick={onLoginRequest}
-                  className={`w-full ${brandBgClass} text-black font-black py-5 rounded-2xl text-xs uppercase tracking-widest ${brandShadowClass} hover:scale-[1.02] active:scale-[0.98] transition-transform`}
-                >
-                  Create Account
-                </button>
+                {!isLoggedIn && (
+                  <button 
+                    onClick={onLoginRequest}
+                    className={`w-full ${brandBgClass} text-black font-black py-5 rounded-2xl text-xs uppercase tracking-widest ${brandShadowClass} hover:scale-[1.02] active:scale-[0.98] transition-transform`}
+                  >
+                    Create Account
+                  </button>
+                )}
                 <button onClick={onBack} className="w-full bg-transparent text-white font-bold py-3 text-xs uppercase tracking-widest hover:text-white/80">
                   Back to Dashboard
                 </button>
