@@ -25,7 +25,11 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> 07f0e87 (Improved site navigation)
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
@@ -44,6 +48,7 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
       setIsLoading(true);
       try {
         const staticQuestions = getQuestionsForEvent(eventName, division);
+<<<<<<< HEAD
         let baseQuestions = staticQuestions.length > 0 ? staticQuestions : [];
 
         if (baseQuestions.length === 0) {
@@ -79,6 +84,44 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
         }
 
         setCards(baseQuestions.slice(0, 5));
+=======
+        if (staticQuestions.length > 0) {
+          setCards(staticQuestions);
+          setIsLoading(false);
+          return;
+        }
+
+        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        const response = await ai.models.generateContent({
+          model: 'gemini-3-flash-preview',
+          contents: `Generate 5 high-quality competitive multiple choice study questions for the FBLA ${division} event: "${eventName}". 
+          The questions must be difficult and follow official FBLA competition guidelines for the 2025 season.
+          Return ONLY a JSON array of objects with "question", "options" (array of 4 strings), and "answer" (the exact correct answer text) keys.`,
+          config: {
+            responseMimeType: 'application/json',
+            responseSchema: {
+              type: Type.ARRAY,
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  question: { type: Type.STRING },
+                  options: {
+                    type: Type.ARRAY,
+                    items: { type: Type.STRING }
+                  },
+                  answer: { type: Type.STRING }
+                },
+                required: ['question', 'options', 'answer']
+              }
+            }
+          }
+        });
+
+        if (response.text) {
+          const generated = JSON.parse(response.text);
+          setCards(generated);
+        }
+>>>>>>> 07f0e87 (Improved site navigation)
       } catch (err) {
         console.error("StudyView fetch error:", err);
       } finally {
@@ -95,7 +138,11 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
     setSelectedOption(null);
     setIsAnswered(false);
     onAnswer();
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 07f0e87 (Improved site navigation)
     if (currentIndex < cards.length - 1) {
       setCurrentIndex(currentIndex + 1);
     } else {
@@ -107,7 +154,11 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
     if (isAnswered || isLimitReached) return;
     setSelectedOption(option);
     setIsAnswered(true);
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 07f0e87 (Improved site navigation)
     if (option === currentCard.answer) {
       setCorrectCount(c => c + 1);
     }
@@ -128,6 +179,7 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
     return (
       <div className="min-h-screen bg-black text-white px-6 py-12 flex flex-col items-center justify-center">
         <div className="w-full max-w-xl bg-rh-dark/50 border border-white/5 p-12 rounded-[48px] text-center shadow-2xl animate-slide-up">
+<<<<<<< HEAD
            <div className="mb-8">
              <div className="text-[10px] font-black text-rh-gray uppercase tracking-[0.3em] mb-2">Study Complete</div>
              <h2 className="text-5xl font-bold tracking-tighter mb-4">Session Results</h2>
@@ -170,6 +222,43 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
                 </button>
               )}
            </div>
+=======
+          <div className="mb-8">
+            <div className="text-[10px] font-black text-rh-gray uppercase tracking-[0.3em] mb-2">Study Complete</div>
+            <h2 className="text-5xl font-bold tracking-tighter mb-4">Session Results</h2>
+            <div className={`text-6xl font-bold tracking-tighter ${accuracy >= 70 ? brandTextClass : 'text-red-500'}`}>
+              {accuracy.toFixed(1)}%
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <button
+              onClick={onBack}
+              className={`w-full ${brandBgClass} text-black font-black py-5 rounded-2xl text-xs uppercase tracking-widest ${brandShadowClass} hover:scale-[1.02] transition-transform`}
+            >
+              Back to Study Plan
+            </button>
+            {isLoggedIn ? (
+              <button
+                onClick={() => {
+                  setCurrentIndex(0);
+                  setCorrectCount(0);
+                  setMode('test');
+                }}
+                className="w-full bg-white/5 text-white font-bold py-4 rounded-2xl text-xs uppercase tracking-widest hover:bg-white/10"
+              >
+                Retry Assessment
+              </button>
+            ) : (
+              <button
+                onClick={onLoginRequest}
+                className="w-full bg-white/5 text-white font-bold py-4 rounded-2xl text-xs uppercase tracking-widest hover:bg-white/10"
+              >
+                Sign Up to Continue
+              </button>
+            )}
+          </div>
+>>>>>>> 07f0e87 (Improved site navigation)
         </div>
       </div>
     );
@@ -187,14 +276,23 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
         <div className="grid md:grid-cols-2 gap-6 w-full max-w-4xl">
           <button onClick={() => setMode('flashcard')} className={`group relative bg-rh-dark border border-white/5 p-10 rounded-[32px] hover:bg-white/5 ${brandBorderHoverClass} transition-all text-left overflow-hidden`}>
             <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+<<<<<<< HEAD
                <svg className="w-32 h-32" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/></svg>
+=======
+              <svg className="w-32 h-32" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z" /></svg>
+>>>>>>> 07f0e87 (Improved site navigation)
             </div>
             <h3 className="text-2xl font-bold text-white mb-2 relative z-10">Flashcards</h3>
             <p className="text-rh-gray text-sm font-medium relative z-10">Quick-fire memorization of official terms and concepts.</p>
           </button>
           <button onClick={() => setMode('test')} className={`group relative bg-rh-dark border border-white/5 p-10 rounded-[32px] hover:bg-white/5 ${brandBorderHoverClass} transition-all text-left overflow-hidden`}>
+<<<<<<< HEAD
              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
                <svg className="w-32 h-32" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+=======
+            <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+              <svg className="w-32 h-32" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" /></svg>
+>>>>>>> 07f0e87 (Improved site navigation)
             </div>
             <h3 className="text-2xl font-bold text-white mb-2 relative z-10">Mock Exam</h3>
             <p className="text-rh-gray text-sm font-medium relative z-10">Realistic simulation of {orgType} competitive testing.</p>
@@ -214,6 +312,7 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
           <span className="text-xs font-bold uppercase tracking-widest">Back</span>
         </button>
         <div className="flex space-x-8 items-center">
+<<<<<<< HEAD
            <div className="flex flex-col items-end">
               <span className={`text-[10px] font-black uppercase ${brandTextClass} tracking-[0.2em]`}>{mode === 'flashcard' ? 'Flashcards' : 'Practice Test'}</span>
               <span className="text-lg font-bold tracking-tighter text-right">{eventName}</span>
@@ -229,6 +328,26 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
           </span>
         </div>
         {remaining === 0 && (
+=======
+          <div className="flex flex-col items-end">
+            <span className={`text-[10px] font-black uppercase ${brandTextClass} tracking-[0.2em]`}>{mode === 'flashcard' ? 'Flashcards' : 'Practice Test'}</span>
+            <span className="text-lg font-bold tracking-tighter text-right">{eventName}</span>
+          </div>
+        </div>
+      </header>
+
+      <div className={`border rounded-2xl p-4 mb-8 flex justify-between items-center transition-colors ${remaining === 0 && !isLoggedIn ? 'bg-red-500/10 border-red-500/50' : remaining === 0 && isLoggedIn ? 'bg-rh-dark border-white/5' : 'bg-rh-dark border-white/5'}`}>
+        <div className="flex items-center space-x-3">
+          <div className={`w-2 h-2 rounded-full ${remaining > 0 ? `${brandBgClass} animate-pulse` : isLoggedIn ? `${brandBgClass}` : 'bg-red-500'}`}></div>
+          <span className={`text-xs font-bold uppercase tracking-widest ${remaining === 0 && !isLoggedIn ? 'text-red-500' : 'text-white'}`}>
+            {isLoggedIn
+              ? (remaining > 0 ? `${remaining} Items Available` : 'Remaining Questions Under Construction')
+              : (remaining > 0 ? `${remaining} Free Items Remaining` : 'Daily Access Limit Reached')
+            }
+          </span>
+        </div>
+        {remaining === 0 && !isLoggedIn && (
+>>>>>>> 07f0e87 (Improved site navigation)
           <button onClick={onLoginRequest} className="text-[10px] font-black uppercase tracking-widest bg-white text-black px-4 py-2 rounded-lg hover:scale-105 transition-all">
             Join PrepHub Elite
           </button>
@@ -237,6 +356,7 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
 
       <div className="flex-grow flex flex-col items-center justify-center max-w-2xl mx-auto w-full relative">
         {isLimitReached ? (
+<<<<<<< HEAD
            <div className="relative w-full aspect-[4/3] z-10">
             <div className="absolute inset-0 bg-rh-dark border border-white/10 rounded-[40px] p-12 flex flex-col items-center justify-center text-center shadow-2xl animate-fade-in-up">
               <h3 className="text-3xl font-bold tracking-tighter mb-6">{isLoggedIn ? 'Under Construction' : 'Study Limit Reached'}</h3>
@@ -260,6 +380,43 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
               </div>
             </div>
            </div>
+=======
+          <div className="relative w-full aspect-[4/3] z-10">
+            <div className="absolute inset-0 bg-rh-dark border border-white/10 rounded-[40px] p-12 flex flex-col items-center justify-center text-center shadow-2xl animate-fade-in-up">
+              {isLoggedIn ? (
+                <>
+                  <h3 className="text-3xl font-bold tracking-tighter mb-6">Under Construction</h3>
+                  <p className="text-rh-gray mb-10 leading-relaxed font-medium">
+                    The remaining questions for this event are currently being built. Check back soon for more content!
+                  </p>
+                  <div className="space-y-4 w-full">
+                    <button onClick={onBack} className={`w-full ${brandBgClass} text-black font-black py-5 rounded-2xl text-xs uppercase tracking-widest ${brandShadowClass} hover:scale-[1.02] active:scale-[0.98] transition-transform`}>
+                      Back to Dashboard
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h3 className="text-3xl font-bold tracking-tighter mb-6">Study Limit Reached</h3>
+                  <p className="text-rh-gray mb-10 leading-relaxed font-medium">
+                    You've reached your free study limit for the 2025-26 season preview. Continue your mastery by creating a free account.
+                  </p>
+                  <div className="space-y-4 w-full">
+                    <button
+                      onClick={onLoginRequest}
+                      className={`w-full ${brandBgClass} text-black font-black py-5 rounded-2xl text-xs uppercase tracking-widest ${brandShadowClass} hover:scale-[1.02] active:scale-[0.98] transition-transform`}
+                    >
+                      Create Account
+                    </button>
+                    <button onClick={onBack} className="w-full bg-transparent text-white font-bold py-3 text-xs uppercase tracking-widest hover:text-white/80">
+                      Back to Dashboard
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+>>>>>>> 07f0e87 (Improved site navigation)
         ) : mode === 'flashcard' ? (
           <>
             <div className="relative w-full aspect-[4/3] group" style={{ perspective: '1000px' }}>
@@ -281,6 +438,7 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
           </>
         ) : (
           <div className="w-full flex flex-col items-center">
+<<<<<<< HEAD
              <div className="bg-rh-dark border border-white/5 rounded-3xl p-10 w-full text-center shadow-2xl mb-6">
                 <span className="block text-[10px] font-bold text-rh-gray uppercase tracking-widest mb-4">Exam Item {currentIndex + 1}</span>
                 <h3 className="text-2xl font-bold tracking-tight leading-snug mb-2">{currentCard.question}</h3>
@@ -312,6 +470,39 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
                  </button>
                </div>
              )}
+=======
+            <div className="bg-rh-dark border border-white/5 rounded-3xl p-10 w-full text-center shadow-2xl mb-6">
+              <span className="block text-[10px] font-bold text-rh-gray uppercase tracking-widest mb-4">Exam Item {currentIndex + 1}</span>
+              <h3 className="text-2xl font-bold tracking-tight leading-snug mb-2">{currentCard.question}</h3>
+            </div>
+            <div className="grid grid-cols-1 gap-3 w-full">
+              {currentCard.options.map((option, idx) => {
+                const isSelected = selectedOption === option;
+                const isCorrect = option === currentCard.answer;
+                const showCorrect = isAnswered && isCorrect;
+                const showWrong = isAnswered && isSelected && !isCorrect;
+
+                let buttonStyle = "bg-rh-dark border-white/10 hover:border-white/30 text-white";
+                if (showCorrect) buttonStyle = `${brandBgClass} text-black ${brandBorderClass}`;
+                else if (showWrong) buttonStyle = "bg-red-500 text-white border-red-500 animate-shake";
+                else if (isAnswered && !isSelected && !isCorrect) buttonStyle = "bg-rh-dark border-white/5 text-gray-500 opacity-50";
+
+                return (
+                  <button key={idx} onClick={() => handleOptionClick(option)} disabled={isAnswered} className={`w-full p-5 rounded-xl border text-left font-bold transition-all ${buttonStyle} ${!isAnswered ? 'hover:scale-[1.01]' : ''}`}>
+                    <span className="inline-block w-6 text-xs opacity-50 mr-2">{String.fromCharCode(65 + idx)}.</span>
+                    {option}
+                  </button>
+                );
+              })}
+            </div>
+            {isAnswered && (
+              <div className="mt-8 w-full animate-slide-up">
+                <button onClick={handleNext} className="w-full bg-white text-black font-black py-5 rounded-2xl text-sm uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+                  Continue Assessment
+                </button>
+              </div>
+            )}
+>>>>>>> 07f0e87 (Improved site navigation)
           </div>
         )}
       </div>

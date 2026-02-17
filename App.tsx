@@ -146,9 +146,15 @@ const App: React.FC = () => {
 
   if (view === 'auth') {
     return (
+<<<<<<< HEAD
       <Auth 
         onLogin={handleLogin} 
         onCancel={() => setView('landing')} 
+=======
+      <Auth
+        onLogin={handleLogin}
+        onCancel={() => setView('landing')}
+>>>>>>> 07f0e87 (Improved site navigation)
         defaultView={authInitialView}
         orgType={orgType}
       />
@@ -157,11 +163,19 @@ const App: React.FC = () => {
 
   if (view === 'study' && activeEvent) {
     return (
+<<<<<<< HEAD
       <StudyView 
         eventName={activeEvent} 
         division={division}
         orgType={orgType}
         onBack={() => setView('portfolio')} 
+=======
+      <StudyView
+        eventName={activeEvent}
+        division={division}
+        orgType={orgType}
+        onBack={() => setView('portfolio')}
+>>>>>>> 07f0e87 (Improved site navigation)
         flashcardsUsed={isLoggedIn ? 0 : flashcardsUsed}
         limit={FLASHCARD_LIMIT}
         onAnswer={incrementUsage}
@@ -177,6 +191,7 @@ const App: React.FC = () => {
   return (
     <div className={`min-h-screen bg-rh-black text-white selection:${isFBLA ? 'bg-rh-green' : isDECA ? 'bg-rh-cyan' : 'bg-rh-yellow'} selection:text-black font-sans`}>
       <nav className="px-6 py-4 flex justify-between items-center bg-black/50 backdrop-blur-md sticky top-0 z-[100]">
+<<<<<<< HEAD
           <div 
             className="flex flex-col items-start"
           >
@@ -204,6 +219,34 @@ const App: React.FC = () => {
         <div className="flex items-center space-x-6">
           {orgType !== 'NONE' && (
             <button 
+=======
+        <div className="flex flex-col items-start">
+          <div
+            className="flex items-center space-x-2 cursor-pointer mb-1"
+            onClick={() => orgType !== 'NONE' ? navigateTo(virtualPath) : navigateTo('/')}
+          >
+            <div className={`w-6 h-6 ${brandColor} rounded-sm rotate-45 flex items-center justify-center transition-colors duration-500`}>
+              <div className="w-2 h-2 bg-black rounded-full"></div>
+            </div>
+            <span className="font-black tracking-tight text-xl uppercase">
+              {orgType === 'NONE' ? 'BIZLEADERPREP' : `${orgType} PREPHUB`}
+            </span>
+          </div>
+          {orgType !== 'NONE' && (
+            <button
+              onClick={() => navigateTo('/')}
+              className="text-[10px] font-bold text-rh-gray hover:text-white uppercase tracking-widest transition-colors flex items-center space-x-1"
+            >
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
+              <span>Back to hub</span>
+            </button>
+          )}
+        </div>
+
+        <div className="flex items-center space-x-6">
+          {orgType !== 'NONE' && (
+            <button
+>>>>>>> 07f0e87 (Improved site navigation)
               onClick={scrollToFeatures}
               className={`text-sm font-bold transition-colors ${view === 'landing' ? brandText : 'text-rh-gray hover:text-white'}`}
             >
@@ -214,6 +257,7 @@ const App: React.FC = () => {
             <>
               <button
                 onClick={() => { setAuthInitialView('signup'); setView('auth'); }}
+<<<<<<< HEAD
                 className={`text-sm font-bold px-4 py-2 rounded-lg text-black transition-colors ${
                   orgType === 'NONE' ? 'bg-rh-yellow hover:bg-rh-yellow/90' : isFBLA ? 'bg-rh-green hover:bg-rh-green/90' : 'bg-rh-cyan hover:bg-rh-cyan/90'
                 }`}
@@ -221,6 +265,14 @@ const App: React.FC = () => {
                 Sign up
               </button>
               <button 
+=======
+                className={`text-sm font-bold px-4 py-2 rounded-lg text-black transition-colors ${orgType === 'NONE' ? 'bg-rh-yellow hover:bg-rh-yellow/90' : isFBLA ? 'bg-rh-green hover:bg-rh-green/90' : 'bg-rh-cyan hover:bg-rh-cyan/90'
+                  }`}
+              >
+                Sign up
+              </button>
+              <button
+>>>>>>> 07f0e87 (Improved site navigation)
                 onClick={() => { setAuthInitialView('login'); setView('auth'); }}
                 className="text-sm font-bold text-rh-gray hover:text-white transition-colors"
               >
@@ -228,7 +280,11 @@ const App: React.FC = () => {
               </button>
             </>
           ) : (
+<<<<<<< HEAD
             <button 
+=======
+            <button
+>>>>>>> 07f0e87 (Improved site navigation)
               onClick={() => supabase.auth.signOut()}
               className="text-sm font-bold text-rh-gray hover:text-white transition-colors"
             >
@@ -241,9 +297,15 @@ const App: React.FC = () => {
       <main>
         {view === 'landing' ? (
           <>
+<<<<<<< HEAD
             <Hero 
               orgType={orgType} 
               onGetStarted={() => setView('portfolio')} 
+=======
+            <Hero
+              orgType={orgType}
+              onGetStarted={() => setView('portfolio')}
+>>>>>>> 07f0e87 (Improved site navigation)
               onNavigate={(path) => navigateTo(path)}
             />
             {orgType !== 'NONE' && (
@@ -270,7 +332,11 @@ const App: React.FC = () => {
                   </p>
                 )}
               </div>
+<<<<<<< HEAD
               
+=======
+
+>>>>>>> 07f0e87 (Improved site navigation)
               {orgType !== 'DECA' && (
                 <div className="flex bg-rh-dark p-1 rounded-xl border border-white/5 h-fit shrink-0">
                   {(['Middle School', 'High School'] as Division[]).map((d) => (

@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   define: {
+<<<<<<< HEAD
     'process.env.API_KEY': JSON.stringify(process.env.API_KEY || ''),
   },
   server: {
@@ -12,4 +13,8 @@ export default defineConfig({
     port: 5000,
     allowedHosts: true,
   },
+=======
+    'process.env': process.env
+  }
+>>>>>>> 07f0e87 (Improved site navigation)
 });
