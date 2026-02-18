@@ -74,7 +74,11 @@ const App: React.FC = () => {
       if (!mounted) return;
       if (session) {
         setIsLoggedIn(true);
-        if (virtualPath === '/') setView('portfolio');
+        // Only auto-switch to portfolio if on a prephub page (not NONE)
+        const currentOrgType = getPathFromLocation();
+        if (currentOrgType === '/fblaprephub' || currentOrgType === '/decaprephub') {
+          setView('portfolio');
+        }
       }
       setIsLoading(false);
     }).catch((err) => {

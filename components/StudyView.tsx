@@ -1,6 +1,5 @@
 
 import React, { useState, useEffect } from 'react';
-import { GoogleGenAI, Type } from "@google/genai";
 import { Division, OrgType } from '../App';
 import { getQuestionsForEvent, QuestionData } from '../data/questionBank';
 import { supabase } from '../supabaseClient';
@@ -50,40 +49,8 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
         const staticQuestions = getQuestionsForEvent(eventName, division);
         if (staticQuestions.length > 0) {
           setCards(staticQuestions.slice(0, 5)); // Hard limit of 5 items
-          setIsLoading(false);
-          return;
         }
-
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-        const response = await ai.models.generateContent({
-          model: 'gemini-3-flash-preview',
-          contents: `Generate 5 high-quality competitive multiple choice study questions for the FBLA ${division} event: "${eventName}". 
-          The questions must be difficult and follow official FBLA competition guidelines for the 2025 season.
-          Return ONLY a JSON array of objects with "question", "options" (array of 4 strings), and "answer" (the exact correct answer text) keys.`,
-          config: {
-            responseMimeType: 'application/json',
-            responseSchema: {
-              type: Type.ARRAY,
-              items: {
-                type: Type.OBJECT,
-                properties: {
-                  question: { type: Type.STRING },
-                  options: {
-                    type: Type.ARRAY,
-                    items: { type: Type.STRING }
-                  },
-                  answer: { type: Type.STRING }
-                },
-                required: ['question', 'options', 'answer']
-              }
-            }
-          }
-        });
-
-        if (response.text) {
-          const generated = JSON.parse(response.text);
-          setCards(generated.slice(0, 5)); // Ensure only 5 items
-        }
+        // If no static questions exist, cards stays empty -> "Under Construction" shown
       } catch (err) {
         console.error("StudyView fetch error:", err);
       } finally {
@@ -124,6 +91,33 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
         <div className={`w-16 h-16 border-4 ${brandBorderClass} border-t-transparent rounded-full animate-spin mb-6`}></div>
         <h2 className="text-2xl font-bold tracking-tighter mb-2">Syncing {orgType} Core</h2>
         <p className="text-rh-gray text-sm animate-pulse-fast">Gathering official materials for {eventName}...</p>
+      </div>
+    );
+  }
+
+  // Show "Under Construction" when no questions are available for this event
+  if (!isLoading && cards.length === 0) {
+    return (
+      <div className="min-h-screen bg-black text-white px-6 py-12 flex flex-col items-center justify-center">
+        <div className="w-full max-w-xl bg-rh-dark/50 border border-white/5 p-12 rounded-[48px] text-center shadow-2xl animate-slide-up">
+          <div className="mb-8">
+            <div className={`w-16 h-16 ${brandBgClass} rounded-2xl rotate-12 flex items-center justify-center mx-auto mb-8 ${brandShadowClass}`}>
+              <svg className="w-8 h-8 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+              </svg>
+            </div>
+            <h2 className="text-4xl font-bold tracking-tighter mb-4">Under Construction</h2>
+            <p className="text-rh-gray text-sm font-medium leading-relaxed max-w-sm mx-auto">
+              Study materials for <span className={`font-bold ${brandTextClass}`}>{eventName}</span> are currently being built for the 2025-26 season. Check back soon!
+            </p>
+          </div>
+          <button
+            onClick={onBack}
+            className={`w-full ${brandBgClass} text-black font-black py-5 rounded-2xl text-xs uppercase tracking-widest ${brandShadowClass} hover:scale-[1.02] transition-transform`}
+          >
+            Back to Events
+          </button>
+        </div>
       </div>
     );
   }
