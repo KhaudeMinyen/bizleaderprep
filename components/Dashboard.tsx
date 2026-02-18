@@ -95,7 +95,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onSelectEvent, division, orgType 
       ? (FBLA_EVENTS[division] || [])
       : [];
 
-  const brandTextClass = orgType === 'FBLA' ? 'text-rh-green' : orgType === 'DECA' ? 'text-rh-cyan' : 'text-rh-yellow';
+  const brandTextClass = orgType === 'FBLA' ? 'text-rh-yellow' : orgType === 'DECA' ? 'text-rh-cyan' : 'text-rh-green';
 
   if (events.length === 0) {
     return (

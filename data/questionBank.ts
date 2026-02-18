@@ -23,20 +23,96 @@ High School,Cybersecurity,"Which of the following is the most secure password pr
 High School,Cybersecurity,"What is a 'Zero-Day' vulnerability?","A bug that has been patched for 0 days","A security flaw unknown to the vendor that is exploited before a patch exists","A virus that only works on Sundays","A firewall that blocks all traffic",B
 High School,Business Management,"What is the primary function of a manager?","To do all the work themselves","To plan, organize, lead, and control","To focus only on profits","To fire employees",B
 High School,Marketing,"The 'Four Ps' of marketing are Product, Price, Place, and:","Positioning","Promotion","Profit","People",B
+Middle School,Career Exploration,"What is the primary purpose of a job shadow?","To earn money","To observe a professional in their work environment","To replace the employee","To get a guaranteed job offer",B
+Middle School,Career Exploration,"Which document lists your education, work experience, and skills?","Cover Letter","Resume","Reference List","Thank You Note",B
+Middle School,Career Exploration,"A specific career path or group of similar jobs is called a:","Job Cluster","Career Cluster","Work Group","Profession Set",B
+Middle School,Career Exploration,"What is the term for learning a trade by working under a skilled professional?","Internship","Apprenticeship","Volunteering","Shadowing",B
+Middle School,Career Exploration,"Which of the following is a 'Soft Skill'?","Typing speed","Computer programming","Communication","Operating machinery",C
 Middle School,Digital Citizenship,"What is a 'Digital Footprint'?","The weight of your laptop","The trail of data you create while using the internet","The physical size of a computer mouse","A biometric security feature",B
-Middle School,Financial Literacy,"A plan for managing your money is called a:","Receipt","Budget","Checkbook","Statement",B
-Middle School,Financial Literacy,"Money you set aside for future use is called:","Expenses","Income","Savings","Debt",C
-Middle School,Financial Literacy,"If you spend more than you earn, you have a:","Surplus","Balance","Deficit","Profit",C`;
+Middle School,Digital Citizenship,"Which practice helps protect against phishing attacks?","Clicking every link in emails","Verifying the sender's email address","Sharing passwords with friends","Disabling antivirus software",B
+Middle School,Digital Citizenship,"What does 'Copyright' protect?","Inventions","Brand names","Original works of authorship","Scientific discoveries",C
+Middle School,Digital Citizenship,"Cyberbullying includes:","Harassing someone online","Posting mean comments","Spreading rumors on social media","All of the above",D
+Middle School,Digital Citizenship,"A strong password should contain:","Your name and birth year","123456","A mix of letters numbers and symbols","The word password",C
+Middle School,Exploring Accounting & Finance,"What is the basic accounting equation?","Assets = Liabilities + Owner's Equity","Income = Expenses + Profit","Assets = Liabilities - Debt","Equity = Cash + Assets",A
+Middle School,Exploring Accounting & Finance,"Which concept refers to the rise in the general level of prices?","Deflation","Inflation","Interest","Recession",B
+Middle School,Exploring Accounting & Finance,"Money paid for the use of borrowed money is called:","Principal","Dividend","Interest","Equity",C
+Middle School,Exploring Accounting & Finance,"A plan for spending and saving money is a:","Budget","Balance Sheet","Ledger","Audit",A
+Middle School,Exploring Accounting & Finance,"Liquid assets are:","Assets that are frozen","Assets easily converted to cash","Long-term investments","Real estate properties",B
+Middle School,Exploring Agribusiness,"What is the primary sector of the economy for agribusiness?","Manufacturing","Agriculture","Service","Technology",B
+Middle School,Exploring Agribusiness,"Which term refers to the cultivation of aquatic animals/plants for food?","Hydroponics","Aquaculture","Agriculture","Horticulture",B
+Middle School,Exploring Agribusiness,"Sustainable agriculture aims to:","Deplete natural resources","Maximize short-term profit only","Protect the environment for future generations","Avoid using technology",C
+Middle School,Exploring Agribusiness,"A cooperative (co-op) is owned by:","The government","A single wealthy investor","Its members","Foreign competitors",C
+Middle School,Exploring Agribusiness,"The detailed coordination of a complex operation involving many people, facilities, or supplies is:","Logistics","Marketing","Accounting","Sales",A
+Middle School,Exploring Business Communication,"Which is a form of non-verbal communication?","Email","Body language","Phone call","Memo",B
+Middle School,Exploring Business Communication,"In a business letter, the salutation is the:","Closing","Greeting","Signature","Body",B
+Middle School,Exploring Business Communication,"Active listening involves:","Interrupting the speaker","Ignoring the speaker","Paying full attention and reflecting understanding","Planning your response while they talk",C
+Middle School,Exploring Business Communication,"What is the most appropriate closing for a formal business letter?","Later,","Sincerely,","Yours,","Cheers,",B
+Middle School,Exploring Business Communication,"Tone of voice in writing is conveyed through:","Font size","Word choice and sentence structure","Paper color","Ink color",B
+Middle School,Exploring Business Concepts,"A business owned by one person is a:","Partnership","Corporation","Sole Proprietorship","Franchise",C
+Middle School,Exploring Business Concepts,"What is 'Profit'?","Total Revenue - Total Expenses","Total Assets + Total Liabilities","Total Sales","Money borrowed",A
+Middle School,Exploring Business Concepts,"The process of creating a new business is called:","Management","Entrepreneurship","Marketing","Accounting",B
+Middle School,Exploring Business Concepts,"Which is a 'Good' (vs. Service)?","Haircut","Car repair","Computer","Legal advice",C
+Middle School,Exploring Business Concepts,"Supply and Demand determines:","Taxes","Price in a market economy","Government regulation","Employee salaries",B
+Middle School,Exploring Computer Science,"What does CPU stand for?","Central Processing Unit","Computer Personal Unit","Central Program Utility","Control Processing User",A
+Middle School,Exploring Computer Science,"Which is an example of an Output device?","Keyboard","Mouse","Monitor","Microphone",C
+Middle School,Exploring Computer Science,"The binary number system uses which digits?","1-10","0 and 1","0-9","1 and 2",B
+Middle School,Exploring Computer Science,"What is 'Malware'?","Hardware malfunction","Malicious software","A secure network","An operating system",B
+Middle School,Exploring Computer Science,"HTML stands for:","Hyper Text Markup Language","High Tech Modern Language","Home Tool Markup Language","Hyperlink Text Mode Logic",A
+Middle School,Exploring Economics,"Scarcity exists because:","Resources are unlimited","Wants are limited","Resources are limited and wants are unlimited","Money is scarce",C
+Middle School,Exploring Economics,"Opportunity Cost is:","The price of a product","The value of the next best alternative given up","The cost of production","The profit made",B
+Middle School,Exploring Economics,"Which economic system relies on custom and history?","Market","Command","Traditional","Mixed",C
+Middle School,Exploring Economics,"Gross Domestic Product (GDP) measures:","Total population","Total value of goods/services produced in a country","Total tax revenue","Stock market growth",B
+Middle School,Exploring Economics,"When supply exceeds demand, a _____ occurs.","Shortage","Surplus","Equilibrium","Deficit",B
+Middle School,Exploring FBLA,"What does FBLA stand for?","Future Business Leaders of America","First Business Leaders Association","Future Business Learners of America","Federal Business Law Administration",A
+Middle School,Exploring FBLA,"The FBLA motto is:","Service, Education, Progress","Service, Education, Leadership","Leaders of Tomorrow","Progress through Service",A
+Middle School,Exploring FBLA,"What are the official colors of FBLA?","Red and White","Blue and Gold","Navy Blue and Gold","Red and Black",B
+Middle School,Exploring FBLA,"Who is the founder of FBLA?","Hamden L. Forkner","Edward D. Miller","Jean Buckley","Conrad Hilton",A
+Middle School,Exploring FBLA,"The fiscal year for FBLA is:","Jan 1 - Dec 31","July 1 - June 30","Aug 1 - July 31","Sept 1 - Aug 31",B
+Middle School,Exploring Leadership,"Which leadership style gives subordinates little input?","Democratic","Laissez-faire","Autocratic","Bureaucratic",C
+Middle School,Exploring Leadership,"Integrity means:","Being popular","Doing the right thing even when no one is watching","Making the most money","Being the boss",B
+Middle School,Exploring Leadership,"A mission statement describes:","The company's history","Current profits","The purpose of the organization","Employee salaries",C
+Middle School,Exploring Leadership,"Delegation means:","Doing everything yourself","Assigning tasks to others","Ignoring tasks","Quitting",B
+Middle School,Exploring Leadership,"Brainstorming is used to:","Generate ideas","Criticize ideas","Finalize a plan","Assign blame",A
+Middle School,Exploring Marketing Concepts,"Detailed information about a target market is:","Demographics","Psychographics","Geographics","All of the above",D
+Middle School,Exploring Marketing Concepts,"A logo is a:","Slogan","Visual symbol of a brand","Product name","Price tag",B
+Middle School,Exploring Marketing Concepts,"The 4 P's of Marketing include:","Product, Price, Place, Promotion","Plan, Produce, Price, Profit","People, Planet, Profit, Product","Promotion, Planning, Placement, People",A
+Middle School,Exploring Marketing Concepts,"Target Market refers to:","Everyone","The specific group a business wants to sell to","Competitors","Suppliers",B
+Middle School,Exploring Marketing Concepts,"What is a Focus Group?","A group of employees","A group of customers gathered to give feedback","A management team","A sales meeting",B
+Middle School,Exploring Parliamentary Procedure,"The official guide for FBLA Parliamentary Procedure is:","Robert's Rules of Order","The Constitution","Standard Code of Procedure","Gregg's Manual",A
+Middle School,Exploring Parliamentary Procedure,"To introduce a new item of business, a member says:","I make a motion","I move that","I suggest","I propose",B
+Middle School,Exploring Parliamentary Procedure,"A majority vote is:","50% of the vote","More than half of the votes cast","Two-thirds of the vote","Unanimous",B
+Middle School,Exploring Parliamentary Procedure,"To end a meeting, a member moves to:","Adjourn","Recess","Quit","Stop",A
+Middle School,Exploring Parliamentary Procedure,"The person running the meeting is the:","Secretary","Treasurer","Chair","Parliamentarian",C
+Middle School,Exploring Personal Finance,"Pay yourself first means:","Buy what you want first","Save money before spending on anything else","Pay bills first","Pay taxes first",B
+Middle School,Exploring Personal Finance,"A debit card draws money from:","A credit line","A savings account","A checking account","A loan",C
+Middle School,Exploring Personal Finance,"Interest earned on interest is called:","Simple Interest","Compound Interest","Fixed Interest","Variable Interest",B
+Middle School,Exploring Personal Finance,"The cost of borrowing money is:","Principal","Credit score","Interest","Debt",C
+Middle School,Exploring Personal Finance,"Which is a 'Need' (vs. Want)?","Designer clothes","Video games","Basic food and shelter","Vacation",C
+Middle School,Exploring Professionalism,"Punctuality means:","Being early or on time","Being late","Leaving early","Working specific hours",A
+Middle School,Exploring Professionalism,"Appropriate business attire usually excludes:","Suit","Tie","Flip-flops","Dress shirt",C
+Middle School,Exploring Professionalism,"Networking is:","Connecting computers","Building professional relationships","Socializing at a party","Using the internet",B
+Middle School,Exploring Professionalism,"Ethical behavior involves:","Maximizing profit at all costs","Following moral principles","Doing whatever is legal","Ignoring rules",B
+Middle School,Exploring Professionalism,"A strong work ethic includes:","Reliability and dedication","Procrastination","Complaining","Doing the bare minimum",A
+Middle School,Exploring Technology,"Hardware refers to:","Computer programs","Physical components of a computer","Internet connection","Data",B
+Middle School,Exploring Technology,"Software refers to:","The monitor","The keyboard","Programs and applications","The mouse",C
+Middle School,Exploring Technology,"The 'Cloud' refers to:","Weather","Servers accessed over the internet","A type of hard drive","A wireless mouse",B
+Middle School,Exploring Technology,"A URL is a:","Web address","Computer virus","Software patch","Hardware part",A
+Middle School,Exploring Technology,"Which is an Operating System?","Microsoft Word","Google Chrome","Windows","Fortnite",C
+Middle School,Interpersonal Communication,"Empathy is:","Feeling sorry for someone","Understanding and sharing the feelings of another","Ignoring feelings","Being angry",B
+Middle School,Interpersonal Communication,"Constructive criticism is meant to:","Hurt feelings","Help improve","Embarrass","Punish",B
+Middle School,Interpersonal Communication,"Non-verbal communication includes:","Facial expressions","Emails","Text messages","Phone calls",A
+Middle School,Interpersonal Communication,"Conflict resolution is:","Ignoring the problem","Finding a peaceful solution to a disagreement","Winning the argument","Fighting",B
+Middle School,Interpersonal Communication,"Teamwork requires:","Collaboration","Competition","Isolation","Dictatorship",A`;
 
 export const getQuestionsForEvent = (eventName: string, division: string, limit: number = 5): QuestionData[] => {
   const lines = RAW_CSV.split('\n');
   const questions: QuestionData[] = [];
-  
+
   const normalizedEvent = eventName.toLowerCase()
     .replace('introduction to ', '')
     .replace('intro to ', '')
     .trim();
-    
+
   const normalizedDivision = division.toLowerCase();
 
   for (let i = 1; i < lines.length; i++) {
@@ -50,7 +126,8 @@ export const getQuestionsForEvent = (eventName: string, division: string, limit:
 
     const rowLevel = cleanParts[0].toLowerCase();
     const rowCategory = cleanParts[1].toLowerCase();
-    
+
+    // Explicit category matching logic for better precision
     const isLevelMatch = normalizedDivision.includes(rowLevel) || rowLevel.includes(normalizedDivision);
     const isCategoryMatch = normalizedEvent.includes(rowCategory) || rowCategory.includes(normalizedEvent);
 

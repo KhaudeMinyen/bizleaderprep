@@ -36,11 +36,11 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
   const isLimitReached = !isLoggedIn && flashcardsUsed >= limit;
   const remaining = Math.max(0, limit - flashcardsUsed);
 
-  const brandTextClass = orgType === 'FBLA' ? 'text-rh-green' : orgType === 'DECA' ? 'text-rh-cyan' : 'text-rh-yellow';
-  const brandBgClass = orgType === 'FBLA' ? 'bg-rh-green' : orgType === 'DECA' ? 'bg-rh-cyan' : 'bg-rh-yellow';
-  const brandBorderClass = orgType === 'FBLA' ? 'border-rh-green' : orgType === 'DECA' ? 'border-rh-cyan' : 'border-rh-yellow';
-  const brandBorderHoverClass = orgType === 'FBLA' ? 'hover:border-rh-green/50' : orgType === 'DECA' ? 'hover:border-rh-cyan/50' : 'hover:border-rh-yellow/50';
-  const brandShadowClass = orgType === 'FBLA' ? 'shadow-[0_0_40px_rgba(0,200,5,0.2)]' : orgType === 'DECA' ? 'shadow-[0_0_40px_rgba(0,166,224,0.2)]' : 'shadow-[0_0_40px_rgba(255,218,0,0.2)]';
+  const brandTextClass = orgType === 'FBLA' ? 'text-rh-yellow' : orgType === 'DECA' ? 'text-rh-cyan' : 'text-rh-green';
+  const brandBgClass = orgType === 'FBLA' ? 'bg-rh-yellow' : orgType === 'DECA' ? 'bg-rh-cyan' : 'bg-rh-green';
+  const brandBorderClass = orgType === 'FBLA' ? 'border-rh-yellow' : orgType === 'DECA' ? 'border-rh-cyan' : 'border-rh-green';
+  const brandBorderHoverClass = orgType === 'FBLA' ? 'hover:border-rh-yellow/50' : orgType === 'DECA' ? 'hover:border-rh-cyan/50' : 'hover:border-rh-green/50';
+  const brandShadowClass = orgType === 'FBLA' ? 'shadow-[0_0_40px_rgba(255,218,0,0.2)]' : orgType === 'DECA' ? 'shadow-[0_0_40px_rgba(0,166,224,0.2)]' : 'shadow-[0_0_40px_rgba(0,200,5,0.2)]';
 
   useEffect(() => {
     const fetchCards = async () => {

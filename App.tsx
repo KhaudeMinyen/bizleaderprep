@@ -140,7 +140,7 @@ const App: React.FC = () => {
   };
 
   if (isLoading) {
-    const spinnerBorder = virtualPath === '/fblaprephub' ? 'border-rh-green' : virtualPath === '/decaprephub' ? 'border-rh-cyan' : 'border-rh-yellow';
+    const spinnerBorder = virtualPath === '/fblaprephub' ? 'border-rh-yellow' : virtualPath === '/decaprephub' ? 'border-rh-cyan' : 'border-rh-green';
     return (
       <div className="min-h-screen bg-rh-black flex items-center justify-center">
         <div className={`w-8 h-8 border-2 ${spinnerBorder} border-t-transparent rounded-full animate-spin`}></div>
@@ -175,8 +175,8 @@ const App: React.FC = () => {
     );
   }
 
-  const brandColor = isFBLA ? 'bg-rh-green' : isDECA ? 'bg-rh-cyan' : 'bg-rh-yellow';
-  const brandText = isFBLA ? 'text-rh-green' : isDECA ? 'text-rh-cyan' : 'text-rh-yellow';
+  const brandColor = isFBLA ? 'bg-rh-yellow' : isDECA ? 'bg-rh-cyan' : 'bg-rh-green';
+  const brandText = isFBLA ? 'text-rh-yellow' : isDECA ? 'text-rh-cyan' : 'text-rh-green';
 
   return (
     <div className={`min-h-screen bg-rh-black text-white selection:${isFBLA ? 'bg-rh-green' : isDECA ? 'bg-rh-cyan' : 'bg-rh-yellow'} selection:text-black font-sans`}>

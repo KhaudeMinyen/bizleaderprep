@@ -18,30 +18,30 @@ const images = [
 ];
 
 const ORGS = [
-  { 
-    name: 'FBLA', 
-    logo: 'https://images.unsplash.com/vector-1769952554970-7659a978f58e?q=80&w=2320&auto=format&fit=crop', 
+  {
+    name: 'FBLA',
+    logo: 'https://images.unsplash.com/vector-1769952554970-7659a978f58e?q=80&w=2320&auto=format&fit=crop',
     path: '/fblaprephub',
     active: true,
-    accent: 'rh-green'
+    accent: 'rh-yellow'
   },
-  { 
-    name: 'DECA', 
-    logo: 'https://images.unsplash.com/vector-1769952554970-ec7722064e8c?q=80&w=1632&auto=format&fit=crop', 
+  {
+    name: 'DECA',
+    logo: 'https://images.unsplash.com/vector-1769952554970-ec7722064e8c?q=80&w=1632&auto=format&fit=crop',
     path: '/decaprephub',
     active: true,
     accent: 'rh-cyan'
   },
-  { 
-    name: 'HOSA', 
-    logo: 'https://images.unsplash.com/vector-1769952554978-837c3049b3f1?q=80&w=3014&auto=format&fit=crop', 
+  {
+    name: 'HOSA',
+    logo: 'https://images.unsplash.com/vector-1769952554978-837c3049b3f1?q=80&w=3014&auto=format&fit=crop',
     path: '#',
     active: false,
     accent: 'rh-gray'
   },
-  { 
-    name: 'BPA', 
-    logo: 'https://images.unsplash.com/vector-1769952555024-4f2f222d05fb?q=80&w=3600&auto=format&fit=crop', 
+  {
+    name: 'BPA',
+    logo: 'https://images.unsplash.com/vector-1769952555024-4f2f222d05fb?q=80&w=3600&auto=format&fit=crop',
     path: '#',
     active: false,
     accent: 'rh-gray'
@@ -50,9 +50,9 @@ const ORGS = [
 
 const Hero: React.FC<HeroProps> = ({ onGetStarted, orgType, onNavigate }) => {
   const isGeneric = orgType === 'NONE';
-  const brandColorClass = orgType === 'FBLA' ? 'bg-rh-green' : orgType === 'DECA' ? 'bg-rh-cyan' : 'bg-rh-yellow';
-  const brandTextClass = orgType === 'FBLA' ? 'text-rh-green' : orgType === 'DECA' ? 'text-rh-cyan' : 'text-rh-yellow';
-  const glowColorClass = orgType === 'FBLA' ? 'bg-rh-green' : orgType === 'DECA' ? 'bg-rh-cyan' : 'bg-rh-yellow';
+  const brandColorClass = orgType === 'FBLA' ? 'bg-rh-yellow' : orgType === 'DECA' ? 'bg-rh-cyan' : 'bg-rh-green';
+  const brandTextClass = orgType === 'FBLA' ? 'text-rh-yellow' : orgType === 'DECA' ? 'text-rh-cyan' : 'text-rh-green';
+  const glowColorClass = orgType === 'FBLA' ? 'bg-rh-yellow' : orgType === 'DECA' ? 'bg-rh-cyan' : 'bg-rh-green';
 
   return (
     <section className="relative min-h-[95vh] flex flex-col items-center justify-center text-center overflow-hidden bg-black transition-colors duration-500">
@@ -79,35 +79,35 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, orgType, onNavigate }) => {
             </div>
           </div>
         )}
-        
+
         <h1 className="text-7xl md:text-8xl lg:text-9xl font-bold tracking-tighter text-white leading-[1] mb-8 animate-fade-in-up">
           {isGeneric ? (
             <>
-              <span className="text-rh-yellow italic block">BizLeader</span>
+              <span className="text-rh-green italic block">BizLeader</span>
               <span className="text-white font-normal block tracking-tight">Prep</span>
             </>
           ) : (
             <>
               {orgType} <br />
-              <span className={`text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/50 italic px-2 inline-block py-2`}>
+              <span className={`text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/50 italic px-4 py-2 inline-block`}>
                 PREPHUB
               </span>
             </>
           )}
         </h1>
-        
+
         <p className="max-w-2xl mx-auto text-lg md:text-xl text-rh-gray mb-16 font-medium leading-relaxed animate-fade-in-up [animation-delay:200ms]">
-          {isGeneric 
-            ? 'The professional study platform for FBLA and DECA students. AI-driven flashcards and mock exams built for competitive excellence.' 
+          {isGeneric
+            ? 'The professional study platform for FBLA and DECA students. AI-driven flashcards and mock exams built for competitive excellence.'
             : `Gain the ${orgType} competitive edge. Master the official clusters and events with adaptive AI learning paths.`
           }
         </p>
-        
+
         {isGeneric ? (
           <div className="w-full flex flex-wrap justify-center items-center gap-6 md:gap-8 animate-fade-in-up [animation-delay:400ms] py-4">
             {ORGS.map((org, i) => (
-              <button 
-                key={i} 
+              <button
+                key={i}
                 onClick={() => org.active && onNavigate(org.path)}
                 className={`flex flex-col items-center space-y-4 p-8 rounded-[40px] border border-white/5 bg-white/5 transition-all duration-300 w-40 md:w-52 ${org.active ? `hover:border-${org.accent}/50 hover:bg-white/10 cursor-pointer hover:scale-105 active:scale-95` : 'opacity-20 grayscale pointer-events-none'}`}
               >
@@ -115,19 +115,19 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, orgType, onNavigate }) => {
                   <img src={org.logo} alt={org.name} className="max-w-full max-h-full object-contain" />
                 </div>
                 <div className="text-center">
-                   <span className="block text-sm font-black text-white tracking-tighter uppercase mb-1">{org.name}</span>
-                   {org.active ? (
-                     <span className={`text-[8px] font-black ${org.name === 'FBLA' ? 'text-rh-green' : 'text-rh-cyan'} uppercase tracking-widest`}>Available Now</span>
-                   ) : (
-                     <span className="text-[8px] font-black text-white/20 uppercase tracking-widest">Coming Soon</span>
-                   )}
+                  <span className="block text-sm font-black text-white tracking-tighter uppercase mb-1">{org.name}</span>
+                  {org.active ? (
+                    <span className={`text-[8px] font-black ${org.name === 'FBLA' ? 'text-rh-yellow' : 'text-rh-cyan'} uppercase tracking-widest`}>Available Now</span>
+                  ) : (
+                    <span className="text-[8px] font-black text-white/20 uppercase tracking-widest">Coming Soon</span>
+                  )}
                 </div>
               </button>
             ))}
           </div>
         ) : (
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4 animate-fade-in-up [animation-delay:400ms]">
-            <button 
+            <button
               onClick={onGetStarted}
               className={`w-full sm:w-auto ${brandColorClass} text-black font-black uppercase tracking-widest text-[11px] px-20 py-6 rounded-full hover:scale-105 active:scale-95 transition-all shadow-[0_20px_60px_rgba(255,255,255,0.1)]`}
             >
