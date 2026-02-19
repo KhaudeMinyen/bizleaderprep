@@ -217,7 +217,7 @@ const App: React.FC = () => {
             <>
               <button
                 onClick={() => { setAuthInitialView('signup'); setView('auth'); }}
-                className={`text-sm font-bold px-4 py-2 rounded-lg text-black transition-colors ${orgType === 'NONE' ? 'bg-rh-yellow hover:bg-rh-yellow/90' : isFBLA ? 'bg-rh-green hover:bg-rh-green/90' : 'bg-rh-cyan hover:bg-rh-cyan/90'
+                className={`text-sm font-bold px-4 py-2 rounded-lg text-black transition-colors ${orgType === 'NONE' ? 'bg-rh-green hover:bg-rh-green/90' : isFBLA ? 'bg-rh-yellow hover:bg-rh-yellow/90' : 'bg-rh-cyan hover:bg-rh-cyan/90'
                   }`}
               >
                 Sign up

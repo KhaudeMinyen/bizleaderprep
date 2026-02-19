@@ -124,6 +124,16 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
 
   if (mode === 'summary') {
     const accuracy = (correctCount / cards.length) * 100;
+
+    // Save score
+    const savedScores = JSON.parse(localStorage.getItem('prephub_mastery') || '{}');
+    // Only update if new score is higher or doesn't exist? Or just overwrite? "Accurate mastery scores" usually implies best or latest. I'll save the Highest score for "Mastery".
+    const previousBest = savedScores[eventName] || 0;
+    if (accuracy > previousBest) {
+      savedScores[eventName] = accuracy;
+      localStorage.setItem('prephub_mastery', JSON.stringify(savedScores));
+    }
+
     return (
       <div className="min-h-screen bg-black text-white px-6 py-12 flex flex-col items-center justify-center">
         <div className="w-full max-w-xl bg-rh-dark/50 border border-white/5 p-12 rounded-[48px] text-center shadow-2xl animate-slide-up">

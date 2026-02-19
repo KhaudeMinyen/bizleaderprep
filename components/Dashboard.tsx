@@ -122,6 +122,18 @@ const Dashboard: React.FC<DashboardProps> = ({ onSelectEvent, division, orgType 
             <div className="flex flex-col">
               <div className="flex items-center space-x-2">
                 <span className={`font-bold text-xl tracking-tight group-hover:${brandTextClass} transition-colors`}>{evt}</span>
+                {(() => {
+                  const scores = JSON.parse(localStorage.getItem('prephub_mastery') || '{}');
+                  const score = scores[evt];
+                  if (score !== undefined) {
+                    return (
+                      <span className={`text-[10px] font-black px-2 py-0.5 rounded ${brandTextClass} bg-white/10 uppercase tracking-widest`}>
+                        {Math.round(score)}% Mastery
+                      </span>
+                    );
+                  }
+                  return null;
+                })()}
                 <svg className="w-3 h-3 text-rh-gray/30 opacity-0 group-hover:opacity-100 transition-opacity" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
                 </svg>
