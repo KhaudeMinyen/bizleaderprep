@@ -20,6 +20,7 @@ type StudyMode = 'selection' | 'flashcard' | 'test' | 'summary';
 
 const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onBack, flashcardsUsed, limit, onAnswer, onLoginRequest, isLoggedIn }) => {
   const [mode, setMode] = useState<StudyMode>('selection');
+  const [lastMode, setLastMode] = useState<StudyMode | null>(null);
   const [cards, setCards] = useState<QuestionData[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
@@ -42,13 +43,26 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
   const brandBorderHoverClass = orgType === 'FBLA' ? 'hover:border-rh-yellow/50' : orgType === 'DECA' ? 'hover:border-rh-cyan/50' : 'hover:border-rh-green/50';
   const brandShadowClass = orgType === 'FBLA' ? 'shadow-[0_0_40px_rgba(255,218,0,0.2)]' : orgType === 'DECA' ? 'shadow-[0_0_40px_rgba(0,166,224,0.2)]' : 'shadow-[0_0_40px_rgba(0,200,5,0.2)]';
 
+  // Events that have full content available
+  const UNLOCKED_EVENTS = [
+    'Accounting',
+    'Advanced Accounting',
+    'Advertising',
+    'Agribusiness',
+    'Business Communication'
+  ];
+
   useEffect(() => {
     const fetchCards = async () => {
       setIsLoading(true);
       try {
-        const staticQuestions = getQuestionsForEvent(eventName, division);
+        const isUnlocked = isLoggedIn && UNLOCKED_EVENTS.includes(eventName);
+        const fetchLimit = isUnlocked ? 50 : 5;
+
+        const staticQuestions = getQuestionsForEvent(eventName, division, fetchLimit);
+
         if (staticQuestions.length > 0) {
-          setCards(staticQuestions.slice(0, 5)); // Hard limit of 5 items
+          setCards(staticQuestions);
         }
         // If no static questions exist, cards stays empty -> "Under Construction" shown
       } catch (err) {
@@ -59,7 +73,7 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
     };
 
     fetchCards();
-  }, [eventName, division, orgType]);
+  }, [eventName, division, orgType, isLoggedIn]);
 
   const handleNext = () => {
     if (isLimitReached) return;
@@ -124,29 +138,46 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
 
   if (mode === 'summary') {
     const accuracy = (correctCount / cards.length) * 100;
+    const isTest = lastMode === 'test';
 
-    // Save score
-    const savedScores = JSON.parse(localStorage.getItem('prephub_mastery') || '{}');
-    // Only update if new score is higher or doesn't exist? Or just overwrite? "Accurate mastery scores" usually implies best or latest. I'll save the Highest score for "Mastery".
-    const previousBest = savedScores[eventName] || 0;
-    if (accuracy > previousBest) {
-      savedScores[eventName] = accuracy;
-      localStorage.setItem('prephub_mastery', JSON.stringify(savedScores));
+    // Save score only if in test mode
+    if (isTest) {
+      const savedScores = JSON.parse(localStorage.getItem('prephub_mastery') || '{}');
+      const previousBest = savedScores[eventName] || 0;
+      if (accuracy > previousBest) {
+        savedScores[eventName] = accuracy;
+        localStorage.setItem('prephub_mastery', JSON.stringify(savedScores));
+      }
     }
 
     return (
       <div className="min-h-screen bg-black text-white px-6 py-12 flex flex-col items-center justify-center">
         <div className="w-full max-w-xl bg-rh-dark/50 border border-white/5 p-12 rounded-[48px] text-center shadow-2xl animate-slide-up">
           <div className="mb-8">
-            <div className="text-[10px] font-black text-rh-gray uppercase tracking-[0.3em] mb-2">Study Complete</div>
-            <h2 className="text-5xl font-bold tracking-tighter mb-4">Session Results</h2>
-            <div className={`text-6xl font-bold tracking-tighter ${accuracy >= 70 ? brandTextClass : 'text-red-500'}`}>
-              {accuracy.toFixed(1)}%
+            <div className="text-[10px] font-black text-rh-gray uppercase tracking-[0.3em] mb-2">
+              {isTest ? 'Assessment Complete' : 'Review Complete'}
             </div>
+            <h2 className="text-5xl font-bold tracking-tighter mb-4">
+              {isTest ? 'Session Results' : 'Great Job!'}
+            </h2>
+            {isTest ? (
+              <div className={`text-6xl font-bold tracking-tighter ${accuracy >= 70 ? brandTextClass : 'text-red-500'}`}>
+                {accuracy.toFixed(1)}%
+              </div>
+            ) : (
+              <div className={`text-xl font-bold ${brandTextClass} mb-4`}>
+                You've reviewed all cards.
+              </div>
+            )}
           </div>
 
           <div className="mb-10 text-center">
-            <p className="text-rh-gray text-sm font-medium">You answered {correctCount} out of {cards.length} correctly.</p>
+            <p className="text-rh-gray text-sm font-medium">
+              {isTest
+                ? `You answered ${correctCount} out of ${cards.length} correctly.`
+                : `You went through ${cards.length} flashcards.`
+              }
+            </p>
           </div>
 
           <div className="space-y-4">
@@ -163,22 +194,25 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
                   onClick={() => {
                     setCurrentIndex(0);
                     setCorrectCount(0);
-                    setMode('test');
+                    setMode(lastMode || 'test');
                   }}
                   className="w-full bg-white/5 text-white font-bold py-4 rounded-2xl text-xs uppercase tracking-widest hover:bg-white/10"
                 >
-                  Retry Assessment
+                  {isTest ? 'Retry Assessment' : 'Review Again'}
                 </button>
-                <p className="text-rh-gray text-[10px] uppercase tracking-widest mt-4">
-                  Additional questions under construction
-                </p>
+                {/* Only show "Under Construction" note if we capped them at 50, which we deemed "full" or if they are in a limited event */}
+                {!UNLOCKED_EVENTS.includes(eventName) && (
+                  <p className="text-rh-gray text-[10px] uppercase tracking-widest mt-4">
+                    Additional questions under construction
+                  </p>
+                )}
               </>
             ) : (
               <button
                 onClick={onLoginRequest}
                 className={`w-full bg-white text-black font-black py-5 rounded-2xl text-xs uppercase tracking-widest hover:scale-[1.02] transition-transform shadow-[0_0_20px_rgba(255,255,255,0.2)]`}
               >
-                Sign Up to Retry
+                Sign Up to Continue
               </button>
             )}
           </div>
@@ -197,14 +231,14 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
         <h1 className="text-3xl md:text-5xl font-bold tracking-tighter mb-4 text-center">Select Study Path</h1>
         <p className="text-rh-gray mb-12 text-center max-w-lg">Choose your preferred method for mastering {eventName}.</p>
         <div className="grid md:grid-cols-2 gap-6 w-full max-w-4xl">
-          <button onClick={() => setMode('flashcard')} className={`group relative bg-rh-dark border border-white/5 p-10 rounded-[32px] hover:bg-white/5 ${brandBorderHoverClass} transition-all text-left overflow-hidden`}>
+          <button onClick={() => { setMode('flashcard'); setLastMode('flashcard'); }} className={`group relative bg-rh-dark border border-white/5 p-10 rounded-[32px] hover:bg-white/5 ${brandBorderHoverClass} transition-all text-left overflow-hidden`}>
             <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
               <svg className="w-32 h-32" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z" /></svg>
             </div>
             <h3 className="text-2xl font-bold text-white mb-2 relative z-10">Flashcards</h3>
             <p className="text-rh-gray text-sm font-medium relative z-10">Quick-fire memorization of official terms and concepts.</p>
           </button>
-          <button onClick={() => setMode('test')} className={`group relative bg-rh-dark border border-white/5 p-10 rounded-[32px] hover:bg-white/5 ${brandBorderHoverClass} transition-all text-left overflow-hidden`}>
+          <button onClick={() => { setMode('test'); setLastMode('test'); }} className={`group relative bg-rh-dark border border-white/5 p-10 rounded-[32px] hover:bg-white/5 ${brandBorderHoverClass} transition-all text-left overflow-hidden`}>
             <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
               <svg className="w-32 h-32" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" /></svg>
             </div>
