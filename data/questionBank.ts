@@ -349,7 +349,851 @@ Middle School,Interpersonal Communication,"Empathy is:","Feeling sorry for someo
 Middle School,Interpersonal Communication,"Constructive criticism is meant to:","Hurt feelings","Help improve","Embarrass","Punish",B
 Middle School,Interpersonal Communication,"Non-verbal communication includes:","Facial expressions","Emails","Text messages","Phone calls",A
 Middle School,Interpersonal Communication,"Conflict resolution is:","Ignoring the problem","Finding a peaceful solution to a disagreement","Winning the argument","Fighting",B
-Middle School,Interpersonal Communication,"Teamwork requires:","Collaboration","Competition","Isolation","Dictatorship",A`;
+Middle School,Interpersonal Communication,"Teamwork requires:","Collaboration","Competition","Isolation","Dictatorship",A
+High School,"Business Ethics","What is business ethics?","Rules about government taxes","Principles guiding right and wrong business behavior","Marketing strategies only","Employee benefit plans",B
+High School,"Business Ethics","Which is an example of ethical behavior?","Falsifying reports","Providing accurate information to customers","Hiding fees","Sharing confidential data",B
+High School,"Business Ethics","What is a conflict of interest?","A disagreement between coworkers","A situation where personal interest interferes with professional duty","A union contract","A pricing dispute",B
+High School,"Business Ethics","What does integrity mean in business?","Maximizing profit at any cost","Following competitors","Being honest and consistent in actions","Reducing staff",C
+High School,"Business Ethics","Which law addresses workplace discrimination in the U.S.?","Sherman Act","Civil Rights Act of 1964","Federal Reserve Act","Securities Act",B
+High School,"Business Ethics","What is corporate social responsibility (CSR)?","Avoiding taxes","Voluntary efforts to benefit society","Increasing advertising only","Outsourcing labor",B
+High School,"Business Ethics","Which is considered confidential information?","Public website content","Employee Social Security number","Press release headline","Company logo",B
+High School,"Business Ethics","What is whistleblowing?","Reporting unethical behavior","Creating advertisements","Negotiating contracts","Conducting audits",A
+High School,"Business Ethics","Which action violates ethical standards?","Honest marketing","Transparent pricing","Insider trading","Equal opportunity hiring",C
+High School,"Business Ethics","What is transparency?","Hiding internal decisions","Open communication of relevant information","Reducing meetings","Limiting access to policies",B
+High School,"Business Ethics","Which stakeholder group includes company owners?","Suppliers","Customers","Shareholders","Competitors",C
+High School,"Business Ethics","What is harassment in the workplace?","Professional disagreement","Unwelcome conduct creating hostile environment","Performance review","Salary negotiation",B
+High School,"Business Ethics","Which federal agency enforces workplace safety?","SEC","OSHA","FTC","FCC",B
+High School,"Business Ethics","What is plagiarism?","Using someone else's work without credit","Proper citation","Original writing","Team collaboration",A
+High School,"Business Ethics","Which principle supports fair treatment?","Discrimination","Favoritism","Justice","Deception",C
+High School,"Business Ethics","What is bribery?","Offering something of value to influence decisions","Standard commission payment","Hourly wage","Employee bonus",A
+High School,"Business Ethics","What does accountability mean?","Avoiding responsibility","Being answerable for actions","Delegating everything","Blaming others",B
+High School,"Business Ethics","Which practice supports ethical leadership?","Modeling ethical behavior","Ignoring misconduct","Hiding complaints","Manipulating data",A
+High School,"Business Ethics","What is data privacy?","Selling customer data freely","Protecting personal information","Posting passwords publicly","Sharing login credentials",B
+High School,"Business Ethics","Which action reflects sustainability ethics?","Polluting waterways","Reducing waste and emissions","Overusing resources","Ignoring regulations",B
+High School,"Business Ethics","What is the purpose of a code of ethics?","Provide ethical guidelines for behavior","Increase marketing reach","Reduce tax liability","Boost sales quotas",A
+High School,"Business Ethics","Which act regulates securities fraud?","Sarbanes-Oxley Act","Clean Air Act","ADA","Patriot Act",A
+High School,"Business Ethics","What is ethical relativism?","Belief ethics depend on context","Universal moral standards only","Strict compliance law","Financial auditing rule",A
+High School,"Business Ethics","Which is an example of insider trading?","Buying stock based on public news","Trading on confidential information","Investing in index funds","Long-term retirement saving",B
+High School,"Business Ethics","What is utilitarianism?","Maximizing overall good outcomes","Following strict rules only","Ignoring stakeholders","Minimizing profits",A
+High School,"Business Ethics","Which stakeholder theory suggests businesses serve multiple groups?","Shareholder primacy model","Stakeholder model","Monopoly theory","Agency-only theory",B
+High School,"Business Ethics","What is a compliance program?","System to ensure adherence to laws and policies","Marketing campaign","Employee bonus plan","Cost reduction strategy",A
+High School,"Business Ethics","Which is an example of greenwashing?","Truthful environmental reporting","Misleading claims about sustainability","Recycling initiatives","Energy efficiency improvements",B
+High School,"Business Ethics","What does fiduciary duty require?","Prioritizing personal gain","Acting in best interest of clients or shareholders","Delegating responsibility","Avoiding transparency",B
+High School,"Business Ethics","Which law protects consumers from deceptive advertising?","FTC Act","Taft-Hartley Act","Wagner Act","Dodd-Frank Act",A
+High School,"Business Ethics","What is the triple bottom line framework?","Profit only","People"," planet"," and profit",Revenue and cost only
+High School,"Business Ethics","Which regulation strengthened corporate financial reporting controls?","Sarbanes-Oxley Act of 2002","Clayton Act","Glass-Steagall Act","National Labor Relations Act",A
+High School,"Business Ethics","What is ethical decision-making model step one?","Implement solution","Identify the problem","Ignore issue","Assign blame",B
+High School,"Business Ethics","What is reputational risk?","Risk of financial statement error","Risk of damage to public trust","Inventory shrinkage","Equipment failure",B
+High School,"Business Ethics","Which global guideline promotes anti-corruption compliance?","UN Global Compact","NAFTA agreement","OPEC charter","Paris Air Show",A
+High School,"Business Ethics","What does ESG reporting evaluate?","Employee attendance","Environmental social governance factors","Product warranties","Office expenses",B
+High School,"Business Ethics","Which is an ethical issue in AI use?","Bias in algorithms","Printer malfunction","Warehouse size","Shipping speed",A
+High School,"Business Ethics","What is corporate governance?","System of rules directing company oversight","Employee training manual only","Product pricing method","Advertising slogan",A
+High School,"Business Ethics","What is retaliation in workplace ethics?","Punishing someone for reporting misconduct","Rewarding performance","Providing bonuses","Granting promotions",A
+High School,"Business Ethics","Which approach focuses on duty-based ethics?","Deontology","Utilitarianism","Egoism","Relativism",A
+High School,"Business Ethics","What is stakeholder engagement?","Ignoring feedback","Actively involving interested parties in decisions","Limiting disclosures","Reducing surveys",B
+High School,"Business Ethics","Which law increased protections for whistleblowers?","Dodd-Frank Act","Homestead Act","Smoot-Hawley Tariff","Volstead Act",A
+High School,"Business Ethics","What is ethical risk assessment?","Identifying potential ethical vulnerabilities","Marketing audit","Inventory count","Tax filing review",A
+High School,"Business Ethics","Which concept addresses unequal power dynamics?","Equity","Monopoly","Inflation","Depreciation",A
+High School,"Business Ethics","What is corporate philanthropy?","Charitable contributions by businesses","Tax evasion strategy","Stock split","Debt restructuring",A
+High School,"Business Ethics","What is moral hazard in business?","Risk-taking due to lack of consequences","Employee morale survey","Cost accounting error","Brand loyalty",A
+High School,"Business Ethics","Which ethical principle emphasizes fairness?","Justice","Profit maximization","Secrecy","Competition",A
+High School,"Business Ethics","What is transparency reporting?","Public disclosure of practices and impacts","Internal memo only","Payroll record","Private audit",A
+High School,"Business Ethics","Which international standard guides anti-bribery management?","ISO 37001","ISO 9001","ISO 14001","ISO 31000",A
+High School,"Business Ethics","What is tone at the top?","Ethical culture set by leadership","Office music level","Marketing message style","Stock price fluctuation",A
+High School,"Business Law","What is statutory law?","Law created by courts","Law passed by legislatures","Law based on customs","International treaty law",B
+High School,"Business Law","What is common law?","Law from judicial decisions","Law written in constitution only","Administrative regulation","Executive order",A
+High School,"Business Law","Which element is required for a valid contract?","Mutual assent","Written format only","Witness signature only","Corporate seal",A
+High School,"Business Law","What is consideration in contract law?","A polite gesture","Something of value exchanged","A government permit","A written clause",B
+High School,"Business Law","Which court is the highest in the United States?","Federal Appeals Court","U.S. Supreme Court","District Court","Tax Court",B
+High School,"Business Law","What is a tort?","Criminal statute","Business license","Civil wrong causing harm","Tax regulation",C
+High School,"Business Law","Which is an example of negligence?","Intentional fraud","Reasonable care exercised","Failure to act with reasonable care","Signing a contract",C
+High School,"Business Law","What does the FTC regulate?","Workplace safety only","Immigration policy","Consumer protection and competition","National defense",C
+High School,"Business Law","Which type of law governs crimes?","Civil law","Administrative law","Contract law","Criminal law",D
+High School,"Business Law","What is a breach of contract?","Failure to perform contractual duty","Successful negotiation","Adding amendments","Renewing agreement",A
+High School,"Business Law","What is defamation?","False statement harming reputation","Written agreement","Legal appeal","Insurance claim",A
+High School,"Business Law","Which amendment protects against self-incrimination?","First Amendment","Fourth Amendment","Fifth Amendment","Tenth Amendment",C
+High School,"Business Law","What is intellectual property?","Physical office assets","Creative legal rights over inventions and works","Tax returns","Company vehicles",B
+High School,"Business Law","What is bankruptcy?","Merging companies","Registering patents","Legal process for debt relief","Dissolving a contract",C
+High School,"Business Law","Which law prohibits workplace discrimination?","Sherman Act","Civil Rights Act","Uniform Commercial Code","Patriot Act",B
+High School,"Business Law","What is a subpoena?","Court order to appear or produce evidence","Tax bill","Corporate charter","Employment contract",A
+High School,"Business Law","Which business structure offers limited liability?","Sole proprietorship","General partnership","Limited liability company","Nonprofit association",C
+High School,"Business Law","What is arbitration?","Trial by jury","Informal negotiation only","Government regulation","Private dispute resolution",D
+High School,"Business Law","Which regulates securities markets?","EPA","Department of Labor","Securities and Exchange Commission","IRS",C
+High School,"Business Law","What is fraud?","Intentional deception for gain","Accounting oversight mistake","Legal amendment","Government audit",A
+High School,"Business Law","What is the Uniform Commercial Code (UCC)?","Federal criminal statute","State law governing commercial transactions","International trade treaty","Tax enforcement code",B
+High School,"Business Law","What is strict liability?","Liability without fault","Liability only for negligence","Liability after appeal","Liability with jury trial",A
+High School,"Business Law","What is an implied contract?","Contract written and signed","Verbal agreement only","Agreement inferred from conduct","Corporate charter",C
+High School,"Business Law","Which law addresses monopolies?","Sherman Antitrust Act","ADA","Family Medical Leave Act","Sarbanes-Oxley Act",A
+High School,"Business Law","What is vicarious liability?","Liability for independent acts only","Employer liability for employee actions","Tax responsibility","Corporate merger",B
+High School,"Business Law","What is a fiduciary duty?","Duty to compete","Duty of loyalty and care","Tax reporting requirement","Environmental regulation",B
+High School,"Business Law","What is due process?","Fair legal procedure","Automatic conviction","Corporate dissolution","Administrative fine",A
+High School,"Business Law","Which protects trade secrets?","Copyright law","Patent law","Trademark law","Uniform Trade Secrets Act",D
+High School,"Business Law","What is an injunction?","Monetary damages","A court order to stop action","Tax refund","Settlement agreement",B
+High School,"Business Law","What is proximate cause?","Distant unrelated cause","Primary legal cause of harm","Financial motive","Insurance clause",B
+High School,"Business Law","What is stare decisis?","Judicial precedent doctrine","Legislative veto power","Executive privilege","Administrative rulemaking",A
+High School,"Business Law","What is piercing the corporate veil?","Expanding shareholder rights","Holding owners personally liable","Creating new stock","Increasing dividends",B
+High School,"Business Law","Which amendment protects against unreasonable searches?","Second Amendment","Third Amendment","Fourth Amendment","Sixth Amendment",C
+High School,"Business Law","What is a hostile work environment?","Competitive office","Unsafe building","Unwelcome conduct affecting employment","Strict supervision",C
+High School,"Business Law","What is contributory negligence?","Plaintiff partially at fault","Intentional misconduct","Absolute liability","Regulatory breach",A
+High School,"Business Law","What is a derivative lawsuit?","Suit by shareholder on behalf of corporation","Criminal prosecution","Employment claim","Patent filing",A
+High School,"Business Law","Which doctrine allows review of agency decisions?","Judicial review","Executive privilege","Legislative immunity","Corporate immunity",A
+High School,"Business Law","What is material misrepresentation?","Minor typo","Significant false statement affecting decision","Delayed shipment","Verbal compliment",B
+High School,"Business Law","What does the ADA prohibit?","Tax evasion","Insider trading","Disability discrimination","Monopoly pricing",C
+High School,"Business Law","What is forum selection clause?","Clause choosing dispute location","Insurance premium","Stock option","Trademark filing",A
+High School,"Business Law","What is indemnification?","Compensation for loss","Tax exemption","Loan refinancing","Patent extension",A
+High School,"Business Law","What is the business judgment rule?","Protects directors acting in good faith","Requires profit maximization","Forces dividends","Eliminates fiduciary duty",A
+High School,"Business Law","What is res judicata?","Case dismissal for delay","Issue already judged","Court scheduling rule","Contract renewal",B
+High School,"Business Law","What is a class action lawsuit?","Individual criminal trial","Appeal to Supreme Court","Regulatory hearing","Lawsuit by group with similar claims",D
+High School,"Business Law","Which regulates data privacy in California?","HIPAA","COPPA","CCPA","Sarbanes-Oxley",C
+High School,"Business Law","What is anticipatory repudiation?","Advance performance","Early breach notice","Contract renewal","Settlement agreement",B
+High School,"Business Law","What is mens rea?","Guilty mind intent element","Civil damages","Corporate tax","Administrative appeal",A
+High School,"Business Law","What is strict scrutiny?","Lowest judicial review","Intermediate review","Highest constitutional review standard","Administrative audit",C
+High School,"Business Law","What is liquidated damages?","Punitive damages","Estimated damages agreed in contract","Emotional damages","Nominal damages",B
+High School,"Business Law","What is unconscionability?","Extremely unfair contract terms","High profit margin","Corporate merger","Trademark dispute",A
+High School,"Computer Problem Solving","What is an algorithm?","A step-by-step procedure to solve a problem","A type of computer hardware","A virus protection tool","A database table",A
+High School,"Computer Problem Solving","Which data type stores whole numbers?","Integer","String","Boolean","Float",A
+High School,"Computer Problem Solving","What does CPU stand for?","Central Processing Unit","Computer Power Utility","Central Program Utility","Control Processing Unit",A
+High School,"Computer Problem Solving","Which symbol is commonly used for assignment in programming?","==","=","!=","&&",B
+High School,"Computer Problem Solving","What is debugging?","Writing new code","Deleting files","Fixing errors in code","Upgrading hardware",C
+High School,"Computer Problem Solving","Which structure repeats code while a condition is true?","If statement","Function","Variable","While loop",D
+High School,"Computer Problem Solving","What is a variable?","A storage location for data","A fixed constant only","A loop structure","A hardware device",A
+High School,"Computer Problem Solving","Which of the following is a programming language?","HTML","Python","HTTP","USB",B
+High School,"Computer Problem Solving","What does RAM store?","Permanent data","Temporary working data","BIOS settings","Archived backups",B
+High School,"Computer Problem Solving","Which operator compares two values for equality in many languages?","==","=","+=","++",A
+High School,"Computer Problem Solving","What is pseudocode?","Executable binary code","Encrypted message","Human-readable algorithm description","Compiled output",C
+High School,"Computer Problem Solving","Which is an example of input?","Keyboard","Monitor","Printer","Speaker",A
+High School,"Computer Problem Solving","What does IDE stand for?","Integrated Development Environment","Internal Data Exchange","Internet Data Engine","Independent Design Editor",A
+High School,"Computer Problem Solving","Which file extension is commonly used for Python files?",".exe",".html",".py",".docx",C
+High School,"Computer Problem Solving","What is a loop used for?","Declaring variables","Repeating instructions","Ending programs","Encrypting data",B
+High School,"Computer Problem Solving","Which Boolean value represents truth?","0","-1","False","True",D
+High School,"Computer Problem Solving","What is output?","Data produced by a program","Raw input data","Source code only","Memory address",A
+High School,"Computer Problem Solving","Which structure makes decisions in code?","Loop","Compiler","Conditional statement","Array",C
+High School,"Computer Problem Solving","What is a syntax error?","Error in grammar of code","Hardware failure","Network outage","Slow processing",A
+High School,"Computer Problem Solving","Which component stores data long term?","RAM","Cache","CPU","Hard drive",D
+High School,"Computer Problem Solving","What is time complexity?","Measure of algorithm speed relative to input size","Clock speed of CPU","Internet bandwidth","Memory size",A
+High School,"Computer Problem Solving","Which data structure uses LIFO order?","Queue","Stack","Array","Tree",B
+High School,"Computer Problem Solving","What is an API?","Application Programming Interface","Advanced Program Instruction","Automated Processing Index","Applied Protocol Internet",A
+High School,"Computer Problem Solving","What does SQL primarily manage?","Graphics rendering","Database queries","Machine learning only","Operating systems",B
+High School,"Computer Problem Solving","What is recursion?","Loop with fixed iterations","Function calling itself","Parallel processing","Memory swapping",B
+High School,"Computer Problem Solving","Which search algorithm checks each element sequentially?","Binary search","Hash search","Linear search","Tree search",C
+High School,"Computer Problem Solving","What is a compiler?","Program translating source code to machine code","Text editor only","Hardware monitor","Database tool",A
+High School,"Computer Problem Solving","Which structure stores key-value pairs?","Array","Stack","Dictionary","Queue",C
+High School,"Computer Problem Solving","What is version control used for?","Tracking code changes","Increasing CPU speed","Encrypting passwords","Replacing hardware",A
+High School,"Computer Problem Solving","What is Big-O notation used to describe?","Data encryption","Algorithm efficiency","UI layout","Color themes",B
+High School,"Computer Problem Solving","What is polymorphism in object-oriented programming?","Single inheritance only","Multiple loops","Ability of objects to take many forms","Data compression",C
+High School,"Computer Problem Solving","What is a deadlock?","Efficient processing state","Security certificate","A situation where processes wait indefinitely","Cache optimization",C
+High School,"Computer Problem Solving","Which sorting algorithm has average O(n log n) time?","Bubble sort","Merge sort","Linear sort","Selection sort",B
+High School,"Computer Problem Solving","What is a hash function?","Function mapping data to fixed-size value","Encryption key only","Loop condition","Graphics renderer",A
+High School,"Computer Problem Solving","What is normalization in databases?","Eliminating redundant data","Adding duplicate tables","Increasing file size","Encrypting records",A
+High School,"Computer Problem Solving","What does REST stand for in web services?","Remote Execution Standard Tool","Representational State Transfer","Real-time Encryption Secure Transfer","Randomized External System Transport",B
+High School,"Computer Problem Solving","What is a race condition?","Color coding issue","Simultaneous thread conflict","Network bandwidth limit","Hardware overheating",B
+High School,"Computer Problem Solving","Which protocol secures web communication?","HTTP","FTP","SMTP","HTTPS",D
+High School,"Computer Problem Solving","What is machine learning?","Manual coding only","System learning patterns from data","Database indexing","Network routing",B
+High School,"Computer Problem Solving","Which data structure is hierarchical?","Tree","Stack","Queue","Array",A
+High School,"Computer Problem Solving","What is encryption?","Process of converting data into secure format","Deleting files","Compressing images","Formatting disk",A
+High School,"Computer Problem Solving","What is a distributed system?","Single computer network","Isolated mainframe","Multiple computers working together","Local storage only",C
+High School,"Computer Problem Solving","Which algorithm is used for shortest path in weighted graphs?","DFS","BFS","Dijkstra’s algorithm","Insertion sort",C
+High School,"Computer Problem Solving","What is containerization?","Hardware virtualization","Operating system kernel","Packaging application with dependencies","Manual installation",C
+High School,"Computer Problem Solving","What is a zero-day vulnerability?","Patched security flaw","Unknown unpatched security flaw","Expired license","Network delay",B
+High School,"Computer Problem Solving","Which cloud model offers highest control?","SaaS","PaaS","IaaS","On-premises",D
+High School,"Computer Problem Solving","What is concurrency?","Sequential execution","Simultaneous task execution","Single-thread processing","Manual scheduling",B
+High School,"Computer Problem Solving","What is a NoSQL database best suited for?","Strict relational schemas","Unstructured large-scale data","Spreadsheet editing","Static HTML",C
+High School,"Computer Problem Solving","What is latency?","Processing delay","Storage capacity","User interface theme","File size",A
+High School,"Computer Problem Solving","What is continuous integration?","Manual code testing","Annual software update","Automated merging and testing of code changes","Hardware replacement",C
+High School,"CyberSecurity","What is cybersecurity?","Protecting systems and data from digital attacks","Fixing hardware failures","Designing websites","Increasing internet speed",A
+High School,"CyberSecurity","What is malware?","Malicious software","Email attachment","Firewall rule","Cloud server",A
+High School,"CyberSecurity","Which is an example of strong password practice?","Using 123456","Using a long unique passphrase","Using your birthdate","Reusing passwords",B
+High School,"CyberSecurity","What does phishing attempt to steal?","Public information","System logs","Sensitive user data","Open-source code",C
+High School,"CyberSecurity","Which device filters network traffic?","Monitor","Keyboard","Router","Firewall",D
+High School,"CyberSecurity","What does VPN stand for?","Virtual Private Network","Verified Public Node","Variable Protocol Network","Virtual Protected Node",A
+High School,"CyberSecurity","What is two-factor authentication?","Single password login","Backup password","Using two verification methods","Security question only",C
+High School,"CyberSecurity","Which is a common sign of ransomware?","Free antivirus alert","Encrypted files demanding payment","Fast internet speed","Automatic updates",B
+High School,"CyberSecurity","What is a firewall?","Software that scans grammar","System that monitors and controls traffic","Cloud storage service","Physical lock",B
+High School,"CyberSecurity","Which practice improves account security?","Sharing passwords","Enabling multi-factor authentication","Disabling updates","Using public Wi-Fi",B
+High School,"CyberSecurity","What is social engineering?","Psychology-based manipulation attack","Network encryption","Hardware configuration","Software debugging",A
+High School,"CyberSecurity","What does antivirus software do?","Creates malware","Detects and removes malicious programs","Blocks all internet access","Increases RAM",B
+High School,"CyberSecurity","What is encryption?","Deleting files","Converting data into coded form","Backing up systems","Formatting drives",B
+High School,"CyberSecurity","Which protocol secures web browsing?","HTTP","FTP","SMTP","HTTPS",D
+High School,"CyberSecurity","What is a data breach?","Authorized data sharing","Intentional backup","Unauthorized access to data","Password reset",C
+High School,"CyberSecurity","What is spyware?","Software that monitors activity secretly","Cloud storage service","Operating system update","Hardware driver",A
+High School,"CyberSecurity","What does CISA focus on?","Infrastructure cybersecurity","Tax collection","Patent approval","Stock regulation",A
+High School,"CyberSecurity","Which is safest on public Wi-Fi?","Accessing bank accounts","Using VPN","Sharing files publicly","Disabling firewall",B
+High School,"CyberSecurity","What is patching?","Ignoring updates","Installing security updates","Deleting logs","Changing passwords",B
+High School,"CyberSecurity","What is a brute-force attack?","Guessing passwords repeatedly","Stealing hardware","Installing antivirus","Backing up data",A
+High School,"CyberSecurity","What is the CIA triad?","Confidentiality Integrity Availability","Cyber Internet Access","Control Inspection Authorization","Centralized Internet Architecture",A
+High School,"CyberSecurity","Which attack overloads a server with traffic?","Phishing","SQL injection","DDoS","Spyware",C
+High School,"CyberSecurity","What is multi-factor authentication?","One password","Two or more authentication methods","Security question only","IP address filtering",B
+High School,"CyberSecurity","What is a vulnerability scan?","System performance test","Automated security weakness assessment","Backup routine","Encryption tool",B
+High School,"CyberSecurity","What is least privilege principle?","Users get maximum access","Users get only necessary access","Shared admin credentials","No password policy",B
+High School,"CyberSecurity","What is SQL injection?","Database performance tuning","Malicious code inserted into queries","Firewall rule creation","Password reset",B
+High School,"CyberSecurity","What is endpoint security?","Protecting individual devices","Monitoring stock prices","Cloud pricing model","Email marketing",A
+High School,"CyberSecurity","What is hashing used for?","Reversible encryption","Securing stored passwords","Increasing bandwidth","Network routing",B
+High School,"CyberSecurity","What is a zero-day exploit?","Exploit for unknown vulnerability","Expired password","Legal compliance audit","Firewall update",A
+High School,"CyberSecurity","Which standard is ISO 27001 related to?","Environmental safety","Quality control","Information security management","Manufacturing compliance",C
+High School,"CyberSecurity","What is defense in depth?","Single firewall strategy","Layered security approach","Removing passwords","Public data sharing",B
+High School,"CyberSecurity","What is a SIEM system?","Security Information and Event Management tool","System Internet Email Module","Secure Internal Encryption Mechanism","Software Installation Engine",A
+High School,"CyberSecurity","What is lateral movement?","User login process","Data encryption","Attacker moving within network","Cloud migration",C
+High School,"CyberSecurity","What is a man-in-the-middle attack?","Intercepting communication between parties","Deleting files remotely","Phishing email campaign","Password reuse",A
+High School,"CyberSecurity","What is threat modeling?","Identifying and mitigating potential threats","System backup routine","Hardware installation","Database normalization",A
+High School,"CyberSecurity","What is sandboxing?","Testing code in isolated environment","Cloud storage method","Password reset policy","User training program",A
+High School,"CyberSecurity","Which framework provides cybersecurity guidance in the U.S.?","NIST Cybersecurity Framework","ISO 9001","GAAP standards","FCC guidelines",A
+High School,"CyberSecurity","What is exfiltration?","Unauthorized data transfer out of system","System reboot","Encryption process","Password hashing",A
+High School,"CyberSecurity","What is biometric authentication?","Fingerprint or facial recognition login","Username only login","IP filtering","Security question",B
+High School,"CyberSecurity","What is a botnet?","Network of infected devices controlled remotely","Secure email server","Cloud firewall","Password manager",A
+High School,"CyberSecurity","What is TLS used for?","Encrypting network communications","Deleting malware","Backing up files","Installing drivers",A
+High School,"CyberSecurity","What is risk assessment?","Identifying and evaluating security risks","Deleting logs","Password reset process","Software upgrade",A
+High School,"CyberSecurity","What is spear phishing?","Targeted phishing attack","Mass email spam","Firewall breach","Data backup",A
+High School,"CyberSecurity","What is red teaming?","Simulated attack to test defenses","Internal audit only","Compliance checklist","Password update",C
+High School,"CyberSecurity","What is a security incident response plan?","Documented procedure for handling breaches","Marketing strategy","Financial report","Server manual",A
+High School,"CyberSecurity","What is identity and access management (IAM)?","System for managing user identities and permissions","Cloud storage service","Hardware firewall","Operating system",A
+High School,"CyberSecurity","What is tokenization?","Replacing sensitive data with tokens","Deleting encrypted data","Network routing","Firewall logging",A
+High School,"CyberSecurity","What is cyber resilience?","Ability to recover from attacks","Preventing all attacks","Eliminating backups","Blocking internet",B
+High School,"CyberSecurity","What is data minimization?","Collecting only necessary data","Storing all data indefinitely","Sharing data publicly","Duplicating backups",A
+High School,"CyberSecurity","What is penetration testing?","Authorized simulated attack to find weaknesses","Software update","Password change policy","Database migration",A
+High School,"Data Science and AI","What is data science?","Field focused on extracting insights from data","Computer hardware repair","Website design only","Tax accounting",A
+High School,"Data Science and AI","What is artificial intelligence (AI)?","Human intelligence only","Simulation of human intelligence by machines","Manual data entry","Spreadsheet formatting",B
+High School,"Data Science and AI","Which is an example of structured data?","Free-form text","Relational database table","Audio recording","Image file",B
+High School,"Data Science and AI","What does CSV stand for?","Computer Stored Value","Central System Variable","Comma-Separated Values","Cloud Storage Version",C
+High School,"Data Science and AI","Which language is widely used in data science?","Python","HTML","PowerPoint","FTP",A
+High School,"Data Science and AI","What is a dataset?","Collection of related data","Single number only","Computer virus","Encryption key",A
+High School,"Data Science and AI","What is machine learning?","Manual coding rules only","System learning patterns from data","Database storage method","Firewall rule",B
+High School,"Data Science and AI","What is a model in AI?","Physical robot","Mathematical representation for predictions","Spreadsheet template","Cloud server",B
+High School,"Data Science and AI","What is data visualization?","Deleting raw data","Encrypting databases","Graphical representation of data","Manual calculation",C
+High School,"Data Science and AI","Which is a common data visualization tool?","Matplotlib","Notepad","Bluetooth","BIOS",A
+High School,"Data Science and AI","What is training data?","Data used to teach a model","Backup storage only","Random noise","Final report",A
+High School,"Data Science and AI","What is testing data used for?","Training model","Deleting records","Evaluating model performance","Increasing storage",C
+High School,"Data Science and AI","What is an algorithm?","Random guess","Step-by-step problem-solving procedure","Hardware chip","Database query",B
+High School,"Data Science and AI","What is big data characterized by?","Small sample size","High volume velocity and variety","Manual spreadsheets only","Limited storage",B
+High School,"Data Science and AI","Which field studies neural networks?","Deep learning","Tax auditing","Web hosting","Word processing",A
+High School,"Data Science and AI","What is a feature in machine learning?","Input variable used for prediction","Output result only","Hardware driver","Database index",A
+High School,"Data Science and AI","What is supervised learning?","Learning with labeled data","Learning without data","Manual coding","Cloud backup",A
+High School,"Data Science and AI","What is unsupervised learning?","Learning with labeled outputs","Learning without labeled outputs","Hardware encryption","Spreadsheet sorting",B
+High School,"Data Science and AI","What is overfitting?","Model performing poorly on training data","Model memorizing training data and failing to generalize","Database corruption","Hardware failure",B
+High School,"Data Science and AI","What is cross-validation?","Splitting data to test model reliability","Deleting duplicates","Encrypting dataset","Manual labeling",A
+High School,"Data Science and AI","What is regression used for?","Classification only","Clustering only","Predicting continuous values","Image rendering",C
+High School,"Data Science and AI","What is classification?","Predicting categories","Forecasting numbers only","Data encryption","Hardware testing",A
+High School,"Data Science and AI","What is clustering?","Grouping similar data points","Sorting alphabetically","Manual labeling","File compression",A
+High School,"Data Science and AI","What is a confusion matrix?","Encryption grid","Evaluation table for classification performance","Data storage plan","Network diagram",B
+High School,"Data Science and AI","What is precision in ML?","Ratio of true positives to predicted positives","Processing speed","Data size","Feature count",A
+High School,"Data Science and AI","What is recall?","Ability to store data","Ratio of true positives to actual positives","Encryption strength","Network delay",B
+High School,"Data Science and AI","What is a neural network inspired by?","Human brain structure","Database schema","Tax forms","Cloud storage",A
+High School,"Data Science and AI","What is natural language processing (NLP)?","AI understanding human language","Data encryption method","Hardware design","File system format",A
+High School,"Data Science and AI","What is gradient descent?","Optimization algorithm minimizing loss function","Data encryption tool","Hardware accelerator","Database engine",A
+High School,"Data Science and AI","What is a loss function?","Measure of model error","Security breach","Cloud service","Storage format",A
+High School,"Data Science and AI","What is reinforcement learning?","Learning through rewards and penalties","Manual labeling only","Database indexing","Encryption protocol",A
+High School,"Data Science and AI","What is model interpretability?","Understanding how a model makes decisions","Increasing model size","Encrypting outputs","Improving bandwidth",A
+High School,"Data Science and AI","What is fairness in AI?","Ensuring equitable outcomes across groups","Maximizing profit","Increasing processing speed","Reducing features",A
+High School,"Data Science and AI","What is explainable AI (XAI)?","Making AI decisions understandable","Improving storage space","Encrypting datasets","Cloud hosting",A
+High School,"Data Science and AI","What is transfer learning?","Reusing pre-trained models for new tasks","Copying files","Moving servers","Changing database",A
+High School,"Data Science and AI","What is a large language model?","AI model trained on vast text data","Small database","Firewall system","Spreadsheet macro",A
+High School,"Data Science and AI","What is data governance?","Managing data availability usability and security","Deleting logs","Compressing files","Increasing CPU",A
+High School,"Data Science and AI","What is synthetic data?","Artificially generated data for training","Stolen data","Backup file","Encrypted file",A
+High School,"Data Science and AI","What is hyperparameter tuning?","Optimizing configuration settings of model","Deleting features","Encrypting parameters","Formatting dataset",A
+High School,"Data Science and AI","What is edge AI?","Running AI on local devices","Cloud-only processing","Data backup method","Encryption standard",A
+High School,"Data Science and AI","What is adversarial attack?","Input designed to fool model","Firewall breach only","Database deletion","Hardware fault",A
+High School,"Data Science and AI","What is federated learning?","Training models across decentralized devices","Single computer training","Manual coding","Data deletion",A
+High School,"Data Science and AI","What is ROC curve used for?","Evaluating classification performance","Data encryption","Feature scaling","Network routing",A
+High School,"Data Science and AI","What is dimensionality reduction?","Reducing number of input variables","Increasing storage","Encrypting dataset","Formatting disk",A
+High School,"Data Science and AI","What is anomaly detection?","Identifying unusual patterns in data","Deleting duplicates","File compression","Manual labeling",A
+High School,"Data Science and AI","What is data drift?","Change in data distribution over time","Data deletion","Encryption failure","Server crash",A
+High School,"Data Science and AI","What is model deployment?","Making trained model available for use","Deleting model","Encrypting server","Archiving dataset",A
+High School,"Data Science and AI","What is AI risk management framework by NIST focused on?","Managing AI system risks","Increasing profits","Reducing storage cost","Hardware upgrades",A
+High School,"Economics","What is economics?","Study of resource allocation","Study of weather patterns","Computer programming field","Medical research",A
+High School,"Economics","What is scarcity?","Unlimited resources","Limited resources relative to wants","High inflation only","Government spending",B
+High School,"Economics","What is opportunity cost?","Total money spent","Value of next best alternative given up","Tax paid on income","Bank interest rate",B
+High School,"Economics","What is demand?","Quantity sellers offer","Quantity buyers are willing and able to buy","Government price control","Import quota",C
+High School,"Economics","What is supply?","Quantity buyers demand","Government subsidy","Tax revenue","Quantity sellers are willing and able to sell",D
+High School,"Economics","What is inflation?","Decrease in prices","General rise in price levels","Increase in unemployment","Stock market crash",B
+High School,"Economics","What is GDP?","Gross Domestic Product","Government Debt Percentage","General Deposit Plan","Global Development Policy",A
+High School,"Economics","Which system relies on private ownership?","Command economy","Traditional economy","Market economy","Barter system",C
+High School,"Economics","What is a shortage?","Excess supply","Price ceiling only","Quantity supplied exceeds demand","Quantity demanded exceeds supply",D
+High School,"Economics","What is a surplus?","Excess quantity supplied over demanded","High inflation","Low GDP","High unemployment",A
+High School,"Economics","What is a price ceiling?","Minimum legal price","Government-set maximum price","Import tax","Export subsidy",B
+High School,"Economics","What is a price floor?","Maximum legal price","Market equilibrium price","Minimum legal price","Consumer tax",C
+High School,"Economics","Who controls monetary policy in the U.S.?","Congress","Department of Treasury","Federal Reserve","World Bank",C
+High School,"Economics","What is unemployment rate?","Percent of labor force unemployed","Total population","Number of businesses","Interest rate",A
+High School,"Economics","What is a tariff?","Tax on imports","Subsidy to exports","Price ceiling","Minimum wage",A
+High School,"Economics","What is specialization?","Producing everything equally","Focusing on producing specific goods efficiently","Government planning","Price fixing",B
+High School,"Economics","What is a subsidy?","Tax penalty","Government financial support","Import restriction","Interest rate hike",B
+High School,"Economics","What is a monopoly?","Market with many sellers","Single seller dominating market","Government agency","International trade bloc",B
+High School,"Economics","What measures cost of living changes?","CPI","GDP","Interest rate","Exchange rate",A
+High School,"Economics","What is entrepreneurship?","Working for government only","Managing imports","Starting and running a business","Collecting taxes",C
+High School,"Economics","What is elasticity of demand?","Responsiveness of quantity demanded to price changes","Total supply amount","Government spending level","Inflation rate",A
+High School,"Economics","What shifts demand curve right?","Decrease in income","Increase in consumer income","Increase in production cost","New tax on product",B
+High School,"Economics","What is fiscal policy?","Government taxation and spending policy","Central bank interest control","Import quotas only","Stock trading regulation",A
+High School,"Economics","What is marginal cost?","Total fixed cost","Cost of producing one more unit","Average revenue","Opportunity cost",B
+High School,"Economics","What is comparative advantage?","Producing at lower opportunity cost","Producing more goods overall","Absolute productivity","High tariffs",A
+High School,"Economics","What does BEA measure?","Inflation expectations","Interest rates","GDP and national accounts","Trade agreements",C
+High School,"Economics","What is stagflation?","High growth and low inflation","Low inflation only","High inflation and high unemployment","High exports",C
+High School,"Economics","What is monetary tightening?","Lowering interest rates","Increasing government spending","Raising interest rates to control inflation","Cutting taxes",C
+High School,"Economics","What is aggregate demand?","Total demand for goods and services in economy","Individual demand only","Export supply","Corporate profits",A
+High School,"Economics","What is a recession commonly defined as?","One month of decline","Two consecutive quarters of GDP decline","Stock market dip only","High inflation period",B
+High School,"Economics","What is the Phillips Curve relationship?","Inflation and unemployment trade-off","Supply and demand equality","GDP and tariffs link","Exports and imports ratio",A
+High School,"Economics","What is quantitative easing?","Reducing government spending","Central bank selling bonds","Increasing taxes","Central bank buying securities to increase money supply",D
+High School,"Economics","What is crowding out?","Government spending reducing private investment","Increase in exports","Decrease in inflation","Rise in unemployment",A
+High School,"Economics","What is purchasing power parity?","Exchange rates adjust to equalize price levels","Tax equalization policy","Interest rate control","Trade quota system",A
+High School,"Economics","What is marginal propensity to consume?","Fraction of additional income spent","Fraction saved only","Inflation rate","Unemployment level",A
+High School,"Economics","What is a progressive tax?","Flat percentage tax","Tax increasing with income","Tax decreasing with income","Import tariff",B
+High School,"Economics","What is the Lorenz Curve used to show?","GDP growth","Interest rate trends","Income inequality","Inflation cycles",C
+High School,"Economics","What is supply-side economics?","Focus on boosting aggregate supply through incentives","Increasing demand via spending","Reducing exports","Price ceilings",A
+High School,"Economics","What is a liquidity trap?","High interest rate period","Situation where monetary policy is ineffective at low rates","High exports","Strong currency",B
+High School,"Economics","What is human capital?","Physical machinery only","Government bonds","Skills and education of workforce","Natural resources",C
+High School,"Economics","What is the multiplier effect?","Change in spending leading to larger GDP change","Tax deduction only","Interest calculation","Inflation adjustment",A
+High School,"Economics","What is an externality?","Private cost only","Market equilibrium","Side effect affecting third parties","Government budget",C
+High School,"Economics","What is a trade deficit?","Exports exceed imports","Imports exceed exports","Balanced trade","High tariffs",B
+High School,"Economics","What does IMF primarily monitor?","Corporate profits","Local taxes","Global financial stability and economic trends","Currency printing",C
+High School,"Economics","What is game theory?","Study of strategic decision-making","Inflation forecasting only","Trade barrier analysis","Unemployment modeling",A
+High School,"Economics","What is nominal GDP?","GDP adjusted for inflation","GDP without inflation adjustment","Per capita income","Government debt",B
+High School,"Economics","What is real interest rate?","Interest adjusted for inflation","Loan principal","Nominal bond value","Exchange rate",A
+High School,"Economics","What is central bank independence?","Government controlling rates directly","Central bank free from political pressure in decisions","Fixed exchange rate system","Trade agreement clause",B
+High School,"Economics","What is capital formation?","Investment in physical assets","Government deficit spending","Inflation rise","Trade restriction",A
+High School,"Healthcare Administration","Which federal program primarily provides health coverage to individuals age 65 and older?","Medicaid","CHIP","Medicare","TRICARE",C
+High School,"Healthcare Administration","What does HIPAA primarily regulate?","Hospital construction standards","Health information privacy and security","Pharmaceutical pricing","Medical licensure",B
+High School,"Healthcare Administration","Which organization accredits many U.S. hospitals?","World Trade Organization","The Joint Commission","Federal Trade Commission","Occupational Safety and Health Administration",B
+High School,"Healthcare Administration","What is the main purpose of electronic health records (EHRs)?","Reduce physician salaries","Eliminate insurance claims","Increase paper documentation","Improve documentation and care coordination",D
+High School,"Healthcare Administration","Which payment model reimburses providers a fixed amount per patient per period?","Fee-for-service","Capitation","Bundled payment","Cost-plus",B
+High School,"Healthcare Administration","What does CMS stand for?","Clinical Management Services","Community Medical Systems","Centers for Medicare & Medicaid Services","Certified Medical Standards",C
+High School,"Healthcare Administration","Which department oversees public health at the federal level?","U.S. Department of Health and Human Services","Department of Labor","Department of Commerce","Department of Education",A
+High School,"Healthcare Administration","What is a key goal of value-based care?","Increase number of procedures","Reward quality and outcomes","Reduce nurse staffing","Expand billing codes",B
+High School,"Healthcare Administration","Which insurance program covers low-income individuals?","Medicare","Medicaid","VA Health Care","COBRA",B
+High School,"Healthcare Administration","What is informed consent?","Financial agreement with insurer","Permission from hospital board","Patient agreement after understanding risks and benefits","Automatic approval for surgery",C
+High School,"Healthcare Administration","What is the primary role of a healthcare administrator?","Perform surgery","Diagnose patients","Dispense medications","Manage operations and strategy",D
+High School,"Healthcare Administration","Which metric measures hospital-acquired infection rates?","EBITDA margin","Case mix index","Quality performance indicators","Stock turnover",C
+High School,"Healthcare Administration","What does EMTALA require hospitals to do?","Provide elective surgery","Offer emergency screening and stabilization","Submit annual tax returns","Share patient data publicly",B
+High School,"Healthcare Administration","What is population health management?","Treating one patient at a time","Managing health outcomes of a defined group","Expanding hospital buildings","Reducing pharmacy inventory",B
+High School,"Healthcare Administration","Which agency issues public health emergency declarations?","U.S. Department of Health and Human Services","Internal Revenue Service","Federal Communications Commission","Securities and Exchange Commission",A
+High School,"Healthcare Administration","What is a deductible?","Monthly insurance premium","Maximum annual coverage limit","Amount paid before insurance coverage begins","Government subsidy",C
+High School,"Healthcare Administration","Which document outlines a hospital’s mission and vision?","Clinical pathway","Strategic plan","Insurance claim form","Prescription pad",B
+High School,"Healthcare Administration","What does revenue cycle management include?","Clinical diagnosis only","Billing and collections processes","Surgical procedures","Research grants",B
+High School,"Healthcare Administration","Which workforce role focuses on coding diagnoses for billing?","Registered nurse","Health information technician","Surgeon","Pharmacist",B
+High School,"Healthcare Administration","What is the purpose of quality improvement programs?","Increase advertising budget","Reduce regulatory oversight","Improve patient outcomes and processes","Cut clinical staff",C
+High School,"Healthcare Administration","Which law expanded health insurance coverage in 2010?","Affordable Care Act","Social Security Act","COBRA Act","Stark Law",A
+High School,"Healthcare Administration","What is accountable care organization (ACO) designed to do?","Increase specialist referrals","Coordinate care to reduce costs and improve quality","Limit preventive services","Replace Medicare",B
+High School,"Healthcare Administration","Which financial statement shows assets and liabilities?","Income statement","Balance sheet","Cash flow forecast","Budget variance report",B
+High School,"Healthcare Administration","What is a bundled payment?","Payment per hospital day","Payment for each service provided","Single payment for entire episode of care","Capitation per year",C
+High School,"Healthcare Administration","Which metric measures hospital financial performance?","Operating margin","Hand hygiene rate","Readmission rate","Infection prevalence",A
+High School,"Healthcare Administration","What does the Stark Law regulate?","Patient privacy","Physician self-referrals","Medical malpractice claims","Drug approval process",B
+High School,"Healthcare Administration","Which leadership style emphasizes collaboration and shared decision-making?","Autocratic","Transactional","Democratic","Laissez-faire",C
+High School,"Healthcare Administration","What is case mix index used to assess?","Hospital profitability only","Patient satisfaction","Complexity and resource needs of patients","Staff productivity",C
+High School,"Healthcare Administration","What does MACRA influence?","Medical school curriculum","Payment models for providers","Pharmacy licensing","Nursing scope of practice",B
+High School,"Healthcare Administration","Which risk management strategy reduces malpractice exposure?","Ignoring complaints","Delaying documentation","Conducting root cause analyses","Eliminating informed consent",C
+High School,"Healthcare Administration","Which organization sets global health standards?","World Health Organization","Centers for Medicare & Medicaid Services","Internal Revenue Service","Department of Defense",A
+High School,"Healthcare Administration","What is the primary purpose of a root cause analysis?","Assign blame","Increase billing","Identify underlying causes of adverse events","Reduce staffing",D
+High School,"Healthcare Administration","Which payment reform penalizes excessive readmissions?","Capitation","Pay-for-performance","Readmissions Reduction Program","Fee-for-service",C
+High School,"Healthcare Administration","What does interoperability enable?","Hospital mergers","Data sharing across systems","Reduction in clinical trials","Elimination of audits",B
+High School,"Healthcare Administration","Which act governs fraud and abuse in federal programs?","False Claims Act","HIPAA","COBRA","EMTALA",A
+High School,"Healthcare Administration","What is strategic alignment in healthcare organizations?","Matching cafeteria menus to demand","Aligning goals with operations and resources","Increasing physician bonuses only","Reducing compliance audits",B
+High School,"Healthcare Administration","Which metric reflects patient experience?","Operating margin","HCAHPS scores","Case mix index","Days cash on hand",B
+High School,"Healthcare Administration","What does population risk stratification involve?","Sorting staff schedules","Categorizing patients by health risk","Reducing hospital beds","Expanding billing departments",C
+High School,"Healthcare Administration","Which framework emphasizes the Triple Aim?","Increase cost and volume","Improve experience"," health"," and reduce cost",Maximize physician autonomy
+High School,"Healthcare Administration","What is a certificate of need (CON) law?","Licensing exam requirement","Capital budgeting method","State approval for healthcare facility expansion","Malpractice insurance",C
+High School,"Healthcare Administration","Which financial metric indicates liquidity?","Return on assets","Operating margin","Days cash on hand","Market share",C
+High School,"Healthcare Administration","What is enterprise risk management (ERM)?","IT backup system only","Comprehensive risk oversight strategy","Malpractice litigation fund","Quality reporting metric",B
+High School,"Healthcare Administration","Which regulation protects substance use disorder records?","42 CFR Part 2","Stark Law","HITECH Act","COBRA",A
+High School,"Healthcare Administration","What does cost shifting refer to?","Reducing staff wages","Charging higher rates to private payers to offset public payer losses","Increasing charity care","Eliminating deductibles",B
+High School,"Healthcare Administration","Which analytics type predicts future outcomes?","Descriptive analytics","Diagnostic analytics","Predictive analytics","Retrospective audit",C
+High School,"Healthcare Administration","What is the purpose of clinical governance?","Maximize advertising revenue","Ensure accountability for quality and safety","Expand service lines","Reduce board oversight",B
+High School,"Healthcare Administration","Which budgeting method starts from zero each period?","Incremental budgeting","Rolling budget","Capital budgeting","Zero-based budgeting",D
+High School,"Healthcare Administration","What is vertical integration in healthcare?","Hospital purchasing supplies","Merger across different levels of care","Reducing facility height","Expanding marketing",C
+High School,"Healthcare Administration","Which KPI measures efficiency of inpatient care?","Average length of stay","Brand awareness index","Stock valuation","Tax rate",A
+High School,"Healthcare Administration","What is the primary goal of health equity initiatives?","Increase profits","Reduce disparities in health outcomes","Expand private insurance markets","Limit telehealth access",B
+High School,"Human Resource Management","What is the primary function of human resource management?","Recruiting and managing employees","Manufacturing products","Selling services","Maintaining equipment",A
+High School,"Human Resource Management","Which law prohibits employment discrimination based on race"," religion"," sex"," or national origin?","Beginner",Family and Medical Leave Act
+High School,"Human Resource Management","What is onboarding?","Terminating an employee","Annual auditing","Integrating new employees into the organization","Negotiating union contracts",C
+High School,"Human Resource Management","What does OSHA primarily regulate?","Tax compliance","Marketing standards","Financial reporting","Workplace safety",D
+High School,"Human Resource Management","Which document verifies employment eligibility in the U.S.?","Form W-4","Form I-9","Form 1099","Form 940",B
+High School,"Human Resource Management","What is a job description?","Statement of company profits","List of duties and responsibilities","Employee performance rating","Union agreement",B
+High School,"Human Resource Management","Which compensation component is mandatory under federal law?","Stock options","Bonuses","Minimum wage compliance","Profit sharing",C
+High School,"Human Resource Management","What is employee engagement?","Level of employee commitment and involvement","Salary calculation method","Recruiting strategy","Union negotiation process",A
+High School,"Human Resource Management","Which act provides eligible employees unpaid job-protected leave?","Fair Labor Standards Act","National Labor Relations Act","Family and Medical Leave Act","Taft-Hartley Act",C
+High School,"Human Resource Management","What is a performance appraisal?","Employee tax filing","Evaluation of employee performance","Workplace hazard inspection","Recruitment campaign",B
+High School,"Human Resource Management","What does EEOC enforce?","Workplace discrimination laws","Corporate tax codes","International trade law","Environmental regulations",A
+High School,"Human Resource Management","Which pay structure ties wages to job value?","Piece-rate system","Commission plan","Market pricing","Job-based pay structure",D
+High School,"Human Resource Management","What is turnover rate?","Revenue growth percentage","Employee retention measurement","Rate of employee departures over time","Promotion frequency",C
+High School,"Human Resource Management","Which interview type uses standardized questions?","Structured interview","Exit interview","Panel interview","Informal interview",A
+High School,"Human Resource Management","What is a collective bargaining agreement?","Individual employment contract","Agreement between employer and union","Performance bonus plan","Safety compliance checklist",B
+High School,"Human Resource Management","Which benefit is required under federal law?","Paid vacation","Health insurance","Social Security contributions","Tuition reimbursement",C
+High School,"Human Resource Management","What is workforce planning?","Forecasting staffing needs","Setting product prices","Designing advertisements","Conducting audits",A
+High School,"Human Resource Management","Which training improves leadership skills?","Compliance training","Technical certification","Customer orientation","Management development",D
+High School,"Human Resource Management","What is job analysis?","Reviewing employee taxes","Determining job duties and requirements","Conducting exit interviews","Setting stock prices",B
+High School,"Human Resource Management","Which law establishes minimum wage and overtime?","Family and Medical Leave Act","Fair Labor Standards Act","Occupational Safety and Health Act","Equal Pay Act",B
+High School,"Human Resource Management","What is disparate impact?","Intentional discrimination","Neutral policy with discriminatory effect","Union organizing tactic","Compensation strategy",B
+High School,"Human Resource Management","Which metric measures recruiting effectiveness?","Time-to-fill","Profit margin","Inventory turnover","Market share",A
+High School,"Human Resource Management","What is succession planning?","Immediate termination policy","Preparing employees for future leadership roles","Outsourcing strategy","Compensation audit",B
+High School,"Human Resource Management","Which act protects employees’ rights to unionize?","National Labor Relations Act","ERISA","COBRA","OSHA",A
+High School,"Human Resource Management","What is variable pay?","Guaranteed salary","Compensation tied to performance metrics","Government tax deduction","Union dues",C
+High School,"Human Resource Management","Which document outlines workplace conduct expectations?","Balance sheet","Employee handbook","Tax return form","Marketing plan",B
+High School,"Human Resource Management","What does ERISA regulate?","Employee benefit plans","Minimum wage","Workplace safety","Immigration compliance",A
+High School,"Human Resource Management","Which analysis compares pay equity across groups?","SWOT analysis","Job rotation","Compensation equity analysis","Market segmentation",C
+High School,"Human Resource Management","What is a 360-degree feedback system?","Single supervisor review","Customer survey only","Peer-only evaluation","Multi-source performance evaluation",D
+High School,"Human Resource Management","Which strategy reduces unconscious bias in hiring?","Unstructured interviews","Blind resume screening","Referral-only hiring","Informal selection",B
+High School,"Human Resource Management","What is human capital ROI?","Return on investment in workforce contributions","Revenue from product sales","Stock dividend yield","Tax refund amount",A
+High School,"Human Resource Management","Which law requires reasonable accommodation for disabilities?","Americans with Disabilities Act","National Labor Relations Act","Fair Labor Standards Act","COBRA",A
+High School,"Human Resource Management","What is predictive analytics used for in HR?","Forecasting workforce trends","Designing logos","Setting tax rates","Managing inventory",A
+High School,"Human Resource Management","Which practice enhances retention?","Ignoring engagement surveys","Reducing training budgets","Competitive total rewards strategy","Eliminating benefits",C
+High School,"Human Resource Management","What is employer branding?","Public perception of the organization as an employer","Tax classification","Union contract negotiation","Safety inspection report",A
+High School,"Human Resource Management","Which approach aligns HR strategy with business goals?","Administrative compliance model","Strategic HR management","Ad hoc staffing","Random workforce allocation",B
+High School,"Human Resource Management","What is job rotation?","Permanent demotion","Moving employees across roles to develop skills","Reducing wages","Terminating staff",C
+High School,"Human Resource Management","Which metric measures diversity representation?","Return on equity","Operating income","Workforce demographic ratio","Sales growth",C
+High School,"Human Resource Management","What is a key purpose of compensation benchmarking?","Set pay without research","Compare pay against market data","Reduce hiring standards","Increase tax liability",B
+High School,"Human Resource Management","Which technique manages high-potential employees?","Performance improvement plan","Progressive discipline","High-potential talent program","Overtime scheduling",C
+High School,"Human Resource Management","What is constructive discharge?","Voluntary resignation due to intolerable work conditions","Promotion without pay","Union membership termination","Job redesign",A
+High School,"Human Resource Management","Which HR technology system manages employee records?","Customer relationship management system","Enterprise resource planning only","Human resource information system","Supply chain management software",C
+High School,"Human Resource Management","What is psychological safety in teams?","Fear-based management","Open environment for speaking up","Strict compliance enforcement","Formal grievance filing only",B
+High School,"Human Resource Management","Which compliance area involves wage-hour audits?","Intellectual property","Workplace safety","Immigration policy","Payroll compliance",D
+High School,"Human Resource Management","What does total rewards include?","Salary only","Bonuses only","Compensation and benefits package","Union dues",C
+High School,"Human Resource Management","Which practice supports pay transparency?","Secret compensation policies","Clear communication of pay structures","Random salary adjustments","Eliminating job grades",B
+High School,"Human Resource Management","What is workforce agility?","Rigid job structures","Inability to adapt","Capability to respond to change","Fixed scheduling",C
+High School,"Human Resource Management","Which factor influences employee engagement most?","Micromanagement style","Leadership quality and communication","Strict surveillance","Reduced autonomy",B
+High School,"Human Resource Management","What is HR risk management?","Ignoring compliance issues","Managing potential workforce-related risks","Eliminating training","Outsourcing payroll only",B
+High School,"Human Resource Management","Which approach improves organizational culture?","Ignoring feedback","Clear values and leadership modeling","Reducing communication channels","Limiting diversity initiatives",B
+High School,"Insurance and Risk Management","What is the primary purpose of insurance?","Transfer financial risk","Eliminate all losses","Increase profits","Guarantee investments",A
+High School,"Insurance and Risk Management","What is a premium?","Amount insurer pays for claim","Cost paid for insurance coverage","Tax deduction","Investment return",B
+High School,"Insurance and Risk Management","What is a deductible?","Maximum coverage limit","Amount insurer pays first","Monthly premium","Amount insured pays before coverage applies",D
+High School,"Insurance and Risk Management","Which type of insurance covers damage to a home?","Auto insurance","Health insurance","Homeowners insurance","Life insurance",C
+High School,"Insurance and Risk Management","What does liability insurance protect against?","Property theft only","Legal responsibility for damages","Stock losses","Loan default",B
+High School,"Insurance and Risk Management","Which insurance is legally required for drivers in most states?","Life insurance","Disability insurance","Auto liability insurance","Travel insurance",C
+High School,"Insurance and Risk Management","What is a policyholder?","Insurance regulator","Person who owns the insurance policy","Claims adjuster","Underwriter",B
+High School,"Insurance and Risk Management","What does underwriting evaluate?","Marketing strategy","Risk and eligibility for coverage","Claim settlement value","Stock performance",B
+High School,"Insurance and Risk Management","What is risk pooling?","Sharing risk among many insured individuals","Borrowing funds","Eliminating claims","Reducing deductibles",A
+High School,"Insurance and Risk Management","Which insurance provides income replacement after death?","Auto insurance","Life insurance","Home insurance","Pet insurance",B
+High School,"Insurance and Risk Management","What is an exclusion in a policy?","Additional coverage benefit","Risk not covered by policy","Premium refund","Claim bonus",B
+High School,"Insurance and Risk Management","What does FEMA primarily manage?","Auto insurance claims","Health underwriting","Disaster response and flood insurance","Life settlements",C
+High School,"Insurance and Risk Management","Which coverage pays medical costs from car accidents regardless of fault?","Collision coverage","Liability coverage","Comprehensive coverage","Personal injury protection",D
+High School,"Insurance and Risk Management","What is subrogation?","Transferring insurer’s right to recover damages","Canceling a policy","Increasing deductible","Lowering premium",A
+High School,"Insurance and Risk Management","What is reinsurance?","Insurance for insurers","Broker commission structure","Policy endorsement","Investment fund",A
+High School,"Insurance and Risk Management","Which term describes the chance of loss?","Peril","Hazard","Risk","Dividend",C
+High School,"Insurance and Risk Management","What is a claim?","Premium payment","Request for payment under policy","Policy cancellation","Underwriting decision",B
+High School,"Insurance and Risk Management","Which factor affects auto insurance premiums?","Driver history only","Type of vehicle only","Credit score only","Multiple risk factors including driving record",D
+High School,"Insurance and Risk Management","What is a peril?","Cause of loss","Insurance agent","Premium discount","Policyholder",A
+High School,"Insurance and Risk Management","Which insurance covers business property and liability?","Commercial insurance","Travel insurance","Medicare","Workers compensation",A
+High School,"Insurance and Risk Management","What is moral hazard?","Increased risk-taking due to insurance coverage","Weather-related loss","Premium discount","Regulatory oversight",A
+High School,"Insurance and Risk Management","Which organization develops model insurance laws in the U.S.?","Insurance Information Institute","National Association of Insurance Commissioners","Federal Reserve","Department of Commerce",B
+High School,"Insurance and Risk Management","What is enterprise risk management (ERM)?","Personal budgeting strategy","Comprehensive risk oversight across organization","Auto insurance policy","Claim settlement process",B
+High School,"Insurance and Risk Management","What does ISO 31000 provide?","Auto claim guidelines","Stock market rules","Risk management principles and framework","Insurance premium calculator",C
+High School,"Insurance and Risk Management","What is adverse selection?","Lower risk individuals buying more coverage","Higher risk individuals more likely to purchase coverage","Premium refund policy","Claim denial process",B
+High School,"Insurance and Risk Management","Which ratio measures insurer profitability?","Combined ratio","Loss ratio only","Expense ratio only","Retention ratio",A
+High School,"Insurance and Risk Management","What is a captive insurance company?","Government insurance agency","Company insuring its own risks","Insurance broker firm","Reinsurance pool",B
+High School,"Insurance and Risk Management","Which coverage protects against employee workplace injuries?","General liability","Property insurance","Workers compensation","Collision coverage",C
+High School,"Insurance and Risk Management","What is risk retention?","Transferring risk to insurer","Avoiding risk entirely","Reducing risk frequency","Accepting risk exposure",D
+High School,"Insurance and Risk Management","What is a stop-loss policy?","Reinsurance limiting insurer losses","Policy cancellation clause","Investment cap","Premium rebate",A
+High School,"Insurance and Risk Management","Which SEC requirement impacts insurance companies that are publicly traded?","Disclosure and financial reporting rules","Auto underwriting standards","Claim adjustment timelines","Disaster response planning",A
+High School,"Insurance and Risk Management","What is parametric insurance?","Payment based on predefined trigger event","Reimbursement of actual loss only","Life insurance rider","Health savings account",C
+High School,"Insurance and Risk Management","Which metric assesses claims severity?","Loss frequency","Average claim cost","Premium growth rate","Dividend yield",B
+High School,"Insurance and Risk Management","What is diversification in risk management?","Concentrating investments","Spreading exposures to reduce risk","Eliminating premiums","Raising deductibles",B
+High School,"Insurance and Risk Management","Which insurance is backed by the federal government for floods?","Private homeowners only","Auto liability","National Flood Insurance Program","Commercial umbrella",C
+High School,"Insurance and Risk Management","What is catastrophe modeling?","Predicting large-scale disaster losses","Reducing deductibles","Underwriting life insurance","Employee training",D
+High School,"Insurance and Risk Management","What is a derivative used for in risk management?","Speculation only","Hedging financial risk","Increasing liability","Policy underwriting",B
+High School,"Insurance and Risk Management","Which ratio indicates claim losses relative to premiums?","Expense ratio","Solvency ratio","Loss ratio","Equity ratio",C
+High School,"Insurance and Risk Management","What is insurable interest?","Financial stake in insured property or life","Investment return","Premium discount","Claim bonus",A
+High School,"Insurance and Risk Management","What is risk appetite?","Maximum risk organization willing to accept","Insurance premium rate","Policy exclusion clause","Reinsurance treaty",A
+High School,"Insurance and Risk Management","Which type of risk cannot be diversified away?","Operational risk","Market/systematic risk","Reputational risk","Compliance risk",B
+High School,"Insurance and Risk Management","What is coinsurance in property insurance?","Shared cost between insurer and insured","Premium discount","Claim penalty","Policy rider",A
+High School,"Insurance and Risk Management","Which financial metric measures insurer solvency?","Return on equity","Risk-based capital ratio","Operating margin","Net promoter score",B
+High School,"Insurance and Risk Management","What is a hedge?","Insurance agent","A reinsurance agreement","Financial instrument to offset risk","Policy endorsement",C
+High School,"Insurance and Risk Management","Which policy provides excess liability coverage?","Umbrella policy","Auto policy only","Health policy","Term life policy",A
+High School,"Insurance and Risk Management","What is exposure unit in underwriting?","Measure of risk basis for premium calculation","Claim payout amount","Dividend payment","Tax obligation",A
+High School,"Insurance and Risk Management","Which tool identifies potential organizational threats?","SWOT risk assessment","Premium audit","Loss payment schedule","Underwriting manual",A
+High School,"Insurance and Risk Management","What is tail risk?","Low probability high impact event","Minor frequent loss","Premium fluctuation","Underwriting error",A
+High School,"Insurance and Risk Management","What is indemnification?","Restoring insured to pre-loss financial position","Increasing deductible","Canceling policy","Reducing coverage",A
+High School,"Insurance and Risk Management","Which strategy transfers risk to another party?","Risk avoidance","Risk mitigation","Risk transfer through insurance","Loss prevention",C
+High School,"Introduction to Business Communication","What is the primary purpose of business communication?","Exchange information to achieve organizational goals","Entertain audiences","Promote only products","Replace management",A
+High School,"Introduction to Business Communication","Which of the following is an example of written communication?","Phone call","Email","Video conference","Presentation slide",B
+High School,"Introduction to Business Communication","What is nonverbal communication?","Spoken words only","Written messages only","Body language and facial expressions","Text messaging",C
+High School,"Introduction to Business Communication","What is active listening?","Interrupting politely","Listening and responding thoughtfully","Waiting to speak","Reading emails",B
+High School,"Introduction to Business Communication","Which is an example of formal communication?","Texting a friend","Official company memo","Social media comment","Casual hallway chat",B
+High School,"Introduction to Business Communication","What does tone refer to in writing?","Font size","Attitude conveyed in message","Grammar rules","File format",B
+High School,"Introduction to Business Communication","Which is a barrier to effective communication?","Clear language","Feedback","Noise","Preparation",C
+High School,"Introduction to Business Communication","What is feedback in communication?","Ignoring the message","Receiver’s response to message","Repeating words","Changing topic",B
+High School,"Introduction to Business Communication","Which format is commonly used for business letters?","Block format","Poetry format","Script format","Comic format",A
+High School,"Introduction to Business Communication","What is the purpose of a subject line in email?","Decoration","Identify topic of message","Add attachment","Increase word count",B
+High School,"Introduction to Business Communication","Which skill improves verbal presentations?","Reading slides word-for-word","Clear articulation and eye contact","Monotone delivery","Ignoring audience",B
+High School,"Introduction to Business Communication","What is professional etiquette?","Proper workplace behavior standards","Personal hobbies","Office décor style","Typing speed",A
+High School,"Introduction to Business Communication","Which communication channel is best for urgent matters?","Printed newsletter","Postal mail","Face-to-face or phone call","Annual report",C
+High School,"Introduction to Business Communication","What does clarity mean in communication?","Using complex vocabulary","Being vague","Being easily understood","Speaking loudly",C
+High School,"Introduction to Business Communication","Which document summarizes meeting discussions?","Invoice","Agenda","Minutes","Resume",C
+High School,"Introduction to Business Communication","What is an agenda used for?","Recording attendance","Outlining meeting topics","Advertising products","Filing taxes",B
+High School,"Introduction to Business Communication","Which is an example of digital communication?","Handwritten memo","Smoke signals","Email newsletter","Notice board posting",C
+High School,"Introduction to Business Communication","Why is proofreading important?","Increase length","Ensure accuracy and professionalism","Add graphics","Delay submission",B
+High School,"Introduction to Business Communication","Which style is appropriate for business emails?","Informal slang","Professional and concise","Emojis only","Abbreviations only",B
+High School,"Introduction to Business Communication","What is a memo typically used for?","External advertising","Internal communication within organization","Customer billing","Legal contracts",B
+High School,"Introduction to Business Communication","What is cultural awareness in communication?","Ignoring differences","Understanding and respecting cultural differences","Enforcing uniformity","Limiting interaction",B
+High School,"Introduction to Business Communication","Which is an example of persuasive communication?","Weekly report","Sales pitch","Policy manual","Invoice",B
+High School,"Introduction to Business Communication","What is the purpose of an executive summary?","Provide detailed background only","Summarize key points of a report","Add citations","List references",B
+High School,"Introduction to Business Communication","What is upward communication?","Communication from managers to staff","Communication from employees to managers","External advertising","Customer service emails",B
+High School,"Introduction to Business Communication","Which listening style focuses on understanding emotions?","Analytical listening","Relational listening","Critical listening","Passive listening",B
+High School,"Introduction to Business Communication","What is the goal of informative communication?","Entertain audience only","Provide clear and accurate information","Convince to purchase","Delay decisions",B
+High School,"Introduction to Business Communication","Which visual aid improves presentations?","Unreadable charts","Relevant graphs and images","Cluttered slides","Blank screen",B
+High School,"Introduction to Business Communication","What is a communication medium?","The channel used to send a message","The speaker only","The receiver only","The topic only",A
+High School,"Introduction to Business Communication","What does conciseness improve?","Confusion","Clarity and efficiency","Length of report","Complexity",B
+High School,"Introduction to Business Communication","Which factor affects cross-cultural communication?","Ignoring customs","Cultural norms and language differences","Font size only","Office layout",B
+High School,"Introduction to Business Communication","What is a stakeholder in communication?","Anyone affected by the message","Only executives","Only customers","Only employees",A
+High School,"Introduction to Business Communication","Which structure organizes ideas logically?","Random order","Chronological or problem-solution format","Circular reasoning","Unrelated listing",B
+High School,"Introduction to Business Communication","What is noise in communication theory?","Background sound only","Any interference with message transmission","Music preference","Feedback response",B
+High School,"Introduction to Business Communication","What is empathy in communication?","Ignoring others’ views","Understanding others’ perspectives","Repeating instructions","Delivering criticism",B
+High School,"Introduction to Business Communication","Which strategy improves audience engagement?","Reading script monotone","Asking relevant questions","Turning back to audience","Skipping visuals",B
+High School,"Introduction to Business Communication","What is a communication audit?","Evaluation of organizational communication effectiveness","Financial inspection","Marketing plan review","Inventory count",A
+High School,"Introduction to Business Communication","Which type of report presents data analysis?","Analytical report","Personal memo","Invitation letter","Brochure",A
+High School,"Introduction to Business Communication","What is credibility based on?","Trustworthiness and expertise","Volume of speech","Slide animation","Length of email",A
+High School,"Introduction to Business Communication","Which element is essential in persuasive messages?","Clear call to action","Random statistics","Long paragraphs","Technical jargon",A
+High School,"Introduction to Business Communication","What does transparency build in organizations?","Confusion","Trust and accountability","Resistance","Competition",B
+High School,"Introduction to Business Communication","Which practice strengthens professional writing?","Overusing jargon","Using clear structure and proofreading","Ignoring grammar","Writing long sentences",B
+High School,"Introduction to Business Communication","What is the purpose of communication ethics?","Promote honesty and responsibility","Increase profit only","Limit dialogue","Control staff",A
+High School,"Introduction to Business Communication","Which tool supports remote collaboration?","Shared online documents","Paper memos only","Fax machine","Printed reports",A
+High School,"Introduction to Business Communication","What is message framing?","Choosing how information is presented","Formatting margins","Adding graphics","Increasing length",A
+High School,"Introduction to Business Communication","Why is feedback important in presentations?","Increase time only","Measure audience understanding","Delay conclusion","Add humor",B
+High School,"Introduction to Business Communication","Which approach reduces miscommunication?","Assuming understanding","Clarifying expectations","Speaking quickly","Using slang",B
+High School,"Introduction to Business Communication","What does professionalism in communication include?","Respectful tone and proper grammar","Informal slang","Ignoring deadlines","Minimal effort",A
+High School,"Introduction to Business Communication","What is an example of external communication?","Internal memo","Department meeting","Company newsletter to customers","Staff evaluation",C
+High School,"Introduction to Business Communication","What is strategic communication?","Planned messaging aligned with goals","Random emails","Personal texting","Unscheduled announcements",A
+High School,"Introduction to Business Communication","Which factor improves cross-generational communication?","Stereotyping age groups","Adapting communication style","Ignoring feedback","Using only one medium",B
+High School,"Introduction to Business Concepts","What is a business?","Organization that produces goods or services for profit","Government agency only","Charity organization","School district",A
+High School,"Introduction to Business Concepts","What is a good?","Intangible service","Tangible product you can touch","Tax payment","Digital subscription",B
+High School,"Introduction to Business Concepts","What is a service?","Physical product","Government regulation","Intangible activity provided to customers","Inventory stock",C
+High School,"Introduction to Business Concepts","What is profit?","Total revenue minus total expenses","Total expenses minus revenue","Tax rate","Bank loan",A
+High School,"Introduction to Business Concepts","What is revenue?","Money earned from sales","Cost of production","Tax deduction","Loan interest",A
+High School,"Introduction to Business Concepts","Which business ownership has one owner?","Corporation","Partnership","Sole proprietorship","Franchise",C
+High School,"Introduction to Business Concepts","What is a partnership?","Business owned by one person","Business owned by two or more people","Government entity","Nonprofit organization",B
+High School,"Introduction to Business Concepts","Which ownership offers limited liability?","Sole proprietorship","General partnership","Corporation","Joint venture",C
+High School,"Introduction to Business Concepts","What is a franchise?","Independent startup","Government license","Right to use another company’s brand and system","Stock exchange",C
+High School,"Introduction to Business Concepts","What does marketing involve?","Production only","Promotion only","Buying raw materials","Identifying and satisfying customer needs",D
+High School,"Introduction to Business Concepts","What is supply?","Quantity consumers want","Quantity producers are willing to sell","Tax rate","Advertising budget",B
+High School,"Introduction to Business Concepts","What is demand?","Producer inventory","Consumer willingness and ability to buy","Import quota","Profit margin",B
+High School,"Introduction to Business Concepts","What is a target market?","Entire population","Specific group of potential customers","Company employees","Government agencies",B
+High School,"Introduction to Business Concepts","What is competition?","Cooperation among firms","Rivalry among businesses for customers","Government monopoly","Price control",B
+High School,"Introduction to Business Concepts","What is entrepreneurship?","Working for corporation","Starting and managing a business","Investing in bonds","Paying taxes",B
+High School,"Introduction to Business Concepts","What is a corporation?","Business with unlimited owner liability","Legal entity separate from owners","Government branch","Informal partnership",B
+High School,"Introduction to Business Concepts","What is a stakeholder?","Person or group affected by business","Only shareholders","Only customers","Only managers",A
+High School,"Introduction to Business Concepts","What is a mission statement?","Financial report","Company’s purpose and goals","Employee contract","Tax document",B
+High School,"Introduction to Business Concepts","What is supply and demand equilibrium?","When price ceiling applies","When quantity supplied equals quantity demanded","When taxes increase","When surplus exists",B
+High School,"Introduction to Business Concepts","What is capital?","Financial resources used to start or run business","Number of employees","Office furniture only","Customer base",A
+High School,"Introduction to Business Concepts","What is break-even point?","Point where revenue equals expenses","Highest profit level","Lowest cost level","Tax threshold",A
+High School,"Introduction to Business Concepts","What is variable cost?","Cost that stays constant","Cost that changes with production level","One-time startup cost","Loan payment",B
+High School,"Introduction to Business Concepts","What is fixed cost?","Cost that changes with output","Cost that remains constant regardless of output","Sales revenue","Marketing expense",B
+High School,"Introduction to Business Concepts","What is diversification?","Offering only one product","Expanding into different products or markets","Reducing staff","Closing locations",B
+High School,"Introduction to Business Concepts","What is market share?","Total industry revenue","Company’s portion of total sales in market","Total expenses","Employee count",B
+High School,"Introduction to Business Concepts","What is SWOT analysis?","Strategic review of strengths weaknesses opportunities threats","Tax audit","Customer survey only","Production plan",A
+High School,"Introduction to Business Concepts","What is outsourcing?","Hiring internal staff","Contracting external provider for services","Increasing prices","Reducing inventory",B
+High School,"Introduction to Business Concepts","What is e-commerce?","Selling goods online","Physical retail only","Government regulation","Manual accounting",A
+High School,"Introduction to Business Concepts","What is supply chain?","Process of producing and delivering product","Advertising strategy","Tax system","Employee training",A
+High School,"Introduction to Business Concepts","What is brand equity?","Value derived from consumer perception of brand","Total inventory cost","Employee wages","Tax savings",A
+High School,"Introduction to Business Concepts","What is economies of scale?","Higher cost per unit","Lower cost per unit as production increases","Fixed tax rate","Market monopoly",B
+High School,"Introduction to Business Concepts","What is corporate social responsibility (CSR)?","Maximizing profit only","Ethical responsibility toward society and environment","Government mandate only","Employee union contract",B
+High School,"Introduction to Business Concepts","What is liquidity?","Ability to convert assets to cash quickly","Total profit margin","Debt ratio","Employee retention rate",A
+High School,"Introduction to Business Concepts","What is vertical integration?","Expanding across same production level","Controlling multiple stages of production","Reducing product lines","Increasing prices",B
+High School,"Introduction to Business Concepts","What is horizontal integration?","Acquiring competitors at same production stage","Buying suppliers","Opening franchise","Increasing wages",A
+High School,"Introduction to Business Concepts","What is risk management?","Ignoring uncertainty","Identifying and mitigating business risks","Reducing marketing","Increasing debt",B
+High School,"Introduction to Business Concepts","What is a merger?","One company buying another entirely","Two companies combining into one","Opening new branch","Expanding product line",B
+High School,"Introduction to Business Concepts","What is acquisition?","Joint venture agreement","One company purchasing another","Market research","Employee training",B
+High School,"Introduction to Business Concepts","What is competitive advantage?","Unique strength allowing business to outperform rivals","High taxes","Large workforce only","Government subsidy",A
+High School,"Introduction to Business Concepts","What is a value proposition?","Statement of unique benefit offered to customers","Internal memo","Expense report","Tax document",A
+High School,"Introduction to Business Concepts","What is working capital?","Current assets minus current liabilities","Total debt only","Long-term investments","Annual profit",A
+High School,"Introduction to Business Concepts","What is stakeholder theory?","Only shareholders matter","All stakeholders’ interests considered in decisions","Government controls business","Profit maximization only",B
+High School,"Introduction to Business Concepts","What is product differentiation?","Offering identical products","Creating distinct features to stand out","Lowering wages","Reducing marketing",B
+High School,"Introduction to Business Concepts","What is business cycle?","Stages of economic growth and decline","Daily operations schedule","Tax season timeline","Supply chain map",A
+High School,"Introduction to Business Concepts","What is leverage in business?","Using borrowed funds to increase potential return","Reducing workforce","Increasing marketing","Eliminating debt",A
+High School,"Introduction to Business Concepts","What is benchmarking?","Comparing performance to industry best practices","Reducing prices only","Increasing advertising","Tax filing process",A
+High School,"Introduction to Business Concepts","What is globalization?","Operating only locally","Integration of global markets and businesses","Government isolation policy","Reducing exports",B
+High School,"Introduction to Business Concepts","What is sustainability in business?","Short-term profit focus","Balancing economic environmental and social goals","Increasing debt","Ignoring regulations",B
+High School,"Introduction to Business Concepts","What is intellectual property?","Physical inventory","Legal rights protecting creations and inventions","Customer database","Marketing budget",B
+High School,"Introduction to Business Procedures","What is a business procedure?","Profit analysis method","Step-by-step method for completing tasks","Marketing strategy","Ownership structure",B
+High School,"Introduction to Business Procedures","What is the purpose of a filing system?","Increase sales revenue","Store inventory","Organize and retrieve documents efficiently","Reduce taxes",C
+High School,"Introduction to Business Procedures","Which document records incoming mail?","Invoice register","Payroll ledger","Expense sheet","Mail log",D
+High School,"Introduction to Business Procedures","What does accounts payable track?","Money owed to suppliers","Employee hours worked","Customer refunds","Inventory turnover",A
+High School,"Introduction to Business Procedures","What does accounts receivable track?","Loan payments","Money owed by customers","Utility expenses","Insurance claims",B
+High School,"Introduction to Business Procedures","What is an invoice?","Shipping manifest","Bill requesting payment","Employee contract","Marketing plan",B
+High School,"Introduction to Business Procedures","What is payroll?","Employee compensation process","Tax filing system","Inventory list","Purchase agreement",A
+High School,"Introduction to Business Procedures","What is a timesheet used for?","Tracking employee work hours","Recording company profits","Listing suppliers","Tracking inventory",A
+High School,"Introduction to Business Procedures","Which document outlines meeting topics?","Receipt","Contract","Agenda","Purchase order",C
+High School,"Introduction to Business Procedures","What is data backup?","Deleting duplicate files","Printing reports","Copying data for recovery","Encrypting emails",C
+High School,"Introduction to Business Procedures","What is confidentiality?","Open sharing of records","Protecting sensitive information","Public reporting","Advertising policy",B
+High School,"Introduction to Business Procedures","What is workflow?","Random task execution","Financial reporting system","Office layout design","Sequence of steps to complete a task",D
+High School,"Introduction to Business Procedures","Which system tracks stock levels?","Payroll system","CRM platform","Inventory management system","Email client",C
+High School,"Introduction to Business Procedures","What is record retention?","Deleting files immediately","Storing records for required time period","Posting data online","Transferring files daily",B
+High School,"Introduction to Business Procedures","What is a purchase order?","Request to buy goods or services","Receipt for payment","Tax statement","Employment agreement",A
+High School,"Introduction to Business Procedures","What does reconciliation involve?","Hiring staff","Comparing records for accuracy","Increasing marketing","Expanding operations",B
+High School,"Introduction to Business Procedures","Which device converts paper to digital format?","Printer","Monitor","Scanner","Router",C
+High School,"Introduction to Business Procedures","What is petty cash?","Long-term investment fund","Large capital account","Payroll reserve","Small cash fund for minor expenses",D
+High School,"Introduction to Business Procedures","What is customer service log used for?","Tracking client interactions","Managing taxes","Monitoring inventory","Advertising campaigns",A
+High School,"Introduction to Business Procedures","What is standard operating procedure (SOP)?","Profit forecast","Employee benefits plan","Documented process for consistent operations","Sales pitch",C
+High School,"Introduction to Business Procedures","What is segregation of duties?","One employee handles all tasks","Dividing responsibilities to reduce fraud risk","Reducing workforce size","Combining accounting roles",B
+High School,"Introduction to Business Procedures","What is document version control?","Deleting drafts permanently","Printing multiple copies","Tracking revisions of documents","Encrypting files",C
+High School,"Introduction to Business Procedures","What is procurement process?","Steps to acquire goods and services","Payroll calculation method","Tax compliance process","Customer onboarding",A
+High School,"Introduction to Business Procedures","What is internal control?","Marketing technique","System to safeguard assets and ensure accuracy","Sales training program","Inventory discount plan",B
+High School,"Introduction to Business Procedures","What is digital signature?","Handwritten signature only","Printed name","Electronic verification of identity","Watermark image",C
+High School,"Introduction to Business Procedures","What is compliance?","Adhering to laws and regulations","Increasing profit margin","Reducing staff","Expanding operations",A
+High School,"Introduction to Business Procedures","What is accounting software used for?","Tracking financial transactions","Designing graphics","Editing videos","Managing social media",A
+High School,"Introduction to Business Procedures","What is electronic filing system?","Paper-only archive","Digital document storage and retrieval","Voice recording system","Postal tracking service",B
+High School,"Introduction to Business Procedures","What is audit trail?","Record of transaction history and changes","Marketing plan","Payroll ledger summary","Customer database",A
+High School,"Introduction to Business Procedures","What is data validation?","Deleting errors manually","Automatic checks to ensure data accuracy","Increasing file size","Encrypting folders",B
+High School,"Introduction to Business Procedures","What is data encryption?","Deleting information","Compressing files","Organizing folders","Converting data into secure code",D
+High School,"Introduction to Business Procedures","What is document management system (DMS)?","Inventory tracking tool","Payroll application","Software to store and track documents","Customer support portal",C
+High School,"Introduction to Business Procedures","What is ERP system?","Enterprise Resource Planning software","Expense reporting form","Email server platform","Recruitment database",A
+High School,"Introduction to Business Procedures","What is business continuity planning?","Plan to maintain operations during disruptions","Sales forecast method","Marketing roadmap","Inventory control sheet",A
+High School,"Introduction to Business Procedures","What is KPI?","Knowledge process index","Key performance indicator","Kernel process integration","Key payroll information",B
+High School,"Introduction to Business Procedures","What is data governance?","Deleting outdated records","Managing data availability usability and security","Increasing server storage","Designing websites",B
+High School,"Introduction to Business Procedures","What is approval workflow?","Random authorization","Immediate payment release","Defined review and approval path for tasks","Manual signature only",C
+High School,"Introduction to Business Procedures","What is quality control?","Advertising review","Ensuring standards are met in processes","Tax compliance review","Sales projection",B
+High School,"Introduction to Business Procedures","What is risk assessment?","Identifying potential operational risks","Increasing exposure to uncertainty","Ignoring threats","Eliminating procedures",A
+High School,"Introduction to Business Procedures","What is vendor management?","Managing supplier relationships","Recruiting employees","Reducing payroll","Marketing expansion",A
+High School,"Introduction to Business Procedures","What is automation in procedures?","Manual repetition of tasks","Using technology to perform tasks automatically","Reducing compliance standards","Increasing paperwork",B
+High School,"Introduction to Business Procedures","What is operational efficiency?","Increasing costs","Optimizing processes to reduce waste and cost","Reducing technology use","Expanding departments",B
+High School,"Introduction to Business Procedures","What is data lifecycle management?","Employee onboarding process","Customer loyalty program","Managing data from creation to disposal","Inventory restocking cycle",C
+High School,"Introduction to Business Procedures","What is compliance audit?","Sales performance review","Evaluation of adherence to policies and laws","Customer feedback survey","Marketing analysis",B
+High School,"Introduction to Business Procedures","What is document indexing?","Deleting files","Assigning identifiers for easy retrieval","Printing copies","Encrypting passwords",B
+High School,"Introduction to Business Procedures","What is risk mitigation?","Increasing exposure to risk","Actions taken to reduce risk impact","Eliminating policies","Expanding operations",B
+High School,"Introduction to Business Procedures","What is confidentiality agreement?","Payroll statement","Tax return form","Contract protecting sensitive information","Advertising contract",C
+High School,"Introduction to Business Procedures","What is change management?","Process for managing organizational changes","Inventory adjustment system","Sales tracking tool","Email filtering system",A
+High School,"Introduction to Business Procedures","What is information security policy?","Guidelines for protecting company data","Marketing strategy plan","Recruitment framework","Profit allocation model",A
+High School,"Introduction to Business Procedures","What is benchmarking?","Comparing performance to industry standards","Reducing employee hours","Increasing file storage","Changing leadership",D
+High School,"Internation Business","What is international business?","Trade within one country","Business between firms in different countries","Local marketing only","Government spending",B
+High School,"Internation Business","What is exporting?","Selling goods to foreign markets","Buying foreign goods","Domestic shipping","Import restriction",A
+High School,"Internation Business","What is importing?","Selling abroad","Buying goods from another country","Opening foreign office","Foreign aid",B
+High School,"Internation Business","What is a tariff?","Import subsidy","Trade agreement","Tax on imported goods","Shipping fee",C
+High School,"Internation Business","What is an exchange rate?","Price of one currency in terms of another","Tax rate","Import limit","Trade quota",A
+High School,"Internation Business","What is globalization?","Isolation of markets","Integration of world economies","Local sourcing only","Nationalization",B
+High School,"Internation Business","What is a quota?","Limit on quantity of goods traded","Import tax","Export subsidy","Trade surplus",A
+High School,"Internation Business","What is a multinational corporation?","Government agency","Nonprofit organization","Company operating in multiple countries","Local partnership",C
+High School,"Internation Business","What is an embargo?","Trade agreement","Import license","Export subsidy","Official ban on trade",D
+High School,"Internation Business","What is foreign direct investment?","Direct ownership in foreign business operations","Short-term loan","Import tax payment","Currency exchange",A
+High School,"Internation Business","What is currency appreciation?","Decrease in currency value","Increase in currency value","Stable exchange rate","Trade imbalance",B
+High School,"Internation Business","What is a trade surplus?","Imports exceed exports","Exports exceed imports","Equal trade","High inflation",B
+High School,"Internation Business","What is outsourcing internationally?","Contracting foreign firm for services","Opening new branch","Selling exports","Paying tariff",A
+High School,"Internation Business","What is balance of trade?","Government budget total","Difference between exports and imports","Total GDP","Foreign reserves",B
+High School,"Internation Business","What is licensing?","Selling company ownership","Granting foreign rights to use IP","Importing raw materials","Setting tariffs",B
+High School,"Internation Business","What is a trade agreement?","Treaty reducing trade barriers between countries","Import tax","Export quota","Subsidy",D
+High School,"Internation Business","What is protectionism?","Policy restricting imports to protect domestic industries","Free trade promotion","Foreign aid program","Trade expansion",A
+High School,"Internation Business","What is a joint venture?","One company buys another","Two firms create shared business entity","Import restriction","Government takeover",B
+High School,"Internation Business","What is a free trade zone?","Area with reduced trade barriers","High tariff region","Import ban area","Closed economy",A
+High School,"Internation Business","What is cultural adaptation?","Standardizing globally","Adjusting to local customs and preferences","Reducing workforce","Closing branches",B
+High School,"Internation Business","What is comparative advantage?","Ability to produce at lower opportunity cost","Higher production volume","Import restriction","Trade embargo",A
+High School,"Internation Business","What is currency depreciation?","Increase in currency value","Decrease in currency value","Stable exchange rate","Trade quota",B
+High School,"Internation Business","What is the WTO?","World Tax Organization","World Trade Organization","Western Trade Office","World Tariff Order",B
+High School,"Internation Business","What is hedging?","Reducing exchange rate risk","Increasing tariffs","Expanding exports","Limiting imports",A
+High School,"Internation Business","What is a trade deficit?","Exports exceed imports","Imports exceed exports","Equal trade balance","Trade surplus",B
+High School,"Internation Business","What is dumping?","Selling goods abroad below fair value","Import quota","Export subsidy","Foreign aid",A
+High School,"Internation Business","What is political risk?","Risk of government instability affecting business","Exchange fluctuation","Transport delay","Inventory loss",A
+High School,"Internation Business","What is transfer pricing?","Pricing between subsidiaries of same firm","Setting retail prices","Tax refund method","Shipping fee",A
+High School,"Internation Business","What is localization strategy?","Uniform global product","Adapting product to local markets","Reducing exports","Centralized production",B
+High School,"Internation Business","What is global standardization?","Adapting to each country uniquely","Using uniform products worldwide","Closing foreign offices","Import substitution",B
+High School,"Internation Business","What is absolute advantage?","Ability to produce more efficiently than another country","Lower opportunity cost only","Trade surplus","Import quota",A
+High School,"Internation Business","What is sovereign risk?","Risk foreign government defaults on obligations","Exchange fluctuation","Transport cost risk","Competition risk",A
+High School,"Internation Business","What is tariff escalation?","Higher tariffs on processed goods than raw materials","Flat tariff rate","Export subsidy","Import quota",A
+High School,"Internation Business","What is a trade bloc?","Group of countries with trade agreements","Single corporation","Import tax system","Stock exchange",A
+High School,"Internation Business","What is countertrade?","Barter-based international trade","Online banking","Foreign loan","Joint venture",A
+High School,"Internation Business","What is repatriation of profits?","Returning foreign earnings to home country","Reinvesting abroad permanently","Paying foreign taxes only","Exporting goods",A
+High School,"Internation Business","What is currency risk?","Risk from exchange rate changes","Political instability","Market competition","Product defect",A
+High School,"Internation Business","What is strategic alliance?","Cooperative agreement between firms in different countries","Hostile takeover","Import quota","Embargo",A
+High School,"Internation Business","What is an emerging market?","Developing country with growth potential","Closed economy","High-income nation","Trade surplus country",A
+High School,"Internation Business","What is global supply chain?","Worldwide network of production and distribution","Local distribution system","Domestic trade policy","Regional tariff",A
+High School,"Internation Business","What is trade liberalization?","Reducing trade barriers to encourage exchange","Increasing tariffs","Imposing quotas","Closing borders",A
+High School,"Internation Business","What is economic sanction?","Government restriction on trade for political reasons","Tax incentive","Trade surplus","Foreign investment",A
+High School,"Internation Business","What is exchange rate volatility?","Fluctuation in currency value over time","Stable currency value","Fixed peg system","High inflation",A
+High School,"Internation Business","What is offshoring?","Relocating business processes to another country","Importing goods only","Foreign tourism","Domestic outsourcing",A
+High School,"Internation Business","What is purchasing power parity?","Theory that exchange rates adjust to equalize purchasing power","Trade agreement","Import quota","Export tax",A
+High School,"Internation Business","What is greenfield investment?","Building new operations in foreign country","Buying existing firm","Licensing agreement","Joint venture",A
+High School,"Internation Business","What is tariff quota?","Combination of quota and tariff system","Flat tariff only","Embargo","Export subsidy",A
+High School,"Internation Business","What is global integration?","Coordinating operations across countries","Local adaptation only","Closing branches","Reducing trade",A
+High School,"Introduction to Marketing Concepts","What is marketing?","Creating value and satisfying customer needs","Accounting for sales","Managing payroll","Producing goods only",A
+High School,"Introduction to Marketing Concepts","What is a target market?","Entire population","A specific group of potential customers","Company employees","Government agencies",B
+High School,"Introduction to Marketing Concepts","What is a need?","Desire for luxury","A marketing campaign","Basic human requirement such as food or shelter","Advertising strategy",C
+High School,"Introduction to Marketing Concepts","What is a want?","Basic survival item","Government program","Product inventory","Form a need takes when shaped by culture",D
+High School,"Introduction to Marketing Concepts","What is a product?","Anything offered to satisfy a need or want","Only physical goods","Only services","Only digital items",A
+High School,"Introduction to Marketing Concepts","What is a service?","Tangible product","Intangible activity provided to customers","Advertising method","Distribution channel",B
+High School,"Introduction to Marketing Concepts","What is branding?","Setting prices","Managing inventory","Creating a distinct identity for a product","Offering discounts",C
+High School,"Introduction to Marketing Concepts","What is a logo?","Company mission","Marketing plan","Sales report","Symbol representing a brand",D
+High School,"Introduction to Marketing Concepts","What is the marketing mix?","Four Ps: product price place promotion","Financial statements","Human resource policies","Supply chain stages",A
+High School,"Introduction to Marketing Concepts","What is promotion?","Setting distribution routes","Communicating product value to customers","Manufacturing goods","Reducing inventory",B
+High School,"Introduction to Marketing Concepts","What is price?","Amount charged for a product","Cost of production","Total revenue","Marketing research",C
+High School,"Introduction to Marketing Concepts","What is place in marketing?","Product design","Advertising message","Brand identity","Distribution methods",D
+High School,"Introduction to Marketing Concepts","What is market research?","Collecting and analyzing data about consumers","Producing goods","Setting salaries","Shipping orders",A
+High School,"Introduction to Marketing Concepts","What is advertising?","Personal selling","Public relations","Mass communication to promote product","Market segmentation",C
+High School,"Introduction to Marketing Concepts","What is a brand?","Company building","Name term or symbol identifying product","Sales territory","Tax document",B
+High School,"Introduction to Marketing Concepts","What is customer satisfaction?","Profit margin","Meeting or exceeding customer expectations","Cost reduction plan","Supply chain efficiency",B
+High School,"Introduction to Marketing Concepts","What is segmentation?","Dividing market into distinct groups","Hiring employees","Reducing prices","Closing stores",A
+High School,"Introduction to Marketing Concepts","What is demographic segmentation?","Grouping by lifestyle","Grouping by income age gender","Grouping by usage rate","Grouping by location",B
+High School,"Introduction to Marketing Concepts","What is geographic segmentation?","Grouping by personality","Grouping by benefits sought","Grouping by location","Grouping by loyalty",C
+High School,"Introduction to Marketing Concepts","What is psychographic segmentation?","Grouping by region","Grouping by age","Grouping by usage","Grouping by lifestyle and values",D
+High School,"Introduction to Marketing Concepts","What is positioning?","Designing company website","Creating image in consumer’s mind relative to competitors","Setting payroll schedule","Reducing costs",B
+High School,"Introduction to Marketing Concepts","What is product life cycle?","Stages product goes through from introduction to decline","Inventory tracking system","Accounting method","Supply chain strategy",A
+High School,"Introduction to Marketing Concepts","What is break-even analysis?","Calculating when revenue equals cost","Determining brand equity","Setting quotas","Forecasting weather",A
+High School,"Introduction to Marketing Concepts","What is market share?","Total industry profit","Company’s percentage of total market sales","Advertising budget","Customer satisfaction rate",B
+High School,"Introduction to Marketing Concepts","What is elasticity of demand?","Inventory flexibility","Price sensitivity of demand","Distribution efficiency","Brand loyalty",C
+High School,"Introduction to Marketing Concepts","What is competitive advantage?","Government support","Unique strength over competitors","Employee training plan","Cost of goods sold",B
+High School,"Introduction to Marketing Concepts","What is a SWOT analysis?","Strategic evaluation of strengths weaknesses opportunities threats","Payroll audit","Inventory system","Advertising report",A
+High School,"Introduction to Marketing Concepts","What is a value proposition?","Tax policy","Company logo","Employee contract","Statement of customer benefit",D
+High School,"Introduction to Marketing Concepts","What is digital marketing?","Traditional media only","Online promotion through digital channels","Direct mail only","Cold calling",B
+High School,"Introduction to Marketing Concepts","What is CRM?","Customer relationship management system","Cost reduction model","Creative retail method","Corporate risk measure",A
+High School,"Introduction to Marketing Concepts","What is differentiation?","Making product distinct from competitors","Lowering wages","Reducing marketing","Closing locations",A
+High School,"Introduction to Marketing Concepts","What is brand equity?","Value derived from consumer perception of brand","Inventory turnover rate","Distribution margin","Shipping efficiency",A
+High School,"Introduction to Marketing Concepts","What is integrated marketing communications?","Coordinated promotional strategy across channels","Payroll integration","Supply integration","Product bundling",A
+High School,"Introduction to Marketing Concepts","What is influencer marketing?","Using individuals with online following to promote products","Mass TV advertising","Direct mail campaign","Trade show selling",A
+High School,"Introduction to Marketing Concepts","What is content marketing?","Creating valuable content to attract customers","Cold calling only","Price discounting","Inventory clearance",A
+High School,"Introduction to Marketing Concepts","What is B2B marketing?","Marketing between businesses","Marketing to consumers","Government sales","Nonprofit fundraising",A
+High School,"Introduction to Marketing Concepts","What is B2C marketing?","Marketing between businesses","Marketing to individual consumers","Import trading","Public policy",A
+High School,"Introduction to Marketing Concepts","What is market penetration strategy?","Increasing sales of existing products in existing markets","Entering new industries","Diversifying ownership","Reducing workforce",A
+High School,"Introduction to Marketing Concepts","What is product development strategy?","Creating new products for existing markets","Increasing price","Reducing inventory","Outsourcing production",A
+High School,"Introduction to Marketing Concepts","What is market development strategy?","Entering new markets with existing products","Reducing staff","Eliminating product lines","Changing logo",A
+High School,"Introduction to Marketing Concepts","What is diversification strategy?","Entering new markets with new products","Increasing sales price","Reducing distribution","Closing facilities",A
+High School,"Introduction to Marketing Concepts","What is viral marketing?","Encouraging rapid sharing of marketing message online","Television advertising only","Trade embargo","Warehouse expansion",A
+High School,"Introduction to Marketing Concepts","What is customer lifetime value?","Projected total revenue from a customer over time","Inventory replacement cost","Marketing expense ratio","Supply chain metric",A
+High School,"Introduction to Marketing Concepts","What is AIDA model?","Attention Interest Desire Action framework","Accounting integration data audit","Automated inventory distribution analysis","Advanced international demand algorithm",A
+High School,"Introduction to Marketing Concepts","What is push strategy?","Promoting product through distribution channels to retailers","Targeting end consumers directly","Reducing supply","Lowering wages",A
+High School,"Introduction to Marketing Concepts","What is pull strategy?","Encouraging consumers to demand product from retailers","Exporting goods","Increasing tariffs","Reducing production",A
+High School,"Introduction to Marketing Concepts","What is neuromarketing?","Applying neuroscience to understand consumer behavior","Supply chain automation","Tax forecasting","Inventory modeling",A
+High School,"Introduction to Marketing Concepts","What is omnichannel marketing?","Providing seamless customer experience across channels","Single store selling","Wholesale trading","Government contracting",A
+High School,"Introduction to Marketing Concepts","What is social media analytics?","Measuring performance of social campaigns","Inventory auditing","Tax compliance","Warehouse optimization",A
+High School,"Introduction to Marketing Strategies","What is a marketing strategy?","Daily sales activity","Inventory planning","A long-term plan to achieve marketing goals","Tax compliance system",C
+High School,"Introduction to Marketing Strategies","What is market segmentation?","Dividing a market into distinct customer groups","Combining all customers into one group","Reducing inventory","Setting payroll",A
+High School,"Introduction to Marketing Strategies","What is positioning?","Lowering prices permanently","Increasing production volume","Warehouse design","Creating a distinct image in consumers' minds",D
+High School,"Introduction to Marketing Strategies","What is targeting?","Mass distribution to everyone","Selecting specific market segments to serve","Eliminating competitors","Reducing workforce",B
+High School,"Introduction to Marketing Strategies","What is differentiation strategy?","Price matching competitors","Cost reduction focus","Offering unique attributes valued by customers","Closing product lines",C
+High School,"Introduction to Marketing Strategies","What is cost leadership strategy?","Becoming the lowest-cost producer in the industry","Premium luxury focus","Niche specialization","Product elimination",A
+High School,"Introduction to Marketing Strategies","What is a niche strategy?","Mass market coverage","Government contracting only","Export expansion only","Serving a small specialized segment",D
+High School,"Introduction to Marketing Strategies","What is branding strategy?","Inventory allocation","Managing brand identity and value","Production scheduling","Trade financing",B
+High School,"Introduction to Marketing Strategies","What is product positioning map used for?","Tracking payroll","Forecasting taxes","Comparing brands on key attributes visually","Measuring inventory turnover",C
+High School,"Introduction to Marketing Strategies","What is promotional strategy?","Plan for communicating value to customers","HR training plan","Cost accounting system","Distribution audit",A
+High School,"Introduction to Marketing Strategies","What is skimming pricing?","Low entry price for all customers","Flat pricing model","Cost-plus calculation","High initial price then gradual reduction",D
+High School,"Introduction to Marketing Strategies","What is penetration pricing?","Premium pricing","B","Low introductory price to gain market share","Seasonal discount",C
+High School,"Introduction to Marketing Strategies","What is distribution strategy?","How products reach customers","Setting wages","Reducing costs","Expanding factories",A
+High School,"Introduction to Marketing Strategies","What is growth strategy?","Plan to increase market presence or sales","Closing stores","Reducing advertising","Lowering wages",A
+High School,"Introduction to Marketing Strategies","What is repositioning?","Maintaining same image forever","Inventory shift only","Expanding workforce","Changing brand image in consumer perception",D
+High School,"Introduction to Marketing Strategies","What is value-based pricing?","Cost plus fixed margin","Price based on perceived customer value","Government-set pricing","Flat rate pricing",B
+High School,"Introduction to Marketing Strategies","What is product development strategy?","Reducing product features","Eliminating SKUs","Introducing new products to existing markets","Lowering brand equity",C
+High School,"Introduction to Marketing Strategies","What is market development strategy?","Entering new markets with existing products","Increasing payroll","Closing branches","Reducing R&D",A
+High School,"Introduction to Marketing Strategies","What is diversification strategy?","Expanding same product locally","Improving packaging only","Inventory reallocation","Entering new markets with new products",D
+High School,"Introduction to Marketing Strategies","What is branding equity strategy focused on?","Tax compliance","Building perceived value of brand","Warehouse expansion","Import substitution",B
+High School,"Introduction to Marketing Strategies","What is competitive positioning?","Reducing distribution costs","Expanding internationally","Establishing brand relative to competitors","Lowering wages",C
+High School,"Introduction to Marketing Strategies","What is push strategy?","Promoting product through intermediaries","Targeting end users only","Ignoring retailers","Closing supply chain",A
+High School,"Introduction to Marketing Strategies","What is pull strategy?","Eliminating promotion","Wholesale-only focus","Inventory dumping","Stimulating consumer demand to pull product",D
+High School,"Introduction to Marketing Strategies","What is channel management?","Managing distribution relationships","Cost accounting","Product manufacturing","HR planning",B
+High School,"Introduction to Marketing Strategies","What is blue ocean strategy?","Competing in saturated markets","Reducing price wars","Creating uncontested market space","Increasing tariffs",C
+High School,"Introduction to Marketing Strategies","What is portfolio strategy?","Managing multiple products as a group","Single product focus only","Closing divisions","Reducing variety",A
+High School,"Introduction to Marketing Strategies","What is market challenger strategy?","Following market leader passively","Reducing R&D","Inventory expansion","Aggressively attacking dominant competitor",D
+High School,"Introduction to Marketing Strategies","What is integrated marketing strategy?","Separate marketing efforts","Coordinated alignment of product price place promotion","Payroll integration","Trade compliance",B
+High School,"Introduction to Marketing Strategies","What is customer retention strategy?","Eliminating discounts","Reducing service costs","Maintaining long-term customer relationships","Mass advertising only",C
+High School,"Introduction to Marketing Strategies","What is competitive advantage in strategy?","Unique strength enabling superior performance","Lower wages only","Import licensing","Tax avoidance",A
+High School,"Introduction to Marketing Strategies","What is brand extension strategy?","Creating entirely new brand","Reducing SKUs","Using existing brand for new product","Closing facilities",D
+High School,"Introduction to Marketing Strategies","What is cost focus strategy?","Premium targeting only","Targeting niche with lowest cost structure","Mass production expansion","Inventory liquidation",B
+High School,"Introduction to Marketing Strategies","What is differentiation focus strategy?","Serving broad market cheaply","Closing segments","Targeting niche with unique offering","Eliminating branding",C
+High School,"Introduction to Marketing Strategies","What is omnichannel strategy?","Providing seamless customer experience across channels","Single channel focus only","Import strategy","Tax restructuring",A
+High School,"Introduction to Marketing Strategies","What is sustainability marketing strategy?","Greenwashing only","Cost reduction plan","Ignoring regulations","Integrating environmental and social goals",D
+High School,"Introduction to Marketing Strategies","What is global standardization strategy?","Adapting fully locally","Using uniform marketing approach worldwide","Reducing exports","Closing branches",B
+High School,"Introduction to Marketing Strategies","What is localization strategy?","Uniform branding everywhere","Mass pricing only","Adapting strategy to local markets","Inventory consolidation",C
+High School,"Introduction to Marketing Strategies","What is dynamic pricing strategy?","Adjusting prices based on demand and conditions","Flat pricing forever","Tax-based pricing","Payroll pricing",A
+High School,"Introduction to Marketing Strategies","What is market penetration growth?","Entering new industries","Acquiring unrelated firms","Import substitution","Increasing share in existing markets",D
+High School,"Introduction to Marketing Strategies","What is relationship marketing strategy?","Short-term transaction focus","Building long-term customer engagement","Reducing loyalty programs","Inventory focus",B
+High School,"Introduction to Marketing Strategies","What is content strategy?","Warehouse planning","HR restructuring","Planning and distributing valuable content","Tax accounting",C
+High School,"Introduction to Marketing Strategies","What is innovation strategy?","Investing in new ideas and technologies","Maintaining status quo","Reducing research","Lowering product quality",A
+High School,"Introduction to Marketing Strategies","What is strategic alliance in marketing?","Merging companies fully","Closing branches","Import quotas","Cooperation between firms for mutual benefit",D
+High School,"Introduction to Marketing Strategies","What is competitive response strategy?","Ignoring competitors","Planned reaction to competitor actions","Reducing marketing","Inventory dumping",B
+High School,"Introduction to Marketing Strategies","What is price elasticity strategy?","Ignoring demand sensitivity","Cost-based pricing only","Adjusting price based on demand responsiveness","Flat universal pricing",C
+High School,"Introduction to Marketing Strategies","What is brand revitalization strategy?","Eliminating brand","Reducing awareness","Increasing costs","Refreshing brand to regain market interest",D
+High School,"Introduction to Marketing Strategies","What is experiential marketing strategy?","Warehouse expansion","Cost auditing","Creating immersive customer experiences","Payroll reform",C
+High School,"Introduction to Marketing Strategies","What is data-driven marketing strategy?","Using analytics to guide decisions","Ignoring metrics","Reducing automation","Closing digital channels",A
+High School,"Introduction to Marketing Strategies","What is competitive defense strategy?","Attacking small firms","Monitoring and countering competitive threats","Price elimination","Inventory reduction",B
+High School,"Introduction to Marketing Strategies","What is value innovation strategy?","Competing only on cost","Premium luxury only","Simultaneously increasing value while reducing costs","Market withdrawal",C
+High School,"Introduction to FBLA","What does FBLA stand for?","Future Business Leaders Association","Future Business Learning Academy","Future Business Leaders of America","Federal Business Leadership Alliance",C
+High School,"Introduction to FBLA","In what year was FBLA founded?","1940","1937","1955","1962",A
+High School,"Introduction to FBLA","What is the national headquarters location of FBLA?","Chicago Illinois","New York New York","Los Angeles California","Reston Virginia",D
+High School,"Introduction to FBLA","Who are the primary members of FBLA?","College professors","High school students interested in business","Middle school teachers","Corporate executives",B
+High School,"Introduction to FBLA","What is the mission of FBLA?","Promote athletics","Raise political funds","Inspire and prepare students to become community-minded business leaders","Provide tax services",C
+High School,"Introduction to FBLA","What colors represent FBLA?","Blue and gold","Red and white","Green and silver","Black and orange",A
+High School,"Introduction to FBLA","What is the FBLA motto?","Success through effort","Lead with confidence","Excellence in leadership","Service Education and Progress",D
+High School,"Introduction to FBLA","What is the official FBLA publication?","The Wall Street Journal","Tomorrow’s Business Leader","USA Today","Forbes Magazine",B
+High School,"Introduction to FBLA","What does the FBLA crest symbolize overall?","Corporate profits only","Government authority","Leadership and achievement in business","Political influence",C
+High School,"Introduction to FBLA","What month is National FBLA Week typically celebrated?","February","March","October","December",A
+High School,"Introduction to FBLA","What is the highest award level in the Business Achievement Awards?","Contributor","Leader","Advocate","America Level",D
+High School,"Introduction to FBLA","What is a local FBLA chapter?","National headquarters","A school-based student organization unit","A government agency","A private company",B
+High School,"Introduction to FBLA","What is the purpose of competitive events?","Social entertainment only","Fundraising exclusively","Test business knowledge and skills","Political debate",C
+High School,"Introduction to FBLA","Who can serve as a chapter adviser?","School business teacher","Any student","Parent volunteer only","Corporate sponsor",A
+High School,"Introduction to FBLA","What is parliamentary procedure used for in meetings?","Advertising campaigns","Financial accounting","Negotiating contracts","Conducting orderly meetings",D
+High School,"Introduction to FBLA","What is the role of the chapter president?","Handle bookkeeping only","Lead meetings and represent chapter","Design logos","Manage school cafeteria",B
+High School,"Introduction to FBLA","What does the FBLA pledge emphasize?","Personal wealth","Political ambition","Duties and responsibilities as a student leader","Athletic success",C
+High School,"Introduction to FBLA","What level comes after local in FBLA structure?","State","National","Regional","International",A
+High School,"Introduction to FBLA","What is FBLA’s focus area?","Sports management","Leadership and business skills","Music performance","Engineering research",B
+High School,"Introduction to FBLA","What is an adviser’s main responsibility?","Compete in events","Guide and mentor chapter members","Manage school finances","Approve national laws",B
+High School,"Introduction to FBLA","What is the purpose of a chapter Program of Work?","Track attendance only","Outline chapter goals and activities","Replace bylaws","Fundraise nationally",C
+High School,"Introduction to FBLA","What are bylaws?","Advertising materials","Official rules governing organization","Tax documents","Meeting minutes",B
+High School,"Introduction to FBLA","What is a quorum?","Minimum members required to conduct business","Fundraising goal","Competitive event score","Officer title",A
+High School,"Introduction to FBLA","What is a motion in meetings?","Annual report","Travel arrangement","Proposal for action","Membership list",D
+High School,"Introduction to FBLA","What is the role of the treasurer?","Lead ceremonies","Keep financial records","Write newsletters","Organize competitions",B
+High School,"Introduction to FBLA","What is networking in FBLA context?","Computer infrastructure only","Socializing at parties","Building professional relationships","Recruiting athletes",C
+High School,"Introduction to FBLA","What is leadership development?","Ignoring teamwork","Developing skills to guide others","Financial auditing","Marketing campaign",B
+High School,"Introduction to FBLA","What is a state officer?","Local adviser","National board member","Student elected to represent state","School principal",C
+High School,"Introduction to FBLA","What is community service in FBLA?","Fundraising only","Serving community through volunteer efforts","Private tutoring","Corporate internship",B
+High School,"Introduction to FBLA","What is the National Leadership Conference?","Local chapter meeting","Annual national competition and leadership event","School assembly","Online webinar",B
+High School,"Introduction to FBLA","What is advocacy in FBLA?","Promoting and supporting the organization’s mission","Financial reporting","Tax compliance","Inventory control",A
+High School,"Introduction to FBLA","What is ethical leadership?","Ignoring rules","Leading with integrity and responsibility","Maximizing profit only","Political campaigning",B
+High School,"Introduction to FBLA","What is professionalism?","Casual conduct","Respectful responsible behavior in business settings","Personal opinion sharing","Social media posting",B
+High School,"Introduction to FBLA","What is career readiness?","Preparation for workforce success","Graduation ceremony","Exam grading","College recruitment",A
+High School,"Introduction to FBLA","What is strategic planning?","Setting long-term goals and action steps","Daily attendance tracking","Short-term scheduling only","Event decoration",A
+High School,"Introduction to FBLA","What is mentorship?","Guidance provided by experienced individual","Competition scoring","Policy enforcement","Advertising strategy",A
+High School,"Introduction to FBLA","What is financial literacy?","Understanding money management concepts","Event coordination","Marketing research","Speech writing",A
+High School,"Introduction to FBLA","What is public speaking skill?","Effective oral communication ability","Written grammar only","Typing speed","Spreadsheet creation",A
+High School,"Introduction to FBLA","What is civic responsibility?","Active participation in community and society","Private profit seeking","Competitive ranking","Personal branding",A
+High School,"Introduction to FBLA","What is collaboration?","Working effectively with others toward shared goals","Independent work only","Ignoring feedback","Competitive isolation",A
+High School,"Introduction to FBLA","What is integrity?","Adhering to moral and ethical principles","Maximizing advantage","Rule avoidance","Political influence",A
+High School,"Introduction to FBLA","What is time management?","Planning and controlling how time is spent","Reducing meetings","Ignoring deadlines","Multitasking excessively",A
+High School,"Introduction to FBLA","What is critical thinking?","Analyzing information objectively","Memorizing facts only","Following orders blindly","Guessing answers",A
+High School,"Introduction to FBLA","What is goal setting?","Defining measurable objectives","Attending meetings","Following trends","Copying competitors",A
+High School,"Introduction to FBLA","What is professionalism in dress?","Wearing appropriate business attire","Following fashion trends only","Casual clothing always","Costume attire",A
+High School,"Introduction to FBLA","What is servant leadership?","Leading by serving others’ needs","Commanding authority only","Delegating everything","Ignoring team input",A
+High School,"Introduction to FBLA","What is accountability?","Accepting responsibility for actions","Blaming others","Ignoring outcomes","Transferring duties",A
+High School,"Introduction to FBLA","What is initiative?","Taking proactive action without being told","Waiting for instructions","Avoiding responsibility","Delegating tasks",A
+High School,"Introduction to FBLA","What is adaptability?","Adjusting effectively to change","Maintaining rigid structure","Avoiding innovation","Rejecting feedback",A
+High School,"Introduction to FBLA","What is vision in leadership?","Clear picture of future direction","Daily task list","Financial statement","Attendance record",A
+High School,"Introduction to Information Technology","What does IT stand for?","Internet Tools","Information Training","Information Technology","Integrated Telecommunications",C
+High School,"Introduction to Information Technology","What is hardware?","Physical components of a computer","Software programs","Cloud storage services","Digital files",A
+High School,"Introduction to Information Technology","What is software?","Keyboard and mouse","Monitor display","Computer case","Programs and applications",D
+High School,"Introduction to Information Technology","What is an operating system?","Word processor","A program that manages computer hardware and software","Spreadsheet tool","Web browser",B
+High School,"Introduction to Information Technology","What is RAM?","Permanent storage device","Input device","Temporary memory used for active processes","Network cable",C
+High School,"Introduction to Information Technology","What is a CPU?","Central processing unit","Computer power utility","Cloud processing utility","Control program unit",A
+High School,"Introduction to Information Technology","What is a firewall?","Physical wall around server","A type of printer","Spreadsheet formula","Security system that filters network traffic",D
+High School,"Introduction to Information Technology","What is a browser?","Photo editing software","Program used to access websites","Antivirus tool","Operating system",B
+High School,"Introduction to Information Technology","What is cloud computing?","Local server storage","External hard drive use","Using remote servers over the internet","Desktop-only computing",C
+High School,"Introduction to Information Technology","What is a file extension?","Letters at end of filename indicating type","Folder name","Password","IP address",A
+High School,"Introduction to Information Technology","What is a virus in computing?","Hardware malfunction","Update patch","Search engine","Malicious software that spreads",D
+High School,"Introduction to Information Technology","What is phishing?","Online gaming","Attempt to trick users into revealing information","File compression","Data backup",B
+High School,"Introduction to Information Technology","What is a network?","Single computer","Software package","Connected computers sharing resources","Printer cable",C
+High School,"Introduction to Information Technology","What is input device?","Device used to enter data into computer","Output speaker","Storage disk","Power supply",A
+High School,"Introduction to Information Technology","What is output device?","Keyboard","Mouse","Scanner","Device that displays or produces results",D
+High School,"Introduction to Information Technology","What is an IP address?","Internet payment method","Unique identifier for device on network","Software license","Email attachment",B
+High School,"Introduction to Information Technology","What is cybersecurity?","Physical security only","Printer protection","Protection of systems and data from digital attacks","Backup routine",C
+High School,"Introduction to Information Technology","What is storage device?","Device used to save data permanently","Keyboard","Router","Monitor",A
+High School,"Introduction to Information Technology","What is encryption?","Deleting files","Backing up data","Updating software","Converting data into coded form",D
+High School,"Introduction to Information Technology","What is database?","Graphic image","A structured collection of data","Computer monitor","Antivirus software",B
+High School,"Introduction to Information Technology","What is bandwidth?","Amount of data that can be transmitted over network","Computer brand name","Software license type","Power supply rating",C
+High School,"Introduction to Information Technology","What is HTML?","HyperText Markup Language","High Transfer Machine Logic","Home Tool Management Layer","Hardware Transfer Mode",A
+High School,"Introduction to Information Technology","What is malware?","Hardware failure","Spreadsheet formula","Operating system","Software designed to damage systems",D
+High School,"Introduction to Information Technology","What is spreadsheet software used for?","Graphic design","Organizing and calculating data","Video editing","Programming games",B
+High School,"Introduction to Information Technology","What is binary system?","Base-8 numbering system","Decimal system only","Base-2 numbering system","Alphabetic coding",C
+High School,"Introduction to Information Technology","What is URL?","Universal Resource Locator","User Reference Login","Unified Routing Line","Unique Response Layer",A
+High School,"Introduction to Information Technology","What is two-factor authentication?","Single password login","Backup storage method","Automatic updates","Security method requiring two verification forms",D
+High School,"Introduction to Information Technology","What is open-source software?","Software with publicly accessible source code","Free trial software only","Licensed closed code","Government-only software",B
+High School,"Introduction to Information Technology","What is data backup?","Deleting duplicates","Cloud-only storage","Copying data for recovery","Formatting disk",C
+High School,"Introduction to Information Technology","What is algorithm?","Step-by-step problem-solving process","Antivirus program","Email service","Computer hardware",A
+High School,"Introduction to Information Technology","What is a server?","Device providing services to other computers","Personal laptop only","Wireless mouse","Software license",D
+High School,"Introduction to Information Technology","What is virtualization?","Physical server expansion","Creating virtual versions of hardware/software","Deleting programs","Installing printer",B
+High School,"Introduction to Information Technology","What is API?","Application Programming Interface","Advanced Processing Integration","Automated Program Input","Active Protection Interface",C
+High School,"Introduction to Information Technology","What is artificial intelligence?","Machine ability to simulate human intelligence","Hardware repair","Manual data entry","Spreadsheet formula",A
+High School,"Introduction to Information Technology","What is blockchain?","Spreadsheet system","Cloud database","Web browser type","Distributed ledger technology",D
+High School,"Introduction to Information Technology","What is SaaS?","Software as a Service","Storage as a Service","Security as a Service","System as a Script",A
+High School,"Introduction to Information Technology","What is IoT?","Internal operating tool","Internet of Things","Input output terminal","Integrated online tracking",C
+High School,"Introduction to Information Technology","What is data analytics?","Analyzing raw data for insights","Deleting old files","Installing hardware","Running antivirus",A
+High School,"Introduction to Information Technology","What is cybersecurity policy?","Physical door lock","Formal guidelines for protecting digital assets","Printer manual","Social media rules",B
+High School,"Introduction to Information Technology","What is ransomware?","Free antivirus software","Malicious software demanding payment","Operating system update","Firewall patch",B
+High School,"Introduction to Information Technology","What is machine learning?","Type of hardware","Manual coding only","Subset of AI where systems learn from data","Spreadsheet macro",C
+High School,"Introduction to Information Technology","What is SQL?","Structured Query Language","Simple Queue Logic","System Quality Level","Secure Quick Login",A
+High School,"Introduction to Information Technology","What is denial-of-service attack?","Increasing bandwidth","Improving performance","Updating firmware","Overloading system to disrupt service",D
+High School,"Introduction to Information Technology","What is encryption key?","Password only","Tool for decoding/encoding encrypted data","Database table","Graphic interface",B
+High School,"Introduction to Information Technology","What is data integrity?","Ensuring accuracy and consistency of data","Deleting duplicates","Compressing files","Reducing storage",C
+High School,"Introduction to Information Technology","What is cloud storage?","Remote data storage accessed via internet","USB drive only","Local-only disk","Printer memory",A
+High School,"Introduction to Information Technology","What is penetration testing?","Testing physical doors","Evaluating system security vulnerabilities","Running antivirus","Updating password",D
+High School,"Introduction to Information Technology","What is multi-factor authentication?","Two-step login method","Single password","Email login only","Hardware reboot",B
+High School,"Introduction to Information Technology","What is data governance?","Managing availability usability and security of data","Deleting files","Installing updates","Repairing hardware",C
+High School,"Introduction to Information Technology","What is edge computing?","Processing data near source of generation","Cloud-only processing","Manual processing","Central-only servers",A
+`;
 
 export const getQuestionsForEvent = (eventName: string, division: string, limit: number = 5): QuestionData[] => {
   const lines = RAW_CSV.split('\n');
