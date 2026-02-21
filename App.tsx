@@ -76,7 +76,7 @@ const App: React.FC = () => {
         setIsLoggedIn(true);
         // Only auto-switch to portfolio if on a prephub page (not NONE)
         const currentOrgType = getPathFromLocation();
-        if (currentOrgType === '/fblaprephub' || currentOrgType === '/decaprephub') {
+        if (currentOrgType === '/fblaprephub') {
           setView('portfolio');
         }
       }
@@ -179,7 +179,7 @@ const App: React.FC = () => {
   const brandText = isFBLA ? 'text-rh-yellow' : isDECA ? 'text-rh-cyan' : 'text-rh-green';
 
   return (
-    <div className={`min-h-screen bg-rh-black text-white selection:${isFBLA ? 'bg-rh-green' : isDECA ? 'bg-rh-cyan' : 'bg-rh-yellow'} selection:text-black font-sans`}>
+    <div className={`min-h-screen bg-rh-black text-white selection:${isFBLA ? 'bg-rh-yellow' : isDECA ? 'bg-rh-cyan' : 'bg-rh-green'} selection:text-black font-sans`}>
       <nav className="px-6 py-4 flex justify-between items-center bg-black/50 backdrop-blur-md sticky top-0 z-[100]">
         <div className="flex flex-col items-start">
           <div

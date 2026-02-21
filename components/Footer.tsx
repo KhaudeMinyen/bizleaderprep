@@ -7,8 +7,8 @@ interface FooterProps {
 }
 
 const Footer: React.FC<FooterProps> = ({ orgType = 'NONE' }) => {
-  const brandColorClass = orgType === 'FBLA' ? 'bg-rh-green' : orgType === 'DECA' ? 'bg-rh-cyan' : 'bg-rh-yellow';
-  const brandTextClass = orgType === 'FBLA' ? 'text-rh-green' : orgType === 'DECA' ? 'text-rh-cyan' : 'text-rh-yellow';
+  const brandColorClass = orgType === 'FBLA' ? 'bg-rh-yellow' : orgType === 'DECA' ? 'bg-rh-cyan' : 'bg-rh-green';
+  const brandTextClass = orgType === 'FBLA' ? 'text-rh-yellow' : orgType === 'DECA' ? 'text-rh-cyan' : 'text-rh-green';
 
   return (
     <footer className="bg-black border-t border-white/5 py-16">
@@ -26,14 +26,14 @@ const Footer: React.FC<FooterProps> = ({ orgType = 'NONE' }) => {
               <span className={`text-[9px] font-black ${brandTextClass} uppercase tracking-widest`}>Systems Live</span>
             </div>
           </div>
-          
+
           <div className="flex space-x-10 text-[10px] font-bold text-rh-gray uppercase tracking-[0.2em]">
-            <a href="#" className="hover:text-white transition-colors">Privacy</a>
+            <a href="/privacy-policy.html" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Privacy</a>
             <a href="#" className="hover:text-white transition-colors">Terms</a>
             <a href="#" className="hover:text-white transition-colors">Support</a>
             <a href="#" className="hover:text-white transition-colors">Events</a>
           </div>
-          
+
           <div className="text-rh-gray text-[10px] font-medium text-right">
             <p>&copy; {new Date().getFullYear()} BIZLEADERPREP.</p>
             <p className="mt-1 opacity-50 uppercase tracking-tighter">Powered by Gemini 3 Flash</p>

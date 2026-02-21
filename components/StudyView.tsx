@@ -56,15 +56,12 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
     const fetchCards = async () => {
       setIsLoading(true);
       try {
-        const isUnlocked = isLoggedIn && UNLOCKED_EVENTS.includes(eventName);
-        const fetchLimit = isUnlocked ? 50 : 5;
-
+        const fetchLimit = isLoggedIn ? 50 : 5;
         const staticQuestions = getQuestionsForEvent(eventName, division, fetchLimit);
 
         if (staticQuestions.length > 0) {
           setCards(staticQuestions);
         }
-        // If no static questions exist, cards stays empty -> "Under Construction" shown
       } catch (err) {
         console.error("StudyView fetch error:", err);
       } finally {
@@ -200,8 +197,8 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
                 >
                   {isTest ? 'Retry Assessment' : 'Review Again'}
                 </button>
-                {/* Only show "Under Construction" note if we capped them at 50, which we deemed "full" or if they are in a limited event */}
-                {!UNLOCKED_EVENTS.includes(eventName) && (
+                {/* Only show "Under Construction" note if we capped them at 50, which we deemed "full" */}
+                {cards.length >= 50 && (
                   <p className="text-rh-gray text-[10px] uppercase tracking-widest mt-4">
                     Additional questions under construction
                   </p>
@@ -267,7 +264,7 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
         </div>
       </header>
 
-      <div className={`border rounded-2xl p-4 mb-8 flex justify-between items-center transition-colors ${!isLoggedIn && remaining === 0 ? 'bg-red-500/10 border-red-500/50' : 'bg-rh-dark border-white/5'
+      <div className={`border rounded-2xl p-4 mb-4 flex justify-between items-center transition-colors ${!isLoggedIn && remaining === 0 ? 'bg-red-500/10 border-red-500/50' : 'bg-rh-dark border-white/5'
         }`}>
         <div className="flex items-center space-x-3">
           <div className={`w-2 h-2 rounded-full ${(isLoggedIn || remaining > 0) ? `${brandBgClass} animate-pulse` : 'bg-red-500'
@@ -275,7 +272,7 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
           <span className={`text-xs font-bold uppercase tracking-widest ${!isLoggedIn && remaining === 0 ? 'text-red-500' : 'text-white'
             }`}>
             {isLoggedIn
-              ? "Items Available: 5 (Under Construction)"
+              ? `Items Available: ${cards.length} ${cards.length >= 50 ? '(Capped)' : ''}`
               : (remaining > 0 ? `${remaining} Free Items Remaining` : 'Daily Access Limit Reached')
             }
           </span>
@@ -312,7 +309,7 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
           <>
             <div className="relative w-full aspect-[4/3] group" style={{ perspective: '1000px' }}>
               <div onClick={() => !isLimitReached && setIsFlipped(!isFlipped)} className={`relative w-full h-full cursor-pointer transition-all duration-500 [transform-style:preserve-3d] ${isFlipped ? '[transform:rotateY(180deg)]' : ''}`}>
-                <div className={`absolute inset-0 bg-rh-dark border border-white/5 rounded-3xl p-10 flex flex-col items-center justify-center text-center shadow-2xl ${orgType === 'FBLA' ? 'hover:border-rh-green/30' : orgType === 'DECA' ? 'hover:border-rh-cyan/30' : 'hover:border-rh-yellow/30'} transition-colors [backface-visibility:hidden]`}>
+                <div className={`absolute inset-0 bg-rh-dark border border-white/5 rounded-3xl p-10 flex flex-col items-center justify-center text-center shadow-2xl ${orgType === 'FBLA' ? 'hover:border-rh-yellow/30' : orgType === 'DECA' ? 'hover:border-rh-cyan/30' : 'hover:border-rh-green/30'} transition-colors [backface-visibility:hidden]`}>
                   <span className="absolute top-8 left-8 text-[10px] font-bold text-rh-gray uppercase tracking-widest">Question {currentIndex + 1}</span>
                   <h3 className="text-2xl md:text-3xl font-bold tracking-tight leading-snug px-4">{currentCard.question}</h3>
                   <span className={`absolute bottom-8 text-[10px] font-bold ${brandTextClass} uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity`}>Click to reveal</span>
@@ -323,6 +320,12 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
                 </div>
               </div>
             </div>
+
+            <button className="mt-6 text-[10px] font-bold text-rh-gray hover:text-red-400 transition-colors uppercase tracking-widest flex items-center space-x-2">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+              <span>Report Issue</span>
+            </button>
+
             <div className="mt-12 flex space-x-4 w-full">
               <button onClick={handleNext} className="flex-grow bg-white text-black font-black py-5 rounded-2xl text-sm uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all">Next Question</button>
             </div>
@@ -353,6 +356,12 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
                 );
               })}
             </div>
+
+            <button className="mt-8 text-[10px] font-bold text-rh-gray hover:text-red-400 transition-colors uppercase tracking-widest flex items-center space-x-2">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+              <span>Report Issue</span>
+            </button>
+
             {isAnswered && (
               <div className="mt-8 w-full animate-slide-up">
                 <button onClick={handleNext} className="w-full bg-white text-black font-black py-5 rounded-2xl text-sm uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)]">

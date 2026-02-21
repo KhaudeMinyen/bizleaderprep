@@ -8,9 +8,9 @@ interface CallToActionProps {
 }
 
 const CallToAction: React.FC<CallToActionProps> = ({ onGetStarted, orgType }) => {
-  const brandColorClass = orgType === 'FBLA' ? 'bg-rh-green' : orgType === 'DECA' ? 'bg-rh-cyan' : 'bg-rh-yellow';
-  const brandShadowClass = orgType === 'FBLA' ? 'shadow-[0_0_50px_rgba(0,200,5,0.25)]' : orgType === 'DECA' ? 'shadow-[0_0_50px_rgba(0,166,224,0.25)]' : 'shadow-[0_0_50px_rgba(255,218,0,0.25)]';
-  const brandGlowClass = orgType === 'FBLA' ? 'bg-rh-green/5' : orgType === 'DECA' ? 'bg-rh-cyan/5' : 'bg-rh-yellow/5';
+  const brandColorClass = orgType === 'FBLA' ? 'bg-rh-yellow' : orgType === 'DECA' ? 'bg-rh-cyan' : 'bg-rh-green';
+  const brandShadowClass = orgType === 'FBLA' ? 'shadow-[0_0_50px_rgba(255,218,0,0.25)]' : orgType === 'DECA' ? 'shadow-[0_0_50px_rgba(0,166,224,0.25)]' : 'shadow-[0_0_50px_rgba(0,200,5,0.25)]';
+  const brandGlowClass = orgType === 'FBLA' ? 'bg-rh-yellow/5' : orgType === 'DECA' ? 'bg-rh-cyan/5' : 'bg-rh-green/5';
 
   return (
     <section className="relative py-32 bg-black overflow-hidden">
@@ -26,7 +26,7 @@ const CallToAction: React.FC<CallToActionProps> = ({ onGetStarted, orgType }) =>
           <p className="mt-6 max-w-xl mx-auto text-lg text-rh-gray font-medium mb-12">
             Join the elite circle of students using AI to dominate their {orgType} competitive events. Free for the 2025-26 season.
           </p>
-          <button 
+          <button
             onClick={onGetStarted}
             className={`${brandColorClass} text-black font-black px-16 py-5 rounded-full hover:scale-105 transition-all ${brandShadowClass} uppercase tracking-widest text-xs`}
           >
