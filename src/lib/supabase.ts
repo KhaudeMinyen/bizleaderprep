@@ -1,8 +1,8 @@
 /// <reference types="vite/client" />
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL as string) || '';
+const SUPABASE_ANON_KEY = (import.meta.env.VITE_SUPABASE_ANON_KEY as string) || '';
 
 // Cookie-based storage so auth persists across new tabs and browser restarts.
 // Supabase tokens are typically 1–3 KB; well within the 4 KB cookie limit.
@@ -33,14 +33,18 @@ const cookieStorage = {
   removeItem: removeCookie,
 };
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: {
-    storage: cookieStorage,
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: true,
-  },
-});
+export const supabase = createClient(
+  SUPABASE_URL || 'https://placeholder.supabase.co',
+  SUPABASE_ANON_KEY || 'placeholder',
+  {
+    auth: {
+      storage: cookieStorage,
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+    },
+  }
+);
 
 export const isSupabaseConfigured = () =>
   !!SUPABASE_URL &&
