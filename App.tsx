@@ -8,9 +8,11 @@ import Footer from './components/Footer';
 import Dashboard from './components/Dashboard';
 import StudyView from './components/StudyView';
 import Auth from './components/Auth';
+import AnimalStaxHome from './components/animalstax/pages/Home';
+import AnimalStaxGame from './components/animalstax/pages/Game';
 import { supabase } from './supabaseClient';
 
-type ViewState = 'landing' | 'portfolio' | 'study' | 'auth';
+type ViewState = 'landing' | 'portfolio' | 'study' | 'auth' | 'animalstax';
 export type Division = 'Middle School' | 'High School';
 export type OrgType = 'FBLA' | 'DECA' | 'NONE';
 
@@ -18,15 +20,35 @@ const FLASHCARD_LIMIT = 5;
 
 function getPathFromLocation(): string {
   const p = window.location.pathname;
-  if (p === '/fblaprephub' || p === '/decaprephub') return p;
+  if (p.startsWith('/fblaprephub')) return '/fblaprephub';
+  if (p.startsWith('/decaprephub')) return '/decaprephub';
   return '/';
 }
 
+function isAnimalStaxPath(): boolean {
+  return window.location.pathname.startsWith('/fblaprephub/animalstax');
+}
+
+function isAnimalStaxGamePath(): boolean {
+  return window.location.pathname.startsWith('/fblaprephub/animalstax/game');
+}
+
+function getDivisionFromPath(): Division {
+  if (window.location.pathname.startsWith('/fblaprephub/ms')) return 'Middle School';
+  return 'High School';
+}
+
 const App: React.FC = () => {
-  const [view, setView] = useState<ViewState>('landing');
+  const [view, setView] = useState<ViewState>(() =>
+    isAnimalStaxPath() ? 'animalstax' : 'landing'
+  );
   const [virtualPath, setVirtualPath] = useState(getPathFromLocation);
   const [activeEvent, setActiveEvent] = useState<string | null>(null);
-  const [division, setDivision] = useState<Division>('High School');
+  const [animalStaxInGame, setAnimalStaxInGame] = useState(isAnimalStaxGamePath);
+  const [animalStaxDifficulty, setAnimalStaxDifficulty] = useState('easy');
+  // Where to return when exiting AnimalStax ('study' if opened from StudyView)
+  const [animalStaxReturnView, setAnimalStaxReturnView] = useState<ViewState>('portfolio');
+  const [division, setDivision] = useState<Division>(getDivisionFromPath);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [flashcardsUsed, setFlashcardsUsed] = useState(() => {
@@ -48,15 +70,29 @@ const App: React.FC = () => {
 
   const navigateTo = (path: string) => {
     window.history.pushState({ path }, '', path);
-    setVirtualPath(path);
-    setView('landing');
+    setVirtualPath(getPathFromLocation());
+    if (isAnimalStaxPath()) {
+      setView('animalstax');
+    } else {
+      setView('landing');
+    }
     window.scrollTo(0, 0);
   };
 
   useEffect(() => {
     const handlePopState = () => {
       setVirtualPath(getPathFromLocation());
-      setView('landing');
+      if (isAnimalStaxPath()) {
+        setView('animalstax');
+      } else if (window.location.pathname.startsWith('/fblaprephub/hs')) {
+        setDivision('High School');
+        setView('portfolio');
+      } else if (window.location.pathname.startsWith('/fblaprephub/ms')) {
+        setDivision('Middle School');
+        setView('portfolio');
+      } else {
+        setView('landing');
+      }
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
@@ -74,9 +110,14 @@ const App: React.FC = () => {
       if (!mounted) return;
       if (session) {
         setIsLoggedIn(true);
-        // Only auto-switch to portfolio if on a prephub page (not NONE)
         const currentOrgType = getPathFromLocation();
-        if (currentOrgType === '/fblaprephub') {
+        if (currentOrgType === '/fblaprephub' && !isAnimalStaxPath()) {
+          const div = getDivisionFromPath();
+          setDivision(div);
+          const subPath = div === 'Middle School' ? 'ms' : 'hs';
+          if (!window.location.pathname.startsWith(`/fblaprephub/${subPath}`)) {
+            window.history.replaceState({}, '', `/fblaprephub/${subPath}`);
+          }
           setView('portfolio');
         }
       }
@@ -130,6 +171,15 @@ const App: React.FC = () => {
     }
   };
 
+  const goToPortfolio = (div?: Division) => {
+    const effectiveDivision = div ?? division;
+    if (isFBLA) {
+      const subPath = effectiveDivision === 'Middle School' ? 'ms' : 'hs';
+      window.history.pushState({}, '', `/fblaprephub/${subPath}`);
+    }
+    setView('portfolio');
+  };
+
   const incrementUsage = () => {
     setFlashcardsUsed(prev => prev + 1);
   };
@@ -165,12 +215,41 @@ const App: React.FC = () => {
         eventName={activeEvent}
         division={division}
         orgType={orgType}
-        onBack={() => setView('portfolio')}
+        onBack={() => goToPortfolio()}
         flashcardsUsed={isLoggedIn ? 0 : flashcardsUsed}
         limit={FLASHCARD_LIMIT}
         onAnswer={incrementUsage}
         onLoginRequest={() => setView('auth')}
         isLoggedIn={isLoggedIn}
+        onAnimalStax={() => {
+          setAnimalStaxInGame(false);
+          setAnimalStaxReturnView('study');
+          setView('animalstax');
+        }}
+      />
+    );
+  }
+
+  // AnimalStax — rendered full-screen, state-based (no URL changes)
+  if (view === 'animalstax') {
+    if (animalStaxInGame) {
+      return (
+        <AnimalStaxGame
+          difficulty={animalStaxDifficulty}
+          onBack={() => {
+            setAnimalStaxInGame(false);
+            setView(animalStaxReturnView);
+          }}
+        />
+      );
+    }
+    return (
+      <AnimalStaxHome
+        onBack={() => setView(animalStaxReturnView)}
+        onPlayGame={(difficulty: string) => {
+          setAnimalStaxDifficulty(difficulty);
+          setAnimalStaxInGame(true);
+        }}
       />
     );
   }
@@ -245,14 +324,14 @@ const App: React.FC = () => {
           <>
             <Hero
               orgType={orgType}
-              onGetStarted={() => setView('portfolio')}
+              onGetStarted={() => goToPortfolio()}
               onNavigate={(path) => navigateTo(path)}
             />
             {orgType !== 'NONE' && (
               <>
                 <Features orgType={orgType} />
                 <VisualShowcase orgType={orgType} />
-                <CallToAction orgType={orgType} onGetStarted={() => setView('portfolio')} />
+                <CallToAction orgType={orgType} onGetStarted={() => goToPortfolio()} />
               </>
             )}
           </>
@@ -278,7 +357,13 @@ const App: React.FC = () => {
                   {(['Middle School', 'High School'] as Division[]).map((d) => (
                     <button
                       key={d}
-                      onClick={() => setDivision(d)}
+                      onClick={() => {
+                        setDivision(d);
+                        if (isFBLA) {
+                          const subPath = d === 'Middle School' ? 'ms' : 'hs';
+                          window.history.replaceState({}, '', `/fblaprephub/${subPath}`);
+                        }
+                      }}
                       className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${division === d ? (`${brandColor} text-black`) : 'text-rh-gray hover:text-white'}`}
                     >
                       {d}
@@ -287,6 +372,7 @@ const App: React.FC = () => {
                 </div>
               )}
             </header>
+
             <Dashboard onSelectEvent={startStudy} division={division} orgType={orgType} />
           </div>
         )}

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Division, OrgType } from '../App';
 import { getQuestionsForEvent, QuestionData } from '../data/questionBank';
-import { supabase } from '../supabaseClient';
+import { supabase } from '../src/lib/supabase';
 
 interface StudyViewProps {
   eventName: string;
@@ -14,11 +14,12 @@ interface StudyViewProps {
   onAnswer: () => void;
   onLoginRequest: () => void;
   isLoggedIn: boolean;
+  onAnimalStax?: () => void;
 }
 
 type StudyMode = 'selection' | 'flashcard' | 'test' | 'summary';
 
-const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onBack, flashcardsUsed, limit, onAnswer, onLoginRequest, isLoggedIn }) => {
+const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onBack, flashcardsUsed, limit, onAnswer, onLoginRequest, isLoggedIn, onAnimalStax }) => {
   const [mode, setMode] = useState<StudyMode>('selection');
   const [lastMode, setLastMode] = useState<StudyMode | null>(null);
   const [cards, setCards] = useState<QuestionData[]>([]);
@@ -43,24 +44,40 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
   const brandBorderHoverClass = orgType === 'FBLA' ? 'hover:border-rh-yellow/50' : orgType === 'DECA' ? 'hover:border-rh-cyan/50' : 'hover:border-rh-green/50';
   const brandShadowClass = orgType === 'FBLA' ? 'shadow-[0_0_40px_rgba(255,218,0,0.2)]' : orgType === 'DECA' ? 'shadow-[0_0_40px_rgba(0,166,224,0.2)]' : 'shadow-[0_0_40px_rgba(0,200,5,0.2)]';
 
-  // Events that have full content available
-  const UNLOCKED_EVENTS = [
-    'Accounting',
-    'Advanced Accounting',
-    'Advertising',
-    'Agribusiness',
-    'Business Communication'
-  ];
-
   useEffect(() => {
     const fetchCards = async () => {
       setIsLoading(true);
       try {
         const fetchLimit = isLoggedIn ? 50 : 5;
-        const staticQuestions = getQuestionsForEvent(eventName, division, fetchLimit);
 
-        if (staticQuestions.length > 0) {
-          setCards(staticQuestions);
+        if (orgType === 'FBLA' && division === 'High School') {
+          const { data, error } = await supabase
+            .from('FBLA HS Questions')
+            .select('*')
+            .eq('event', eventName);
+
+          if (error) throw error;
+
+          if (data && data.length > 0) {
+            const shuffled = [...data].sort(() => Math.random() - 0.5).slice(0, fetchLimit);
+            const questions: QuestionData[] = shuffled.map(row => {
+              const options = [row.answer_1, row.answer_2, row.answer_3, row.answer_4];
+              let answer = '';
+              switch ((row.correct_answer as string).toUpperCase()) {
+                case 'A': answer = row.answer_1; break;
+                case 'B': answer = row.answer_2; break;
+                case 'C': answer = row.answer_3; break;
+                case 'D': answer = row.answer_4; break;
+              }
+              return { question: row.question, answer, options };
+            });
+            setCards(questions);
+          }
+        } else {
+          const staticQuestions = getQuestionsForEvent(eventName, division, fetchLimit);
+          if (staticQuestions.length > 0) {
+            setCards(staticQuestions);
+          }
         }
       } catch (err) {
         console.error("StudyView fetch error:", err);
@@ -242,6 +259,18 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
             <h3 className="text-2xl font-bold text-white mb-2 relative z-10">Mock Exam</h3>
             <p className="text-rh-gray text-sm font-medium relative z-10">Realistic simulation of {orgType} competitive testing.</p>
           </button>
+          {onAnimalStax && (
+            <button onClick={onAnimalStax} className="group relative bg-rh-dark border border-white/5 p-10 rounded-[32px] hover:bg-white/5 hover:border-green-500/30 transition-all text-left overflow-hidden md:col-span-2">
+              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity text-green-400">
+                <svg className="w-32 h-32" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+              </div>
+              <div className="flex items-center space-x-3 mb-2 relative z-10">
+                <h3 className="text-2xl font-bold text-white">Animal Stax</h3>
+                <span className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-rh-yellow text-black">New</span>
+              </div>
+              <p className="text-rh-gray text-sm font-medium relative z-10">Take a break — stack animals in this arcade-style study game.</p>
+            </button>
+          )}
         </div>
       </div>
     );
