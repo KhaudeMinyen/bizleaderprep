@@ -69,14 +69,20 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
           if (data && data.length > 0) {
             const shuffled = [...data].sort(() => Math.random() - 0.5).slice(0, fetchLimit);
             const questions: QuestionData[] = shuffled.map(row => {
-              const options = [row.answer_1, row.answer_2, row.answer_3, row.answer_4].map(o => o ?? '');
+              const a1 = row.answer_choice_1 ?? row.answer_1 ?? '';
+              const a2 = row.answer_choice_2 ?? row.answer_2 ?? '';
+              const a3 = row.answer_choice_3 ?? row.answer_3 ?? '';
+              const a4 = row.answer_choice_4 ?? row.answer_4 ?? '';
+              const options = [a1, a2, a3, a4];
               let answer = '';
               const ca = String(row.correct_answer ?? '').trim().toUpperCase();
+              console.log('a1:', JSON.stringify(a1), 'a2:', JSON.stringify(a2), 'a3:', JSON.stringify(a3), 'a4:', JSON.stringify(a4), 'ca:', ca);
               switch (ca) {
-                case 'A': answer = row.answer_1 ?? ''; break;
-                case 'B': answer = row.answer_2 ?? ''; break;
-                case 'C': answer = row.answer_3 ?? ''; break;
-                case 'D': answer = row.answer_4 ?? ''; break;
+                case 'A': case '1': answer = a1; break;
+                case 'B': case '2': answer = a2; break;
+                case 'C': case '3': answer = a3; break;
+                case 'D': case '4': answer = a4; break;
+                default: answer = String(row.correct_answer ?? '').trim();
               }
               return { question: row.question, answer, options };
             });
@@ -317,12 +323,13 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
                   if (lastMode === 'test') {
                     startTest();
                   } else {
+                    setIsFlipped(false);
                     setMode(lastMode || 'flashcard');
                   }
                 }}
                 className="w-full bg-white/5 text-white font-bold py-4 rounded-2xl text-xs uppercase tracking-widest hover:bg-white/10"
               >
-                {isTest ? 'Retry Assessment' : 'Review Again'}
+                Try Again
               </button>
             ) : (
               <>
