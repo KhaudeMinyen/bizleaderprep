@@ -221,11 +221,6 @@ const App: React.FC = () => {
         onAnswer={incrementUsage}
         onLoginRequest={() => setView('auth')}
         isLoggedIn={isLoggedIn}
-        onAnimalStax={() => {
-          setAnimalStaxInGame(false);
-          setAnimalStaxReturnView('study');
-          setView('animalstax');
-        }}
       />
     );
   }

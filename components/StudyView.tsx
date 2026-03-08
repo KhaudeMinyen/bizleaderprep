@@ -14,13 +14,12 @@ interface StudyViewProps {
   onAnswer: () => void;
   onLoginRequest: () => void;
   isLoggedIn: boolean;
-  onAnimalStax?: () => void;
 }
 
 type StudyMode = 'selection' | 'flashcard' | 'test' | 'summary' | 'review';
 type Difficulty = 'Beginner' | 'Intermediate' | 'Advanced';
 
-const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onBack, flashcardsUsed, limit, onAnswer, onLoginRequest, isLoggedIn, onAnimalStax }) => {
+const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onBack, flashcardsUsed, limit, onAnswer, onLoginRequest, isLoggedIn }) => {
   const [mode, setMode] = useState<StudyMode>('selection');
   const [lastMode, setLastMode] = useState<StudyMode | null>(null);
   const [cards, setCards] = useState<QuestionData[]>([]);
@@ -38,6 +37,7 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
   const [timerActive, setTimerActive] = useState(false);
 
   const [isRetrying, setIsRetrying] = useState(false);
+  const [allCards, setAllCards] = useState<QuestionData[]>([]);
 
   const isLimitReached = !isRetrying && !isLoggedIn && flashcardsUsed >= limit;
   const remaining = Math.max(0, limit - flashcardsUsed);
@@ -60,11 +60,16 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
         const tableName = division === 'High School' ? 'FBLA HS Questions' : 'FBLA MS Questions';
 
         if (isSupabaseEvent) {
-          const { data, error } = await supabase
+          let queryBuilder = supabase
             .from(tableName)
             .select('*')
-            .eq('event', eventName)
-            .eq('difficulty', difficulty);
+            .eq('event', eventName);
+
+          if (!isLoggedIn) {
+            queryBuilder = queryBuilder.eq('difficulty', difficulty);
+          }
+
+          const { data, error } = await queryBuilder;
 
           if (error) throw error;
 
@@ -87,13 +92,16 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
               }
               return { question: row.question, answer, options };
             });
+            setAllCards(questions);
             setCards(questions);
           } else {
+            setAllCards([]);
             setCards([]);
           }
         } else {
           const staticQuestions = getQuestionsForEvent(eventName, division, fetchLimit);
           if (staticQuestions.length > 0) {
+            setAllCards(staticQuestions);
             setCards(staticQuestions);
           }
         }
@@ -120,12 +128,14 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
   }, [timeLeft, timerActive, mode]);
 
   const startTest = () => {
+    const testCards = allCards.length > 0 ? allCards : cards;
+    setCards(testCards);
     setCurrentIndex(0);
     setCorrectCount(0);
     setAnswerHistory([]);
     setSelectedOption(null);
     setIsAnswered(false);
-    setTimeLeft(cards.length * 45);
+    setTimeLeft(testCards.length * 45);
     setTimerActive(true);
     setMode('test');
     setLastMode('test');
@@ -406,7 +416,12 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
 
         <div className="grid md:grid-cols-2 gap-6 w-full max-w-4xl">
           <button
-            onClick={() => { setMode('flashcard'); setLastMode('flashcard'); }}
+            onClick={() => {
+              const fcCards = isLoggedIn ? (allCards.length > 0 ? allCards : cards).slice(0, 20) : cards;
+              setCards(fcCards);
+              setMode('flashcard');
+              setLastMode('flashcard');
+            }}
             className={`group relative ${cardColor.bg} border ${cardColor.border} p-10 rounded-[32px] ${cardColor.hover} transition-all text-left overflow-hidden`}
           >
             <div className={`absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity ${cardColor.icon}`}>
@@ -425,18 +440,6 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
             <h3 className="text-2xl font-bold text-white mb-2 relative z-10">Mock Exam</h3>
             <p className={`${cardColor.text} text-sm font-medium relative z-10`}>Realistic simulation of {orgType} competitive testing.</p>
           </button>
-          {onAnimalStax && (
-            <button onClick={onAnimalStax} className={`group relative ${cardColor.bg} border ${cardColor.border} p-10 rounded-[32px] ${cardColor.hover} transition-all text-left overflow-hidden md:col-span-2`}>
-              <div className={`absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity ${cardColor.icon}`}>
-                <svg className="w-32 h-32" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
-              </div>
-              <div className="flex items-center space-x-3 mb-2 relative z-10">
-                <h3 className="text-2xl font-bold text-white">Animal Stax</h3>
-                <span className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-rh-yellow text-black">New</span>
-              </div>
-              <p className={`${cardColor.text} text-sm font-medium relative z-10`}>Take a break — stack animals in this arcade-style study game.</p>
-            </button>
-          )}
         </div>
       </div>
     );
