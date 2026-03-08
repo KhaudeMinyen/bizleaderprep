@@ -157,9 +157,16 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
           eventName,
         }),
       });
+      if (!res.ok) {
+        const text = await res.text();
+        console.error('Explain API error:', res.status, text);
+        setExplanation(`Error ${res.status}: ${text.slice(0, 100)}`);
+        return;
+      }
       const data = await res.json();
       setExplanation(data.explanation ?? 'No explanation available.');
-    } catch {
+    } catch (err) {
+      console.error('Explain fetch error:', err);
       setExplanation('Could not load explanation. Please try again.');
     } finally {
       setIsExplaining(false);
