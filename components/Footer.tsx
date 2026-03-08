@@ -30,8 +30,6 @@ const Footer: React.FC<FooterProps> = ({ orgType = 'NONE' }) => {
           <div className="flex space-x-10 text-[10px] font-bold text-rh-gray uppercase tracking-[0.2em]">
             <a href="/privacy-policy.html" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Privacy</a>
             <a href="#" className="hover:text-white transition-colors">Terms</a>
-            <a href="#" className="hover:text-white transition-colors">Support</a>
-            <a href="#" className="hover:text-white transition-colors">Events</a>
           </div>
 
           <div className="text-rh-gray text-[10px] font-medium text-right">

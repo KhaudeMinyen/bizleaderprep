@@ -45,10 +45,9 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
   const brandTextClass = orgType === 'FBLA' ? 'text-rh-yellow' : orgType === 'DECA' ? 'text-rh-cyan' : 'text-rh-green';
   const brandBgClass = orgType === 'FBLA' ? 'bg-rh-yellow' : orgType === 'DECA' ? 'bg-rh-cyan' : 'bg-rh-green';
   const brandBorderClass = orgType === 'FBLA' ? 'border-rh-yellow' : orgType === 'DECA' ? 'border-rh-cyan' : 'border-rh-green';
-  const brandBorderHoverClass = orgType === 'FBLA' ? 'hover:border-rh-yellow/50' : orgType === 'DECA' ? 'hover:border-rh-cyan/50' : 'hover:border-rh-green/50';
   const brandShadowClass = orgType === 'FBLA' ? 'shadow-[0_0_40px_rgba(255,218,0,0.2)]' : orgType === 'DECA' ? 'shadow-[0_0_40px_rgba(0,166,224,0.2)]' : 'shadow-[0_0_40px_rgba(0,200,5,0.2)]';
 
-  const showDifficultyFilter = orgType === 'FBLA' && division === 'High School';
+  const showDifficultyFilter = orgType === 'FBLA' && (division === 'High School' || division === 'Middle School');
 
   useEffect(() => {
     const fetchCards = async () => {
@@ -57,9 +56,12 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
       try {
         const fetchLimit = isLoggedIn ? 50 : 5;
 
-        if (orgType === 'FBLA' && division === 'High School') {
+        const isSupabaseEvent = orgType === 'FBLA' && (division === 'High School' || division === 'Middle School');
+        const tableName = division === 'High School' ? 'FBLA HS Questions' : 'FBLA MS Questions';
+
+        if (isSupabaseEvent) {
           const { data, error } = await supabase
-            .from('FBLA HS Questions')
+            .from(tableName)
             .select('*')
             .eq('event', eventName)
             .eq('difficulty', difficulty);
@@ -69,14 +71,13 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
           if (data && data.length > 0) {
             const shuffled = [...data].sort(() => Math.random() - 0.5).slice(0, fetchLimit);
             const questions: QuestionData[] = shuffled.map(row => {
-              const a1 = row.answer_choice_1 ?? row.answer_1 ?? '';
-              const a2 = row.answer_choice_2 ?? row.answer_2 ?? '';
-              const a3 = row.answer_choice_3 ?? row.answer_3 ?? '';
-              const a4 = row.answer_choice_4 ?? row.answer_4 ?? '';
+              const a1 = row.answer_choice_1 ?? '';
+              const a2 = row.answer_choice_2 ?? '';
+              const a3 = row.answer_choice_3 ?? '';
+              const a4 = row.answer_choice_4 ?? '';
               const options = [a1, a2, a3, a4];
               let answer = '';
               const ca = String(row.correct_answer ?? '').trim().toUpperCase();
-              console.log('a1:', JSON.stringify(a1), 'a2:', JSON.stringify(a2), 'a3:', JSON.stringify(a3), 'a4:', JSON.stringify(a4), 'ca:', ca);
               switch (ca) {
                 case 'A': case '1': answer = a1; break;
                 case 'B': case '2': answer = a2; break;
@@ -462,7 +463,7 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
           )}
           <button
             onClick={() => { setTimerActive(false); setMode('summary'); }}
-            className="text-[10px] font-black uppercase tracking-widest text-rh-gray/50 hover:text-red-400 transition-colors border border-white/10 hover:border-red-500/30 px-3 py-1.5 rounded-lg"
+            className="text-[10px] font-black uppercase tracking-widest text-white/80 hover:text-red-400 transition-colors border border-white/30 hover:border-red-500/50 px-4 py-2 rounded-lg bg-white/5 hover:bg-red-500/10"
           >
             End
           </button>
@@ -504,7 +505,19 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
                 >
                   Create Account
                 </button>
-                <button onClick={onBack} className="w-full bg-transparent text-white font-bold py-3 text-xs uppercase tracking-widest hover:text-white/80">
+                <button
+                  onClick={() => {
+                    setIsRetrying(true);
+                    setCurrentIndex(0);
+                    setCorrectCount(0);
+                    setAnswerHistory([]);
+                    setIsFlipped(false);
+                  }}
+                  className="w-full bg-white/5 border border-white/10 text-white font-black py-4 rounded-2xl text-xs uppercase tracking-widest hover:bg-white/10 transition-colors"
+                >
+                  Try Again
+                </button>
+                <button onClick={onBack} className="w-full bg-transparent text-white/40 font-bold py-2 text-xs uppercase tracking-widest hover:text-white/80 transition-colors">
                   Back to Dashboard
                 </button>
               </div>
@@ -526,10 +539,10 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
               </div>
             </div>
 
-            <button className="mt-6 text-[10px] font-bold text-rh-gray hover:text-red-400 transition-colors uppercase tracking-widest flex items-center space-x-2">
+            <a href={`mailto:support@bizleaderprep.com?subject=Issue with ${encodeURIComponent(eventName)}&body=Question%20index%3A%20${currentIndex + 1}%0A%0ADescribe%20the%20issue%3A`} className="mt-6 text-[10px] font-bold text-rh-gray hover:text-red-400 transition-colors uppercase tracking-widest flex items-center space-x-2">
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
               <span>Report Issue</span>
-            </button>
+            </a>
 
             <div className="mt-12 flex space-x-4 w-full">
               <button onClick={handleNext} className="flex-grow bg-white text-black font-black py-5 rounded-2xl text-sm uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all">Next Question</button>
@@ -562,10 +575,10 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
               })}
             </div>
 
-            <button className="mt-8 text-[10px] font-bold text-rh-gray hover:text-red-400 transition-colors uppercase tracking-widest flex items-center space-x-2">
+            <a href={`mailto:support@bizleaderprep.com?subject=Issue with ${encodeURIComponent(eventName)}&body=Question%20index%3A%20${currentIndex + 1}%0A%0ADescribe%20the%20issue%3A`} className="mt-8 text-[10px] font-bold text-rh-gray hover:text-red-400 transition-colors uppercase tracking-widest flex items-center space-x-2">
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
               <span>Report Issue</span>
-            </button>
+            </a>
 
             {isAnswered && (
               <div className="mt-8 w-full animate-slide-up">
