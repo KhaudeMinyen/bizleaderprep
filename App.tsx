@@ -48,7 +48,10 @@ const App: React.FC = () => {
   const [animalStaxDifficulty, setAnimalStaxDifficulty] = useState('easy');
   // Where to return when exiting AnimalStax ('study' if opened from StudyView)
   const [animalStaxReturnView, setAnimalStaxReturnView] = useState<ViewState>('portfolio');
-  const [division, setDivision] = useState<Division>(getDivisionFromPath);
+  const [division, setDivision] = useState<Division>(() => {
+    const saved = localStorage.getItem('prephub_division') as Division | null;
+    return saved === 'Middle School' ? 'Middle School' : getDivisionFromPath();
+  });
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [flashcardsUsed, setFlashcardsUsed] = useState(() => {
@@ -356,6 +359,7 @@ const App: React.FC = () => {
                       key={d}
                       onClick={() => {
                         setDivision(d);
+                        localStorage.setItem('prephub_division', d);
                         if (isFBLA) {
                           const subPath = d === 'Middle School' ? 'ms' : 'hs';
                           window.history.replaceState({}, '', `/fblaprephub/${subPath}`);

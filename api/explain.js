@@ -46,7 +46,7 @@ Always use simple language appropriate for a middle or high school student. Alwa
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { maxOutputTokens: 500, temperature: 0.4 },
+          generationConfig: { maxOutputTokens: 900, temperature: 0.4 },
         }),
       });
 

@@ -152,9 +152,9 @@ const Dashboard: React.FC<DashboardProps> = ({ onSelectEvent, division, orgType 
               <div
                 key={evt}
                 onClick={() => onSelectEvent(evt)}
-                className="group flex justify-between items-center px-5 py-4 hover:bg-white/[0.03] cursor-pointer transition-all border border-white/5 rounded-2xl"
+                className="group flex justify-between items-center px-6 py-8 hover:bg-white/[0.03] cursor-pointer transition-all border border-white/5 rounded-2xl"
               >
-                <span className={`font-bold text-sm tracking-tight group-hover:${brandTextClass} transition-colors`}>{evt}</span>
+                <span className={`font-bold text-xl tracking-tight group-hover:${brandTextClass} transition-colors`}>{evt}</span>
                 <div className="flex items-center space-x-3">
                   <button
                     onClick={(e) => toggleFavorite(evt, e)}
