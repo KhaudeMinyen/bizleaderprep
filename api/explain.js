@@ -20,7 +20,7 @@ export default async function handler(req, res) {
     const prompt = `You are a concise study assistant for ${eventName || 'a business competitive event'} exam prep.\n\nQuestion: ${question}\n\nOptions:\n${optionsList}\n\nCorrect Answer: ${answer}\n\nIn 2-3 sentences, explain why "${answer}" is correct and what key concept this tests. Be educational and direct.`;
 
     const callGemini = (key) =>
-      fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`, {
+      fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
