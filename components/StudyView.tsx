@@ -154,6 +154,7 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
           question: card.question,
           answer: card.answer,
           options: card.options,
+          selectedAnswer: selectedOption,
           eventName,
         }),
       });
