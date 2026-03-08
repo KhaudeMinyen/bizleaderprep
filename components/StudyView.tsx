@@ -38,6 +38,8 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
 
   const [isRetrying, setIsRetrying] = useState(false);
   const [allCards, setAllCards] = useState<QuestionData[]>([]);
+  const [explanation, setExplanation] = useState<string | null>(null);
+  const [isExplaining, setIsExplaining] = useState(false);
 
   const isLimitReached = !isRetrying && !isLoggedIn && flashcardsUsed >= limit;
   const remaining = Math.max(0, limit - flashcardsUsed);
@@ -141,11 +143,35 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
     setLastMode('test');
   };
 
+  const fetchExplanation = async (card: QuestionData) => {
+    setIsExplaining(true);
+    setExplanation(null);
+    try {
+      const res = await fetch('/api/explain', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          question: card.question,
+          answer: card.answer,
+          options: card.options,
+          eventName,
+        }),
+      });
+      const data = await res.json();
+      setExplanation(data.explanation ?? 'No explanation available.');
+    } catch {
+      setExplanation('Could not load explanation. Please try again.');
+    } finally {
+      setIsExplaining(false);
+    }
+  };
+
   const handleNext = () => {
     if (isLimitReached) return;
     setIsFlipped(false);
     setSelectedOption(null);
     setIsAnswered(false);
+    setExplanation(null);
     if (!isRetrying) onAnswer();
 
     if (currentIndex < cards.length - 1) {
@@ -584,7 +610,36 @@ const StudyView: React.FC<StudyViewProps> = ({ eventName, division, orgType, onB
             </a>
 
             {isAnswered && (
-              <div className="mt-8 w-full animate-slide-up">
+              <div className="mt-8 w-full animate-slide-up space-y-3">
+                {!explanation && (
+                  <button
+                    onClick={() => fetchExplanation(currentCard)}
+                    disabled={isExplaining}
+                    className={`w-full border py-4 rounded-2xl text-xs font-black uppercase tracking-widest transition-all ${isExplaining ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/5'} ${brandBorderClass} ${brandTextClass} bg-transparent`}
+                  >
+                    {isExplaining ? (
+                      <span className="flex items-center justify-center space-x-2">
+                        <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                        <span>Explaining...</span>
+                      </span>
+                    ) : '✦ Explain This Answer'}
+                  </button>
+                )}
+
+                {explanation && (
+                  <div className={`w-full border ${brandBorderClass} bg-white/[0.03] rounded-2xl p-5 animate-slide-up`}>
+                    <div className={`text-[10px] font-black uppercase tracking-widest ${brandTextClass} mb-2`}>✦ AI Explanation</div>
+                    <p className="text-white/80 text-sm leading-relaxed font-medium">{explanation}</p>
+                    <button
+                      onClick={() => fetchExplanation(currentCard)}
+                      disabled={isExplaining}
+                      className="mt-3 text-[10px] font-bold text-rh-gray hover:text-white uppercase tracking-widest transition-colors disabled:opacity-40"
+                    >
+                      Regenerate
+                    </button>
+                  </div>
+                )}
+
                 <button onClick={handleNext} className="w-full bg-white text-black font-black py-5 rounded-2xl text-sm uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)]">
                   Continue Assessment
                 </button>
