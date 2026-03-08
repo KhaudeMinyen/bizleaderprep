@@ -34,7 +34,7 @@ const Footer: React.FC<FooterProps> = ({ orgType = 'NONE' }) => {
 
           <div className="text-rh-gray text-[10px] font-medium text-right">
             <p>&copy; {new Date().getFullYear()} BIZLEADERPREP.</p>
-            <p className="mt-1 opacity-50 uppercase tracking-tighter">Powered by Gemini 3 Flash</p>
+            <p className="mt-1 opacity-50 uppercase tracking-tighter">Created with the help of Anthropic Claude</p>
           </div>
         </div>
       </div>
