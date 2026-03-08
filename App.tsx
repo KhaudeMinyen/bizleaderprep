@@ -119,6 +119,8 @@ const App: React.FC = () => {
             window.history.replaceState({}, '', `/fblaprephub/${subPath}`);
           }
           setView('portfolio');
+        } else if (currentOrgType === '/decaprephub') {
+          setView('portfolio');
         }
       }
       setIsLoading(false);
