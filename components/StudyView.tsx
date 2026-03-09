@@ -452,101 +452,142 @@ const StudyView: React.FC<StudyViewProps> = ({
     const rCard = realisticCards[realisticIndex] || { question: '', answer: '', options: [] };
     const answered = Object.keys(realisticAnswers).length;
     const isFlagged = realisticFlagged.includes(realisticIndex);
+    const progressPct = realisticCards.length > 0 ? (answered / realisticCards.length) * 100 : 0;
 
     return (
-      <div className="min-h-screen bg-black text-white flex flex-col">
-        {/* Exam header */}
-        <div className="bg-rh-dark border-b border-white/10 px-6 py-3 flex items-center justify-between sticky top-0 z-50">
-          <div className="flex-1">
-            <div className="text-[10px] font-black text-rh-gray uppercase tracking-widest">{orgType} — {division}</div>
-            <div className="font-bold text-sm tracking-tight">{eventName}</div>
+      <div className="min-h-screen flex flex-col" style={{ background: '#f3f4f6', fontFamily: 'system-ui, sans-serif' }}>
+
+        {/* ── Blue Panda-style header ── */}
+        <div className="sticky top-0 z-50 flex items-center px-4 py-2 gap-4" style={{ background: '#1b2c5e', minHeight: '56px' }}>
+          {/* Left: title + division */}
+          <div className="flex-1 min-w-0">
+            <div className="text-white font-black text-sm leading-tight uppercase tracking-wide truncate">
+              {orgType} {division.toUpperCase()} — {eventName.toUpperCase()}
+            </div>
+            <div className="text-blue-300 text-xs font-medium">{division} Competitive Exam</div>
           </div>
-          <div className="flex items-center space-x-6">
-            <div className="text-center">
-              <div className="text-[10px] font-black text-rh-gray uppercase tracking-widest">Answered</div>
-              <div className="font-black text-lg">{answered} / {realisticCards.length}</div>
+
+          {/* Center: progress bar + score + timer */}
+          <div className="flex flex-col items-center shrink-0">
+            <div className="w-48 bg-white/20 rounded-full h-1.5 mb-1 overflow-hidden">
+              <div className="h-full rounded-full transition-all duration-300" style={{ width: `${progressPct}%`, background: '#60a5fa' }} />
             </div>
-            <div className={`text-center ${timeLeft < 300 ? 'text-red-500' : ''}`}>
-              <div className="text-[10px] font-black text-rh-gray uppercase tracking-widest">Remaining</div>
-              <div className={`font-black text-2xl tabular-nums ${timeLeft < 300 ? 'text-red-500' : ''}`}>{formatTime(timeLeft)}</div>
+            <div className="text-white font-black text-base tabular-nums leading-none">{answered} / {realisticCards.length}</div>
+            <div className={`text-xs font-bold tabular-nums ${timeLeft < 300 ? 'text-red-400' : 'text-blue-200'}`}>
+              Remaining: {formatTime(timeLeft)}
             </div>
+          </div>
+
+          {/* Right: submit */}
+          <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => { if (window.confirm('Submit exam? This cannot be undone.')) handleRealisticSubmit(); }}
-              className={`${brandBgClass} text-black font-black px-6 py-3 rounded-xl text-xs uppercase tracking-widest hover:scale-[1.02] transition-transform`}
+              className="flex items-center gap-2 font-black text-sm px-4 py-2 rounded text-white transition-opacity hover:opacity-90 active:opacity-75"
+              style={{ background: '#2563eb' }}
             >
               Submit
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
             </button>
           </div>
         </div>
 
-        {/* Question */}
-        <div className="flex-1 max-w-3xl mx-auto w-full px-6 py-8 flex flex-col">
-          <div className="flex items-center justify-between mb-6">
-            <div className={`text-[10px] font-black uppercase tracking-widest ${brandTextClass}`}>Question {realisticIndex + 1}</div>
-            <button
-              onClick={() => toggleRealisticFlag(realisticIndex)}
-              className={`text-[10px] font-black uppercase tracking-widest flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border transition-all ${isFlagged ? 'bg-amber-500/20 border-amber-500/40 text-amber-400' : 'bg-white/5 border-white/10 text-rh-gray hover:text-white'}`}
-            >
-              <svg className="w-3 h-3" fill={isFlagged ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2z"/></svg>
-              <span>{isFlagged ? 'Flagged for Review' : 'Flag for Review'}</span>
-            </button>
+        {/* ── Question area ── */}
+        <div className="flex-1 max-w-4xl mx-auto w-full flex flex-col">
+
+          {/* Blue question number bar */}
+          <div className="px-6 py-3 font-black text-white text-base" style={{ background: '#1d4ed8' }}>
+            Question #{realisticIndex + 1}
           </div>
 
-          <div className="bg-rh-dark border border-white/5 rounded-3xl p-8 mb-6">
-            <p className="text-xl font-bold leading-snug">{rCard.question}</p>
-          </div>
-
-          <div className="space-y-3 mb-8">
-            {rCard.options.map((opt, idx) => {
-              const letter = String.fromCharCode(65 + idx);
-              const isSelected = realisticAnswers[realisticIndex] === opt;
-              return (
-                <button
-                  key={idx}
-                  onClick={() => setRealisticAnswers(prev => ({ ...prev, [realisticIndex]: opt }))}
-                  className={`w-full p-5 rounded-xl border text-left font-bold transition-all flex items-center space-x-4 ${isSelected ? `${brandBgClass} text-black ${brandBorderClass}` : 'bg-rh-dark border-white/10 hover:border-white/30 text-white hover:scale-[1.005]'}`}
-                >
-                  <span className={`w-7 h-7 rounded-full border flex-shrink-0 flex items-center justify-center text-xs font-black ${isSelected ? 'border-black/30 bg-black/20' : 'border-white/20'}`}>{letter}</span>
-                  <span>{opt}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Navigation */}
-          <div className="flex items-center justify-between mt-auto">
-            <button
-              onClick={() => setRealisticIndex(i => Math.max(0, i - 1))}
-              disabled={realisticIndex === 0}
-              className="flex items-center space-x-2 px-6 py-3 rounded-xl border border-white/10 bg-white/5 text-white font-bold text-sm hover:bg-white/10 disabled:opacity-30 transition-all"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7"/></svg>
-              <span>Previous</span>
-            </button>
-
-            {/* Question dots (mini map) */}
-            <div className="flex flex-wrap gap-1 max-w-xs justify-center">
-              {realisticCards.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setRealisticIndex(i)}
-                  className={`w-5 h-5 rounded text-[9px] font-black transition-all ${i === realisticIndex ? `${brandBgClass} text-black` : realisticAnswers[i] ? 'bg-white/20 text-white' : realisticFlagged.includes(i) ? 'bg-amber-500/30 text-amber-400' : 'bg-white/5 text-gray-500'}`}
-                  title={`Q${i + 1}`}
-                >
-                  {i + 1}
-                </button>
-              ))}
+          {/* White question + options card */}
+          <div className="bg-white shadow-sm mx-0 flex-1 flex flex-col">
+            <div className="px-8 pt-6 pb-4 border-b border-gray-200">
+              <p className="text-gray-900 text-base font-medium leading-relaxed">{rCard.question}</p>
             </div>
 
-            <button
-              onClick={() => setRealisticIndex(i => Math.min(realisticCards.length - 1, i + 1))}
-              disabled={realisticIndex === realisticCards.length - 1}
-              className="flex items-center space-x-2 px-6 py-3 rounded-xl border border-white/10 bg-white/5 text-white font-bold text-sm hover:bg-white/10 disabled:opacity-30 transition-all"
-            >
-              <span>Next</span>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7"/></svg>
-            </button>
+            {/* Radio options */}
+            <div className="px-8 py-4 space-y-1 flex-1">
+              {rCard.options.map((opt, idx) => {
+                const isSelected = realisticAnswers[realisticIndex] === opt;
+                return (
+                  <label
+                    key={idx}
+                    className="flex items-center gap-3 px-3 py-3 rounded cursor-pointer select-none transition-colors hover:bg-blue-50"
+                    style={isSelected ? { background: '#eff6ff' } : {}}
+                  >
+                    <input
+                      type="radio"
+                      name={`q-${realisticIndex}`}
+                      checked={isSelected}
+                      onChange={() => setRealisticAnswers(prev => ({ ...prev, [realisticIndex]: opt }))}
+                      className="w-4 h-4 cursor-pointer accent-blue-600"
+                    />
+                    <span className="text-gray-800 text-sm font-normal">{opt}</span>
+                  </label>
+                );
+              })}
+            </div>
+
+            {/* Bottom bar: flag checkbox + clear answer */}
+            <div className="px-8 py-3 border-t border-gray-200 flex items-center justify-between">
+              <label className="flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={isFlagged}
+                  onChange={() => toggleRealisticFlag(realisticIndex)}
+                  className="w-4 h-4 cursor-pointer accent-blue-600"
+                />
+                <span className="text-gray-600 text-sm">I want to review this again before I submit</span>
+              </label>
+              <button
+                onClick={() => setRealisticAnswers(prev => { const n = { ...prev }; delete n[realisticIndex]; return n; })}
+                disabled={!realisticAnswers[realisticIndex]}
+                className="flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-800 disabled:opacity-30 transition-colors border border-gray-300 rounded px-3 py-1.5 hover:border-gray-400 disabled:cursor-not-allowed"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                Clear Answer
+              </button>
+            </div>
           </div>
+        </div>
+
+        {/* ── Footer nav (matches Blue Panda) ── */}
+        <div className="flex items-center justify-between px-4 py-3" style={{ background: '#1b2c5e' }}>
+          <button
+            onClick={() => setRealisticIndex(i => Math.max(0, i - 1))}
+            disabled={realisticIndex === 0}
+            className="flex items-center gap-2 px-5 py-2.5 rounded font-bold text-sm text-white border border-white/30 hover:bg-white/10 disabled:opacity-30 transition-all"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7"/></svg>
+            Prev Question
+          </button>
+
+          {/* Mini question map */}
+          <div className="flex flex-wrap gap-1 max-w-sm justify-center">
+            {realisticCards.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setRealisticIndex(i)}
+                title={`Q${i + 1}${realisticFlagged.includes(i) ? ' (flagged)' : ''}`}
+                className="w-5 h-5 rounded text-[9px] font-black transition-all"
+                style={{
+                  background: i === realisticIndex ? '#2563eb' : realisticFlagged.includes(i) ? '#d97706' : realisticAnswers[i] ? '#374151' : '#ffffff22',
+                  color: i === realisticIndex || realisticFlagged.includes(i) || realisticAnswers[i] ? '#fff' : '#9ca3af',
+                }}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={() => setRealisticIndex(i => Math.min(realisticCards.length - 1, i + 1))}
+            disabled={realisticIndex === realisticCards.length - 1}
+            className="flex items-center gap-2 px-5 py-2.5 rounded font-bold text-sm text-white border border-white/30 hover:bg-white/10 disabled:opacity-30 transition-all"
+          >
+            Next Question
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7"/></svg>
+          </button>
         </div>
       </div>
     );
