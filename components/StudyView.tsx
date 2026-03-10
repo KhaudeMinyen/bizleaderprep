@@ -16,7 +16,7 @@ interface StudyViewProps {
   isLoggedIn: boolean;
 }
 
-type StudyMode = 'selection' | 'flashcard' | 'test' | 'realistic' | 'summary' | 'review';
+type StudyMode = 'difficulty' | 'selection' | 'flashcard' | 'test' | 'realistic' | 'summary' | 'review';
 type Difficulty = 'Beginner' | 'Intermediate' | 'Advanced';
 
 function shuffleArray<T>(arr: T[]): T[] {
@@ -41,7 +41,7 @@ const realisticKey = (evt: string, div: string) => `prephub_realistic_${evt}_${d
 const StudyView: React.FC<StudyViewProps> = ({
   eventName, division, orgType, onBack, flashcardsUsed, limit, onAnswer, onLoginRequest, isLoggedIn
 }) => {
-  const [mode, setMode] = useState<StudyMode>('selection');
+  const [mode, setMode] = useState<StudyMode>(orgType === 'FBLA' ? 'difficulty' : 'selection');
   const [lastMode, setLastMode] = useState<StudyMode | null>(null);
   const [cards, setCards] = useState<QuestionData[]>([]);
   const [allCards, setAllCards] = useState<QuestionData[]>([]);
@@ -453,126 +453,127 @@ const StudyView: React.FC<StudyViewProps> = ({
     const answered = Object.keys(realisticAnswers).length;
     const isFlagged = realisticFlagged.includes(realisticIndex);
     const progressPct = realisticCards.length > 0 ? (answered / realisticCards.length) * 100 : 0;
+    const NAV = '#1a237e';        // dark navy — header & footer
+    const Q_BLUE = '#1565c0';     // medium blue — question bar
+    const BTN_BLUE = '#1976d2';   // button blue
 
     return (
-      <div className="min-h-screen flex flex-col" style={{ background: '#f3f4f6', fontFamily: 'system-ui, sans-serif' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', fontFamily: "'Segoe UI', Arial, sans-serif", background: '#fff' }}>
 
-        {/* ── Blue Panda-style header ── */}
-        <div className="sticky top-0 z-50 flex items-center px-4 py-2 gap-4" style={{ background: '#1b2c5e', minHeight: '56px' }}>
-          {/* Left: title + division */}
-          <div className="flex-1 min-w-0">
-            <div className="text-white font-black text-sm leading-tight uppercase tracking-wide truncate">
-              {orgType} {division.toUpperCase()} — {eventName.toUpperCase()}
+        {/* ════ HEADER ════ */}
+        <div style={{ background: NAV, display: 'flex', alignItems: 'center', padding: '6px 12px', gap: 12, flexShrink: 0, minHeight: 56 }}>
+          {/* Left: event title + subtitle */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ color: '#fff', fontWeight: 700, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {eventName.toUpperCase()}
             </div>
-            <div className="text-blue-300 text-xs font-medium">{division} Competitive Exam</div>
+            <div style={{ color: '#90caf9', fontSize: 11 }}>{orgType} {division} Competitive Exam</div>
           </div>
 
           {/* Center: progress bar + score + timer */}
-          <div className="flex flex-col items-center shrink-0">
-            <div className="w-48 bg-white/20 rounded-full h-1.5 mb-1 overflow-hidden">
-              <div className="h-full rounded-full transition-all duration-300" style={{ width: `${progressPct}%`, background: '#60a5fa' }} />
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
+            <div style={{ width: 200, height: 6, background: 'rgba(255,255,255,0.2)', borderRadius: 3, overflow: 'hidden', marginBottom: 3 }}>
+              <div style={{ height: '100%', borderRadius: 3, background: '#42a5f5', width: `${progressPct}%`, transition: 'width 0.3s' }} />
             </div>
-            <div className="text-white font-black text-base tabular-nums leading-none">{answered} / {realisticCards.length}</div>
-            <div className={`text-xs font-bold tabular-nums ${timeLeft < 300 ? 'text-red-400' : 'text-blue-200'}`}>
+            <div style={{ color: '#fff', fontWeight: 700, fontSize: 15, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
+              {answered} / {realisticCards.length}
+            </div>
+            <div style={{ color: timeLeft < 300 ? '#ef5350' : '#90caf9', fontSize: 11, fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
               Remaining: {formatTime(timeLeft)}
             </div>
           </div>
 
-          {/* Right: submit */}
-          <div className="flex items-center gap-2 shrink-0">
+          {/* Right: submit button */}
+          <div style={{ flexShrink: 0 }}>
             <button
               onClick={() => { if (window.confirm('Submit exam? This cannot be undone.')) handleRealisticSubmit(); }}
-              className="flex items-center gap-2 font-black text-sm px-4 py-2 rounded text-white transition-opacity hover:opacity-90 active:opacity-75"
-              style={{ background: '#2563eb' }}
+              style={{ background: BTN_BLUE, color: '#fff', border: 'none', borderRadius: 4, padding: '7px 16px', fontWeight: 700, fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
             >
               Submit
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
             </button>
           </div>
         </div>
 
-        {/* ── Question area ── */}
-        <div className="flex-1 max-w-4xl mx-auto w-full flex flex-col">
+        {/* ════ BODY (scrollable) ════ */}
+        <div style={{ flex: 1, overflowY: 'auto', background: '#fff', display: 'flex', flexDirection: 'column' }}>
 
-          {/* Blue question number bar */}
-          <div className="px-6 py-3 font-black text-white text-base" style={{ background: '#1d4ed8' }}>
+          {/* Question number bar */}
+          <div style={{ background: Q_BLUE, color: '#fff', padding: '10px 20px', fontWeight: 700, fontSize: 15 }}>
             Question #{realisticIndex + 1}
           </div>
 
-          {/* White question + options card */}
-          <div className="bg-white shadow-sm mx-0 flex-1 flex flex-col">
-            <div className="px-8 pt-6 pb-4 border-b border-gray-200">
-              <p className="text-gray-900 text-base font-medium leading-relaxed">{rCard.question}</p>
-            </div>
+          {/* Question text */}
+          <div style={{ padding: '18px 24px 12px', borderBottom: '1px solid #e0e0e0' }}>
+            <p style={{ margin: 0, fontSize: 14, color: '#212121', lineHeight: 1.6 }}>{rCard.question}</p>
+          </div>
 
-            {/* Radio options */}
-            <div className="px-8 py-4 space-y-1 flex-1">
-              {rCard.options.map((opt, idx) => {
-                const isSelected = realisticAnswers[realisticIndex] === opt;
-                return (
-                  <label
-                    key={idx}
-                    className="flex items-center gap-3 px-3 py-3 rounded cursor-pointer select-none transition-colors hover:bg-blue-50"
-                    style={isSelected ? { background: '#eff6ff' } : {}}
-                  >
-                    <input
-                      type="radio"
-                      name={`q-${realisticIndex}`}
-                      checked={isSelected}
-                      onChange={() => setRealisticAnswers(prev => ({ ...prev, [realisticIndex]: opt }))}
-                      className="w-4 h-4 cursor-pointer accent-blue-600"
-                    />
-                    <span className="text-gray-800 text-sm font-normal">{opt}</span>
-                  </label>
-                );
-              })}
-            </div>
+          {/* Radio options */}
+          <div style={{ padding: '8px 24px', flex: 1 }}>
+            {rCard.options.map((opt, idx) => {
+              const isSelected = realisticAnswers[realisticIndex] === opt;
+              return (
+                <label
+                  key={idx}
+                  style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 8px', cursor: 'pointer', borderBottom: '1px solid #f5f5f5', background: isSelected ? '#e3f2fd' : 'transparent' }}
+                >
+                  <input
+                    type="radio"
+                    name={`q-${realisticIndex}`}
+                    checked={isSelected}
+                    onChange={() => setRealisticAnswers(prev => ({ ...prev, [realisticIndex]: opt }))}
+                    style={{ width: 16, height: 16, cursor: 'pointer', accentColor: BTN_BLUE }}
+                  />
+                  <span style={{ fontSize: 14, color: '#212121' }}>{opt}</span>
+                </label>
+              );
+            })}
+          </div>
 
-            {/* Bottom bar: flag checkbox + clear answer */}
-            <div className="px-8 py-3 border-t border-gray-200 flex items-center justify-between">
-              <label className="flex items-center gap-2 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={isFlagged}
-                  onChange={() => toggleRealisticFlag(realisticIndex)}
-                  className="w-4 h-4 cursor-pointer accent-blue-600"
-                />
-                <span className="text-gray-600 text-sm">I want to review this again before I submit</span>
-              </label>
-              <button
-                onClick={() => setRealisticAnswers(prev => { const n = { ...prev }; delete n[realisticIndex]; return n; })}
-                disabled={!realisticAnswers[realisticIndex]}
-                className="flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-800 disabled:opacity-30 transition-colors border border-gray-300 rounded px-3 py-1.5 hover:border-gray-400 disabled:cursor-not-allowed"
-              >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                Clear Answer
-              </button>
-            </div>
+          {/* Bottom bar: flag + clear */}
+          <div style={{ padding: '10px 24px', borderTop: '1px solid #e0e0e0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fafafa' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 13, color: '#555' }}>
+              <input
+                type="checkbox"
+                checked={isFlagged}
+                onChange={() => toggleRealisticFlag(realisticIndex)}
+                style={{ width: 14, height: 14, cursor: 'pointer', accentColor: BTN_BLUE }}
+              />
+              I want to review this again before I submit
+            </label>
+            <button
+              onClick={() => setRealisticAnswers(prev => { const n = { ...prev }; delete n[realisticIndex]; return n; })}
+              disabled={!realisticAnswers[realisticIndex]}
+              style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: '#555', background: 'none', border: '1px solid #bdbdbd', borderRadius: 3, padding: '5px 10px', cursor: 'pointer', opacity: realisticAnswers[realisticIndex] ? 1 : 0.35 }}
+            >
+              <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              Clear Answer
+            </button>
           </div>
         </div>
 
-        {/* ── Footer nav (matches Blue Panda) ── */}
-        <div className="flex items-center justify-between px-4 py-3" style={{ background: '#1b2c5e' }}>
+        {/* ════ FOOTER ════ */}
+        <div style={{ background: NAV, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', flexShrink: 0 }}>
           <button
             onClick={() => setRealisticIndex(i => Math.max(0, i - 1))}
             disabled={realisticIndex === 0}
-            className="flex items-center gap-2 px-5 py-2.5 rounded font-bold text-sm text-white border border-white/30 hover:bg-white/10 disabled:opacity-30 transition-all"
+            style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'transparent', border: '1px solid rgba(255,255,255,0.3)', borderRadius: 4, padding: '7px 16px', color: '#fff', fontWeight: 700, fontSize: 13, cursor: realisticIndex === 0 ? 'not-allowed' : 'pointer', opacity: realisticIndex === 0 ? 0.35 : 1 }}
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7"/></svg>
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7"/></svg>
             Prev Question
           </button>
 
-          {/* Mini question map */}
-          <div className="flex flex-wrap gap-1 max-w-sm justify-center">
+          {/* Question minimap */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 3, maxWidth: 340, justifyContent: 'center' }}>
             {realisticCards.map((_, i) => (
               <button
                 key={i}
                 onClick={() => setRealisticIndex(i)}
                 title={`Q${i + 1}${realisticFlagged.includes(i) ? ' (flagged)' : ''}`}
-                className="w-5 h-5 rounded text-[9px] font-black transition-all"
                 style={{
-                  background: i === realisticIndex ? '#2563eb' : realisticFlagged.includes(i) ? '#d97706' : realisticAnswers[i] ? '#374151' : '#ffffff22',
-                  color: i === realisticIndex || realisticFlagged.includes(i) || realisticAnswers[i] ? '#fff' : '#9ca3af',
+                  width: 20, height: 20, borderRadius: 3, border: 'none', fontSize: 9, fontWeight: 700, cursor: 'pointer', transition: 'all 0.15s',
+                  background: i === realisticIndex ? BTN_BLUE : realisticFlagged.includes(i) ? '#f57c00' : realisticAnswers[i] ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.12)',
+                  color: i === realisticIndex || realisticFlagged.includes(i) || realisticAnswers[i] ? '#fff' : 'rgba(255,255,255,0.5)',
                 }}
               >
                 {i + 1}
@@ -583,10 +584,78 @@ const StudyView: React.FC<StudyViewProps> = ({
           <button
             onClick={() => setRealisticIndex(i => Math.min(realisticCards.length - 1, i + 1))}
             disabled={realisticIndex === realisticCards.length - 1}
-            className="flex items-center gap-2 px-5 py-2.5 rounded font-bold text-sm text-white border border-white/30 hover:bg-white/10 disabled:opacity-30 transition-all"
+            style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'transparent', border: '1px solid rgba(255,255,255,0.3)', borderRadius: 4, padding: '7px 16px', color: '#fff', fontWeight: 700, fontSize: 13, cursor: realisticIndex === realisticCards.length - 1 ? 'not-allowed' : 'pointer', opacity: realisticIndex === realisticCards.length - 1 ? 0.35 : 1 }}
           >
             Next Question
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7"/></svg>
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Difficulty Screen ──────────────────────────────────────────────────────
+  if (mode === 'difficulty') {
+    const opts: { d: Difficulty; label: string; desc: string; bg: string; border: string; text: string; badge: string }[] = [
+      { d: 'Beginner',     label: 'Beginner',     desc: 'Fundamental concepts and definitions. Great for first-time studiers.', bg: 'bg-green-500/10',  border: 'border-green-500/30',  text: 'text-green-400',  badge: 'bg-green-500/20 text-green-300' },
+      { d: 'Intermediate', label: 'Intermediate', desc: 'Applied knowledge and scenario-based questions.',                      bg: 'bg-yellow-500/10', border: 'border-yellow-500/30', text: 'text-yellow-400', badge: 'bg-yellow-500/20 text-yellow-300' },
+      { d: 'Advanced',     label: 'Advanced',     desc: 'Complex analysis and competitive-level challenge questions.',          bg: 'bg-red-500/10',    border: 'border-red-500/30',    text: 'text-red-400',    badge: 'bg-red-500/20 text-red-300' },
+    ];
+    return (
+      <div className="min-h-screen bg-black text-white px-6 py-12 flex flex-col items-center justify-center">
+        <button onClick={onBack} className="absolute top-6 left-6 text-rh-gray hover:text-white transition-colors flex items-center space-x-2">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"/></svg>
+          <span className="text-xs font-bold uppercase tracking-widest">Exit</span>
+        </button>
+        <p className={`text-[10px] font-black uppercase tracking-[0.3em] ${brandTextClass} mb-3`}>{eventName}</p>
+        <h1 className="text-3xl md:text-5xl font-bold tracking-tighter mb-3 text-center">Choose Your Level</h1>
+        <p className="text-rh-gray text-sm mb-10 text-center max-w-md">Select the difficulty that matches where you are in your preparation.</p>
+        <div className="flex flex-col gap-4 w-full max-w-lg">
+          {opts.map(({ d, label, desc, bg, border, text, badge }) => (
+            <button
+              key={d}
+              onClick={() => { setDifficulty(d); setMode('selection'); }}
+              className={`group w-full ${bg} border ${border} p-6 rounded-2xl text-left hover:scale-[1.01] transition-all flex items-center justify-between`}
+            >
+              <div>
+                <div className="flex items-center gap-3 mb-1">
+                  <span className={`text-lg font-black ${text}`}>{label}</span>
+                  <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${badge}`}>{d}</span>
+                </div>
+                <p className="text-white/50 text-sm font-medium">{desc}</p>
+              </div>
+              <svg className={`w-5 h-5 ${text} opacity-0 group-hover:opacity-100 transition-opacity shrink-0 ml-4`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7"/></svg>
+            </button>
+          ))}
+
+          {/* Divider */}
+          <div className="flex items-center gap-3 my-1">
+            <div className="flex-1 border-t border-white/10" />
+            <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">or</span>
+            <div className="flex-1 border-t border-white/10" />
+          </div>
+
+          {/* Realistic Exam */}
+          <button
+            onClick={startRealistic}
+            className={`group relative w-full ${brandBgClass} p-6 rounded-2xl text-left overflow-hidden hover:scale-[1.01] transition-transform ${brandShadowClass} flex items-center justify-between`}
+          >
+            <div className="relative z-10">
+              <div className="flex items-center gap-3 mb-1">
+                <span className="text-lg font-black text-black">Realistic Exam</span>
+                <span className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-black/20 text-black/70">
+                  {division === 'Middle School' ? '30 min' : '50 min'}
+                </span>
+              </div>
+              <p className="text-black/60 text-sm font-medium">
+                {REALISTIC_QTY[division]} questions · timed · mirrors real {orgType} conditions
+              </p>
+              {!isLoggedIn && <p className="text-black/50 text-xs font-black uppercase tracking-widest mt-1">Login required</p>}
+              {!!localStorage.getItem(realisticKey(eventName, division)) && isLoggedIn && (
+                <p className="text-black/70 text-xs font-black uppercase tracking-widest mt-1">⚡ Resume saved exam</p>
+              )}
+            </div>
+            <svg className="w-5 h-5 text-black/50 group-hover:text-black/80 transition-colors shrink-0 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7"/></svg>
           </button>
         </div>
       </div>
@@ -595,13 +664,7 @@ const StudyView: React.FC<StudyViewProps> = ({
 
   // ── Selection Screen ───────────────────────────────────────────────────────
   if (mode === 'selection') {
-    const difficulties: Difficulty[] = ['Beginner', 'Intermediate', 'Advanced'];
-    const diffColor: Record<Difficulty, string> = {
-      Beginner:     difficulty === 'Beginner'     ? 'bg-green-500/80 text-black'  : 'bg-green-500/10 text-green-400 hover:bg-green-500/20',
-      Intermediate: difficulty === 'Intermediate' ? 'bg-yellow-500/80 text-black' : 'bg-yellow-500/10 text-yellow-400 hover:bg-yellow-500/20',
-      Advanced:     difficulty === 'Advanced'     ? 'bg-red-500/80 text-white'    : 'bg-red-500/10 text-red-400 hover:bg-red-500/20',
-    };
-    const cardColor = {
+    const cardColor: Record<Difficulty, { bg: string; border: string; hover: string; text: string; icon: string }> = {
       Beginner:     { bg: 'bg-green-500/10',  border: 'border-green-500/20',  hover: 'hover:bg-green-500/15 hover:border-green-500/40',  text: 'text-green-300/60',  icon: 'text-green-400'  },
       Intermediate: { bg: 'bg-yellow-500/10', border: 'border-yellow-500/20', hover: 'hover:bg-yellow-500/15 hover:border-yellow-500/40', text: 'text-yellow-300/60', icon: 'text-yellow-400' },
       Advanced:     { bg: 'bg-red-500/10',    border: 'border-red-500/20',    hover: 'hover:bg-red-500/15 hover:border-red-500/40',       text: 'text-red-300/60',    icon: 'text-red-400'    },
@@ -611,22 +674,14 @@ const StudyView: React.FC<StudyViewProps> = ({
 
     return (
       <div className="min-h-screen bg-black text-white px-6 py-12 flex flex-col items-center justify-center">
-        <button onClick={onBack} className="absolute top-6 left-6 text-rh-gray hover:text-white transition-colors flex items-center space-x-2">
+        <button onClick={() => orgType === 'FBLA' ? setMode('difficulty') : onBack()} className="absolute top-6 left-6 text-rh-gray hover:text-white transition-colors flex items-center space-x-2">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"/></svg>
-          <span className="text-xs font-bold uppercase tracking-widest">Exit</span>
+          <span className="text-xs font-bold uppercase tracking-widest">{orgType === 'FBLA' ? 'Back' : 'Exit'}</span>
         </button>
 
+        <p className={`text-[10px] font-black uppercase tracking-[0.3em] ${brandTextClass} mb-1`}>{difficulty} Level</p>
         <h1 className="text-3xl md:text-5xl font-bold tracking-tighter mb-2 text-center">Select Study Path</h1>
         <p className="text-rh-gray mb-6 text-center max-w-lg text-sm">Choose your preferred method for mastering {eventName}.</p>
-
-        {/* Difficulty pills */}
-        {orgType === 'FBLA' && (
-          <div className="flex space-x-2 mb-5">
-            {difficulties.map(d => (
-              <button key={d} onClick={() => setDifficulty(d)} className={`px-4 py-2 rounded-full text-[11px] font-black uppercase tracking-widest transition-all ${diffColor[d]}`}>{d}</button>
-            ))}
-          </div>
-        )}
 
         {/* Quantity selector */}
         {isLoggedIn && (
@@ -665,32 +720,6 @@ const StudyView: React.FC<StudyViewProps> = ({
           </button>
         </div>
 
-        {/* Realistic Exam */}
-        <div className="w-full max-w-4xl">
-          <button
-            onClick={startRealistic}
-            className={`group relative w-full ${brandBgClass} p-8 rounded-[32px] text-left overflow-hidden hover:scale-[1.01] transition-transform ${brandShadowClass}`}
-          >
-            <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity text-black">
-              <svg className="w-32 h-32" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
-            </div>
-            <div className="flex items-start justify-between relative z-10">
-              <div>
-                <h3 className="text-2xl font-bold text-black mb-2">Realistic Exam</h3>
-                <p className="text-black/60 text-sm font-medium">
-                  Timed simulation — {REALISTIC_QTY[division]} questions in {division === 'Middle School' ? '30' : '50'} minutes. Mirrors real {orgType} exam conditions.
-                </p>
-                {!isLoggedIn && <p className="text-black/60 text-xs font-black uppercase tracking-widest mt-2">Login required</p>}
-                {savedRealistic && isLoggedIn && (
-                  <p className="text-black/70 text-xs font-black uppercase tracking-widest mt-2">⚡ Resume saved exam</p>
-                )}
-              </div>
-              <div className="bg-black/20 rounded-xl px-4 py-2 text-black font-black text-sm shrink-0 ml-4">
-                {division === 'Middle School' ? '30:00' : '50:00'}
-              </div>
-            </div>
-          </button>
-        </div>
       </div>
     );
   }
