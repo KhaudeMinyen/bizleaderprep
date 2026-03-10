@@ -664,11 +664,11 @@ const StudyView: React.FC<StudyViewProps> = ({
 
   // ── Selection Screen ───────────────────────────────────────────────────────
   if (mode === 'selection') {
-    const cardColor: Record<Difficulty, { bg: string; border: string; hover: string; text: string; icon: string }> = {
+    const cardColor: { bg: string; border: string; hover: string; text: string; icon: string } = ({
       Beginner:     { bg: 'bg-green-500/10',  border: 'border-green-500/20',  hover: 'hover:bg-green-500/15 hover:border-green-500/40',  text: 'text-green-300/60',  icon: 'text-green-400'  },
       Intermediate: { bg: 'bg-yellow-500/10', border: 'border-yellow-500/20', hover: 'hover:bg-yellow-500/15 hover:border-yellow-500/40', text: 'text-yellow-300/60', icon: 'text-yellow-400' },
       Advanced:     { bg: 'bg-red-500/10',    border: 'border-red-500/20',    hover: 'hover:bg-red-500/15 hover:border-red-500/40',       text: 'text-red-300/60',    icon: 'text-red-400'    },
-    }[difficulty];
+    } as Record<Difficulty, { bg: string; border: string; hover: string; text: string; icon: string }>)[difficulty];
     const qtyOptions = isLoggedIn ? [10, 20, 30, 50] : [];
     const savedRealistic = !!localStorage.getItem(realisticKey(eventName, division));
 
