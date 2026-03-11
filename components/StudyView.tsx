@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Division, OrgType } from '../App';
 import { getQuestionsForEvent, QuestionData } from '../data/questionBank';
 import { supabase } from '../src/lib/supabase';
@@ -41,6 +41,8 @@ const getAnswerLetter = (card: QuestionData, text: string): string => {
 };
 
 const realisticKey = (evt: string, div: string) => `prephub_realistic_${evt}_${div}`;
+const practiceKey = (evt: string, div: string, diff: string) => `prephub_practice_${evt}_${div}_${diff}`;
+const flashcardKey = (evt: string, div: string, diff: string) => `prephub_flashcard_${evt}_${div}_${diff}`;
 
 const StudyView: React.FC<StudyViewProps> = ({
   eventName, division, orgType, onBack, flashcardsUsed, limit, onAnswer, onLoginRequest, isLoggedIn
@@ -74,6 +76,8 @@ const StudyView: React.FC<StudyViewProps> = ({
   const [realisticIndex, setRealisticIndex] = useState(0);
   const [realisticSubmitted, setRealisticSubmitted] = useState(false);
   const [realisticScore, setRealisticScore] = useState<{ correct: number; total: number } | null>(null);
+
+  const hasRestored = useRef(false);
 
   const isLimitReached = !isRetrying && !isLoggedIn && flashcardsUsed >= limit;
   const remaining = Math.max(0, limit - flashcardsUsed);
@@ -135,13 +139,82 @@ const StudyView: React.FC<StudyViewProps> = ({
     fetchCards();
   }, [eventName, division, orgType, isLoggedIn, difficulty]);
 
+  // Auto-resume any saved session after initial load
+  useEffect(() => {
+    if (isLoading || hasRestored.current) return;
+    hasRestored.current = true;
+
+    // Realistic exam?
+    const realisticSave = localStorage.getItem(realisticKey(eventName, division));
+    if (realisticSave) {
+      try {
+        const s = JSON.parse(realisticSave);
+        setRealisticCards(s.cards || []);
+        setRealisticAnswers(s.answers || {});
+        setRealisticFlagged(s.flagged || []);
+        setTimeLeft(s.timeLeft ?? REALISTIC_SECS[division]);
+        setRealisticIndex(s.index ?? 0);
+        setRealisticSubmitted(false);
+        setTimerActive(true);
+        setMode('realistic');
+        return;
+      } catch {}
+    }
+
+    // Practice exam across all difficulties?
+    for (const diff of ['Beginner', 'Intermediate', 'Advanced'] as Difficulty[]) {
+      const practiceSave = localStorage.getItem(practiceKey(eventName, division, diff));
+      if (practiceSave) {
+        try {
+          const s = JSON.parse(practiceSave);
+          setDifficulty(diff);
+          setCards(s.cards || []);
+          setCurrentIndex(s.currentIndex ?? 0);
+          setCorrectCount(s.correctCount ?? 0);
+          setAnswerHistory(s.answerHistory || []);
+          setTimeLeft(s.timeLeft ?? 0);
+          setTimerActive(true);
+          setSelectedOption(null);
+          setIsAnswered(false);
+          setExplanation(null);
+          setIsRetrying(false);
+          setMode('test');
+          setLastMode('test');
+          return;
+        } catch {}
+      }
+    }
+
+    // Flashcard session across all difficulties?
+    for (const diff of ['Beginner', 'Intermediate', 'Advanced'] as Difficulty[]) {
+      const flashSave = localStorage.getItem(flashcardKey(eventName, division, diff));
+      if (flashSave) {
+        try {
+          const s = JSON.parse(flashSave);
+          setDifficulty(diff);
+          setCards(s.cards || []);
+          setCurrentIndex(s.currentIndex ?? 0);
+          setIsFlipped(false);
+          setAnswerHistory([]);
+          setIsRetrying(false);
+          setMode('flashcard');
+          setLastMode('flashcard');
+          return;
+        } catch {}
+      }
+    }
+  }, [isLoading]);
+
   // Exam timer (realistic + test/practice modes)
   useEffect(() => {
     if (!timerActive || (mode !== 'realistic' && mode !== 'test')) return;
     if (timeLeft <= 0) {
       setTimerActive(false);
       if (mode === 'realistic') handleRealisticSubmit();
-      else setMode('summary');
+      else {
+        localStorage.removeItem(practiceKey(eventName, division, difficulty));
+        setMode('summary');
+      }
       return;
     }
     const id = setTimeout(() => setTimeLeft(t => t - 1), 1000);
@@ -161,12 +234,34 @@ const StudyView: React.FC<StudyViewProps> = ({
     }));
   }, [realisticAnswers, realisticFlagged, timeLeft, realisticIndex, mode]);
 
+  // Save practice exam to localStorage on state change
+  useEffect(() => {
+    if (mode !== 'test' || cards.length === 0) return;
+    localStorage.setItem(practiceKey(eventName, division, difficulty), JSON.stringify({
+      cards,
+      currentIndex,
+      correctCount,
+      answerHistory,
+      timeLeft,
+    }));
+  }, [currentIndex, correctCount, answerHistory, timeLeft, mode]);
+
+  // Save flashcard session to localStorage on state change
+  useEffect(() => {
+    if (mode !== 'flashcard' || cards.length === 0) return;
+    localStorage.setItem(flashcardKey(eventName, division, difficulty), JSON.stringify({
+      cards,
+      currentIndex,
+    }));
+  }, [currentIndex, mode]);
+
   const getPool = (diff: Difficulty): QuestionData[] => {
     const filtered = (allCards as any[]).filter(c => !c.difficulty || c.difficulty === diff);
     return filtered.length > 0 ? filtered : allCards;
   };
 
   const startFlashcard = () => {
+    localStorage.removeItem(flashcardKey(eventName, division, difficulty));
     let pool = orgType === 'FBLA' ? getPool(difficulty) : allCards;
     if (!isLoggedIn) pool = pool.slice(0, limit);
     const deck = shuffleArray(pool).slice(0, isLoggedIn ? selectedQty : pool.length).map(shuffleOptions);
@@ -179,7 +274,28 @@ const StudyView: React.FC<StudyViewProps> = ({
     setLastMode('flashcard');
   };
 
-  const startPractice = () => {
+  const startPractice = (forceNew = false) => {
+    if (!forceNew) {
+      const saved = localStorage.getItem(practiceKey(eventName, division, difficulty));
+      if (saved) {
+        try {
+          const s = JSON.parse(saved);
+          setCards(s.cards || []);
+          setCurrentIndex(s.currentIndex ?? 0);
+          setCorrectCount(s.correctCount ?? 0);
+          setAnswerHistory(s.answerHistory || []);
+          setTimeLeft(s.timeLeft ?? 0);
+          setTimerActive(true);
+          setSelectedOption(null);
+          setIsAnswered(false);
+          setExplanation(null);
+          setIsRetrying(false);
+          setMode('test');
+          setLastMode('test');
+          return;
+        } catch {}
+      }
+    }
     let pool = orgType === 'FBLA' ? getPool(difficulty) : allCards;
     if (!isLoggedIn) pool = pool.slice(0, limit);
     const deck = shuffleArray(pool).slice(0, isLoggedIn ? selectedQty : pool.length).map(shuffleOptions);
@@ -284,6 +400,8 @@ const StudyView: React.FC<StudyViewProps> = ({
     if (currentIndex < cards.length - 1) {
       setCurrentIndex(currentIndex + 1);
     } else {
+      localStorage.removeItem(practiceKey(eventName, division, difficulty));
+      localStorage.removeItem(flashcardKey(eventName, division, difficulty));
       setMode('summary');
     }
   };
@@ -405,7 +523,7 @@ const StudyView: React.FC<StudyViewProps> = ({
               </button>
             )}
             {isLoggedIn ? (
-              <button onClick={() => { setCurrentIndex(0); setCorrectCount(0); setAnswerHistory([]); lastMode === 'test' ? startPractice() : startFlashcard(); }} className="w-full bg-white/5 text-white font-bold py-4 rounded-2xl text-xs uppercase tracking-widest hover:bg-white/10">
+              <button onClick={() => { setCurrentIndex(0); setCorrectCount(0); setAnswerHistory([]); lastMode === 'test' ? startPractice(true) : startFlashcard(); }} className="w-full bg-white/5 text-white font-bold py-4 rounded-2xl text-xs uppercase tracking-widest hover:bg-white/10">
                 Try Again
               </button>
             ) : (
@@ -732,15 +850,18 @@ const StudyView: React.FC<StudyViewProps> = ({
           </button>
 
           <button
-            onClick={startPractice}
+            onClick={() => startPractice()}
             className={`group relative ${cardColor.bg} border ${cardColor.border} p-10 rounded-[32px] ${cardColor.hover} transition-all text-left overflow-hidden`}
           >
             <div className={`absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity ${cardColor.icon}`}>
               <svg className="w-32 h-32" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
             </div>
             <h3 className="text-2xl font-bold text-white mb-2 relative z-10">Practice Exam</h3>
-            <p className={`${cardColor.text} text-sm font-medium relative z-10`}>Untimed practice with instant feedback and AI explanations.</p>
-            {isLoggedIn && <p className={`text-[10px] font-black uppercase tracking-widest mt-3 relative z-10 ${cardColor.icon}`}>{selectedQty} questions · {difficulty} · No timer</p>}
+            <p className={`${cardColor.text} text-sm font-medium relative z-10`}>Timed practice with instant feedback and AI explanations.</p>
+            {isLoggedIn && <p className={`text-[10px] font-black uppercase tracking-widest mt-3 relative z-10 ${cardColor.icon}`}>{selectedQty} questions · {difficulty}</p>}
+            {!!localStorage.getItem(practiceKey(eventName, division, difficulty)) && (
+              <p className="text-[10px] font-black uppercase tracking-widest mt-1 relative z-10 text-white/60">⚡ Resume saved session</p>
+            )}
           </button>
         </div>
 
@@ -754,7 +875,7 @@ const StudyView: React.FC<StudyViewProps> = ({
   return (
     <div className="min-h-screen bg-black text-white px-6 py-8 flex flex-col relative">
       <header className="flex justify-between items-center mb-6">
-        <button onClick={() => { setTimerActive(false); setMode('selection'); }} className="text-rh-gray hover:text-white transition-colors flex items-center space-x-2">
+        <button onClick={() => { setTimerActive(false); localStorage.removeItem(practiceKey(eventName, division, difficulty)); setMode('selection'); }} className="text-rh-gray hover:text-white transition-colors flex items-center space-x-2">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"/></svg>
           <span className="text-xs font-bold uppercase tracking-widest">Back</span>
         </button>
@@ -768,7 +889,7 @@ const StudyView: React.FC<StudyViewProps> = ({
               {formatTime(timeLeft)}
             </span>
           )}
-          <button onClick={() => { setTimerActive(false); setMode('summary'); }} className="text-[10px] font-black uppercase tracking-widest text-white/80 hover:text-red-400 transition-colors border border-white/30 hover:border-red-500/50 px-4 py-2 rounded-lg bg-white/5 hover:bg-red-500/10">
+          <button onClick={() => { setTimerActive(false); localStorage.removeItem(practiceKey(eventName, division, difficulty)); setMode('summary'); }} className="text-[10px] font-black uppercase tracking-widest text-white/80 hover:text-red-400 transition-colors border border-white/30 hover:border-red-500/50 px-4 py-2 rounded-lg bg-white/5 hover:bg-red-500/10">
             End
           </button>
         </div>

@@ -39,11 +39,17 @@ function getDivisionFromPath(): Division {
 }
 
 const App: React.FC = () => {
-  const [view, setView] = useState<ViewState>(() =>
-    isAnimalStaxPath() ? 'animalstax' : 'landing'
-  );
+  const [view, setView] = useState<ViewState>(() => {
+    if (isAnimalStaxPath()) return 'animalstax';
+    const savedEvent = localStorage.getItem('prephub_activeEvent');
+    const path = getPathFromLocation();
+    if (savedEvent && (path === '/fblaprephub' || path === '/decaprephub')) return 'study';
+    return 'landing';
+  });
   const [virtualPath, setVirtualPath] = useState(getPathFromLocation);
-  const [activeEvent, setActiveEvent] = useState<string | null>(null);
+  const [activeEvent, setActiveEvent] = useState<string | null>(
+    () => localStorage.getItem('prephub_activeEvent')
+  );
   const [animalStaxInGame, setAnimalStaxInGame] = useState(isAnimalStaxGamePath);
   const [animalStaxDifficulty, setAnimalStaxDifficulty] = useState('easy');
   // Where to return when exiting AnimalStax ('study' if opened from StudyView)
@@ -114,6 +120,7 @@ const App: React.FC = () => {
       if (session) {
         setIsLoggedIn(true);
         const currentOrgType = getPathFromLocation();
+        const savedEvent = localStorage.getItem('prephub_activeEvent');
         if (currentOrgType === '/fblaprephub' && !isAnimalStaxPath()) {
           const div = getDivisionFromPath();
           setDivision(div);
@@ -121,9 +128,19 @@ const App: React.FC = () => {
           if (!window.location.pathname.startsWith(`/fblaprephub/${subPath}`)) {
             window.history.replaceState({}, '', `/fblaprephub/${subPath}`);
           }
-          setView('portfolio');
+          if (savedEvent) {
+            setActiveEvent(savedEvent);
+            setView('study');
+          } else {
+            setView('portfolio');
+          }
         } else if (currentOrgType === '/decaprephub') {
-          setView('portfolio');
+          if (savedEvent) {
+            setActiveEvent(savedEvent);
+            setView('study');
+          } else {
+            setView('portfolio');
+          }
         }
       }
       setIsLoading(false);
@@ -162,6 +179,7 @@ const App: React.FC = () => {
 
   const startStudy = (eventName: string) => {
     setActiveEvent(eventName);
+    localStorage.setItem('prephub_activeEvent', eventName);
     setView('study');
   };
 
@@ -177,6 +195,7 @@ const App: React.FC = () => {
   };
 
   const goToPortfolio = (div?: Division) => {
+    localStorage.removeItem('prephub_activeEvent');
     const effectiveDivision = div ?? division;
     if (isFBLA) {
       const subPath = effectiveDivision === 'Middle School' ? 'ms' : 'hs';
