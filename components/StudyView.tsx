@@ -28,6 +28,10 @@ function shuffleArray<T>(arr: T[]): T[] {
   return a;
 }
 
+function shuffleOptions(card: QuestionData): QuestionData {
+  return { ...card, options: shuffleArray(card.options) };
+}
+
 const REALISTIC_QTY: Record<Division, number> = { 'Middle School': 50, 'High School': 100 };
 const REALISTIC_SECS: Record<Division, number> = { 'Middle School': 30 * 60, 'High School': 50 * 60 };
 
@@ -131,10 +135,15 @@ const StudyView: React.FC<StudyViewProps> = ({
     fetchCards();
   }, [eventName, division, orgType, isLoggedIn, difficulty]);
 
-  // Realistic exam timer
+  // Exam timer (realistic + test/practice modes)
   useEffect(() => {
-    if (!timerActive || mode !== 'realistic') return;
-    if (timeLeft <= 0) { setTimerActive(false); handleRealisticSubmit(); return; }
+    if (!timerActive || (mode !== 'realistic' && mode !== 'test')) return;
+    if (timeLeft <= 0) {
+      setTimerActive(false);
+      if (mode === 'realistic') handleRealisticSubmit();
+      else setMode('summary');
+      return;
+    }
     const id = setTimeout(() => setTimeLeft(t => t - 1), 1000);
     return () => clearTimeout(id);
   }, [timeLeft, timerActive, mode]);
@@ -160,7 +169,7 @@ const StudyView: React.FC<StudyViewProps> = ({
   const startFlashcard = () => {
     let pool = orgType === 'FBLA' ? getPool(difficulty) : allCards;
     if (!isLoggedIn) pool = pool.slice(0, limit);
-    const deck = shuffleArray(pool).slice(0, isLoggedIn ? selectedQty : pool.length);
+    const deck = shuffleArray(pool).slice(0, isLoggedIn ? selectedQty : pool.length).map(shuffleOptions);
     setCards(deck);
     setCurrentIndex(0);
     setIsFlipped(false);
@@ -173,7 +182,7 @@ const StudyView: React.FC<StudyViewProps> = ({
   const startPractice = () => {
     let pool = orgType === 'FBLA' ? getPool(difficulty) : allCards;
     if (!isLoggedIn) pool = pool.slice(0, limit);
-    const deck = shuffleArray(pool).slice(0, isLoggedIn ? selectedQty : pool.length);
+    const deck = shuffleArray(pool).slice(0, isLoggedIn ? selectedQty : pool.length).map(shuffleOptions);
     setCards(deck);
     setCurrentIndex(0);
     setCorrectCount(0);
@@ -181,7 +190,8 @@ const StudyView: React.FC<StudyViewProps> = ({
     setSelectedOption(null);
     setIsAnswered(false);
     setExplanation(null);
-    setTimerActive(false);
+    setTimeLeft(deck.length * 45);
+    setTimerActive(true);
     setIsRetrying(false);
     setMode('test');
     setLastMode('test');
@@ -206,7 +216,7 @@ const StudyView: React.FC<StudyViewProps> = ({
       } catch {}
     }
     const qty = REALISTIC_QTY[division];
-    const deck = shuffleArray(allCards).slice(0, qty);
+    const deck = shuffleArray(allCards).slice(0, qty).map(shuffleOptions);
     setRealisticCards(deck);
     setRealisticAnswers({});
     setRealisticFlagged([]);
@@ -400,7 +410,21 @@ const StudyView: React.FC<StudyViewProps> = ({
               </button>
             ) : (
               <>
-                <button onClick={() => { setIsRetrying(true); setCurrentIndex(0); setCorrectCount(0); setAnswerHistory([]); lastMode === 'test' ? startPractice() : startFlashcard(); }} className="w-full bg-white/5 text-white font-bold py-4 rounded-2xl text-xs uppercase tracking-widest hover:bg-white/10">Try Again</button>
+                <button onClick={() => {
+                setIsRetrying(true);
+                setCurrentIndex(0);
+                setCorrectCount(0);
+                setAnswerHistory([]);
+                setSelectedOption(null);
+                setIsAnswered(false);
+                setExplanation(null);
+                setIsFlipped(false);
+                if (lastMode === 'test') {
+                  setTimeLeft(cards.length * 45);
+                  setTimerActive(true);
+                }
+                setMode(lastMode || 'test');
+              }} className="w-full bg-white/5 text-white font-bold py-4 rounded-2xl text-xs uppercase tracking-widest hover:bg-white/10">Try Again</button>
                 <button onClick={onLoginRequest} className="w-full bg-white text-black font-black py-5 rounded-2xl text-xs uppercase tracking-widest hover:scale-[1.02] transition-transform shadow-[0_0_20px_rgba(255,255,255,0.2)]">Sign Up to Unlock All Questions</button>
               </>
             )}
@@ -738,9 +762,16 @@ const StudyView: React.FC<StudyViewProps> = ({
           <span className={`text-[10px] font-black uppercase ${brandTextClass} tracking-[0.2em]`}>{mode === 'flashcard' ? 'Flashcards' : 'Practice Exam'}</span>
           <span className="text-lg font-bold tracking-tighter">{eventName}</span>
         </div>
-        <button onClick={() => { setTimerActive(false); setMode('summary'); }} className="text-[10px] font-black uppercase tracking-widest text-white/80 hover:text-red-400 transition-colors border border-white/30 hover:border-red-500/50 px-4 py-2 rounded-lg bg-white/5 hover:bg-red-500/10">
-          End
-        </button>
+        <div className="flex flex-col items-end gap-1">
+          {mode === 'test' && (
+            <span className={`text-lg font-black tabular-nums leading-none ${timeLeft < 30 ? 'text-red-500 animate-pulse' : brandTextClass}`}>
+              {formatTime(timeLeft)}
+            </span>
+          )}
+          <button onClick={() => { setTimerActive(false); setMode('summary'); }} className="text-[10px] font-black uppercase tracking-widest text-white/80 hover:text-red-400 transition-colors border border-white/30 hover:border-red-500/50 px-4 py-2 rounded-lg bg-white/5 hover:bg-red-500/10">
+            End
+          </button>
+        </div>
       </header>
 
       <div className={`border rounded-2xl p-4 mb-4 flex justify-between items-center transition-colors ${!isLoggedIn && remaining === 0 ? 'bg-red-500/10 border-red-500/50' : 'bg-rh-dark border-white/5'}`}>
