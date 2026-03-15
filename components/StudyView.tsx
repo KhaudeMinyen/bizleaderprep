@@ -78,6 +78,7 @@ const StudyView: React.FC<StudyViewProps> = ({
   const [realisticScore, setRealisticScore] = useState<{ correct: number; total: number } | null>(null);
 
   const hasRestored = useRef(false);
+  const skipNextFetchRef = useRef(false);
 
   const isLimitReached = !isRetrying && !isLoggedIn && flashcardsUsed >= limit;
   const remaining = Math.max(0, limit - flashcardsUsed);
@@ -89,6 +90,7 @@ const StudyView: React.FC<StudyViewProps> = ({
 
   // Fetch all cards
   useEffect(() => {
+    if (skipNextFetchRef.current) { skipNextFetchRef.current = false; return; }
     const fetchCards = async () => {
       setIsLoading(true);
       setAnswerHistory([]);
@@ -167,6 +169,7 @@ const StudyView: React.FC<StudyViewProps> = ({
       if (practiceSave) {
         try {
           const s = JSON.parse(practiceSave);
+          skipNextFetchRef.current = true;
           setDifficulty(diff);
           setCards(s.cards || []);
           setCurrentIndex(s.currentIndex ?? 0);
@@ -191,6 +194,7 @@ const StudyView: React.FC<StudyViewProps> = ({
       if (flashSave) {
         try {
           const s = JSON.parse(flashSave);
+          skipNextFetchRef.current = true;
           setDifficulty(diff);
           setCards(s.cards || []);
           setCurrentIndex(s.currentIndex ?? 0);
