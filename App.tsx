@@ -42,10 +42,12 @@ const App: React.FC = () => {
   const [view, setView] = useState<ViewState>(() => {
     if (isAnimalStaxPath()) return 'animalstax';
     const savedEvent = localStorage.getItem('prephub_activeEvent');
-    const savedPath = localStorage.getItem('prephub_virtualPath');
+    const savedVPath = localStorage.getItem('prephub_virtualPath');
+    const savedDiv = localStorage.getItem('prephub_division');
     const path = getPathFromLocation();
-    const effectivePath = path !== '/' ? path : (savedPath || '/');
+    const effectivePath = path !== '/' ? path : (savedVPath || '/');
     if (savedEvent && (effectivePath === '/fblaprephub' || effectivePath === '/decaprephub')) return 'study';
+    if (savedDiv && (effectivePath === '/fblaprephub' || effectivePath === '/decaprephub')) return 'portfolio';
     return 'landing';
   });
   const [virtualPath, setVirtualPath] = useState(() => {
@@ -92,9 +94,25 @@ const App: React.FC = () => {
     }
     if (isAnimalStaxPath()) {
       setView('animalstax');
-    } else {
-      setView('landing');
+      window.scrollTo(0, 0);
+      return;
     }
+    // Returning users skip the org landing page and go straight to their last division
+    const savedDiv = localStorage.getItem('prephub_division') as Division | null;
+    if (newPath === '/fblaprephub' && savedDiv) {
+      const subPath = savedDiv === 'Middle School' ? 'ms' : 'hs';
+      window.history.replaceState({}, '', `/fblaprephub/${subPath}`);
+      setDivision(savedDiv);
+      setView('portfolio');
+      window.scrollTo(0, 0);
+      return;
+    }
+    if (newPath === '/decaprephub' && savedDiv) {
+      setView('portfolio');
+      window.scrollTo(0, 0);
+      return;
+    }
+    setView('landing');
     window.scrollTo(0, 0);
   };
 
@@ -191,6 +209,7 @@ const App: React.FC = () => {
     setActiveEvent(eventName);
     localStorage.setItem('prephub_activeEvent', eventName);
     localStorage.setItem('prephub_virtualPath', virtualPath);
+    localStorage.setItem('prephub_division', division);
     setView('study');
   };
 
@@ -209,6 +228,7 @@ const App: React.FC = () => {
     localStorage.removeItem('prephub_activeEvent');
     localStorage.removeItem('prephub_virtualPath');
     const effectiveDivision = div ?? division;
+    localStorage.setItem('prephub_division', effectiveDivision);
     if (isFBLA) {
       const subPath = effectiveDivision === 'Middle School' ? 'ms' : 'hs';
       window.history.pushState({}, '', `/fblaprephub/${subPath}`);
