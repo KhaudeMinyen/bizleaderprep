@@ -42,11 +42,17 @@ const App: React.FC = () => {
   const [view, setView] = useState<ViewState>(() => {
     if (isAnimalStaxPath()) return 'animalstax';
     const savedEvent = localStorage.getItem('prephub_activeEvent');
+    const savedPath = localStorage.getItem('prephub_virtualPath');
     const path = getPathFromLocation();
-    if (savedEvent && (path === '/fblaprephub' || path === '/decaprephub')) return 'study';
+    const effectivePath = path !== '/' ? path : (savedPath || '/');
+    if (savedEvent && (effectivePath === '/fblaprephub' || effectivePath === '/decaprephub')) return 'study';
     return 'landing';
   });
-  const [virtualPath, setVirtualPath] = useState(getPathFromLocation);
+  const [virtualPath, setVirtualPath] = useState(() => {
+    const path = getPathFromLocation();
+    if (path !== '/') return path;
+    return localStorage.getItem('prephub_virtualPath') || '/';
+  });
   const [activeEvent, setActiveEvent] = useState<string | null>(
     () => localStorage.getItem('prephub_activeEvent')
   );
@@ -180,6 +186,7 @@ const App: React.FC = () => {
   const startStudy = (eventName: string) => {
     setActiveEvent(eventName);
     localStorage.setItem('prephub_activeEvent', eventName);
+    localStorage.setItem('prephub_virtualPath', virtualPath);
     setView('study');
   };
 
@@ -196,6 +203,7 @@ const App: React.FC = () => {
 
   const goToPortfolio = (div?: Division) => {
     localStorage.removeItem('prephub_activeEvent');
+    localStorage.removeItem('prephub_virtualPath');
     const effectiveDivision = div ?? division;
     if (isFBLA) {
       const subPath = effectiveDivision === 'Middle School' ? 'ms' : 'hs';
