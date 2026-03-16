@@ -25,7 +25,7 @@ const Footer: React.FC<FooterProps> = ({ orgType = 'NONE' }) => {
               <div className={`w-1.5 h-1.5 rounded-full ${brandColorClass} animate-pulse`}></div>
               <span className={`text-[9px] font-black ${brandTextClass} uppercase tracking-widest`}>Systems Live</span>
             </div>
-            <span className="text-[9px] font-bold text-rh-gray/50 uppercase tracking-widest">v0.3.54</span>
+            <span className="text-[9px] font-bold text-rh-gray/50 uppercase tracking-widest">v0.3.55</span>
           </div>
 
           <div className="flex space-x-10 text-[10px] font-bold text-rh-gray uppercase tracking-[0.2em]">
