@@ -85,7 +85,11 @@ const App: React.FC = () => {
 
   const navigateTo = (path: string) => {
     window.history.pushState({ path }, '', path);
-    setVirtualPath(getPathFromLocation());
+    const newPath = getPathFromLocation();
+    setVirtualPath(newPath);
+    if (newPath === '/fblaprephub' || newPath === '/decaprephub') {
+      localStorage.setItem('prephub_virtualPath', newPath);
+    }
     if (isAnimalStaxPath()) {
       setView('animalstax');
     } else {
