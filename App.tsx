@@ -43,11 +43,9 @@ const App: React.FC = () => {
     if (isAnimalStaxPath()) return 'animalstax';
     const savedEvent = localStorage.getItem('prephub_activeEvent');
     const savedVPath = localStorage.getItem('prephub_virtualPath');
-    const savedDiv = localStorage.getItem('prephub_division');
     const path = getPathFromLocation();
     const effectivePath = path !== '/' ? path : (savedVPath || '/');
     if (savedEvent && (effectivePath === '/fblaprephub' || effectivePath === '/decaprephub')) return 'study';
-    if (savedDiv && (effectivePath === '/fblaprephub' || effectivePath === '/decaprephub')) return 'portfolio';
     return 'landing';
   });
   const [virtualPath, setVirtualPath] = useState(() => {
