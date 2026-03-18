@@ -96,19 +96,21 @@ const StarIcon: React.FC<{ filled: boolean; className?: string }> = ({ filled, c
 
 const Dashboard: React.FC<DashboardProps> = ({ onSelectEvent, division, orgType, isLoggedIn }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [favorites, setFavorites] = useState<string[]>(() => {
-    try { return JSON.parse(localStorage.getItem('prephub_favorites') || '[]'); } catch { return []; }
-  });
+  const [favorites, setFavorites] = useState<string[]>([]);
 
-  // Load favorites from Supabase for logged-in users
+  // Sync favorites: Supabase when logged in, localStorage when logged out
   useEffect(() => {
-    if (!isLoggedIn) return;
-    supabase
-      .from('user_favorites')
-      .select('event_name')
-      .then(({ data }) => {
-        if (data) setFavorites(data.map(r => r.event_name));
-      });
+    if (isLoggedIn) {
+      supabase
+        .from('user_favorites')
+        .select('event_name')
+        .then(({ data }) => {
+          setFavorites(data ? data.map(r => r.event_name) : []);
+        });
+    } else {
+      try { setFavorites(JSON.parse(localStorage.getItem('prephub_favorites') || '[]')); }
+      catch { setFavorites([]); }
+    }
   }, [isLoggedIn]);
 
   const allEvents = orgType === 'DECA'
