@@ -6,6 +6,7 @@ import VisualShowcase from './components/VisualShowcase';
 import CallToAction from './components/CallToAction';
 import Footer from './components/Footer';
 import Dashboard from './components/Dashboard';
+import Sidebar from './components/Sidebar';
 import StudyView from './components/StudyView';
 import Auth from './components/Auth';
 import AnimalStaxHome from './components/animalstax/pages/Home';
@@ -373,7 +374,9 @@ const App: React.FC = () => {
             )}
           </>
         ) : (
-          <div className="max-w-4xl mx-auto pt-12 px-6 animate-slide-up">
+          <div className="flex min-h-[calc(100vh-64px)]">
+            {isFBLA && <Sidebar isLoggedIn={isLoggedIn} />}
+            <div className="flex-1 max-w-4xl mx-auto pt-12 px-6 animate-slide-up">
             <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
               <div className="flex-1">
                 <p className="text-rh-gray text-xs font-bold uppercase tracking-widest mb-1">
@@ -412,6 +415,7 @@ const App: React.FC = () => {
             </header>
 
             <Dashboard onSelectEvent={startStudy} division={division} orgType={orgType} isLoggedIn={isLoggedIn} />
+            </div>
           </div>
         )}
       </main>
