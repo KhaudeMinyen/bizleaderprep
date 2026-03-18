@@ -48,11 +48,7 @@ const App: React.FC = () => {
     if (savedEvent && (effectivePath === '/fblaprephub' || effectivePath === '/decaprephub')) return 'study';
     return 'landing';
   });
-  const [virtualPath, setVirtualPath] = useState(() => {
-    const path = getPathFromLocation();
-    if (path !== '/') return path;
-    return localStorage.getItem('prephub_virtualPath') || '/';
-  });
+  const [virtualPath, setVirtualPath] = useState(getPathFromLocation);
   const [activeEvent, setActiveEvent] = useState<string | null>(
     () => localStorage.getItem('prephub_activeEvent')
   );
@@ -76,6 +72,14 @@ const App: React.FC = () => {
   const isDECA = virtualPath === '/decaprephub';
   const orgType: OrgType = isFBLA ? 'FBLA' : isDECA ? 'DECA' : 'NONE';
 
+  // Restore org path for study sessions loaded from root URL (runs while spinner is shown)
+  useEffect(() => {
+    if (virtualPath === '/' && localStorage.getItem('prephub_activeEvent')) {
+      const savedVPath = localStorage.getItem('prephub_virtualPath');
+      if (savedVPath) setVirtualPath(savedVPath);
+    }
+  }, []);
+
   // Ensure DECA defaults to High School and stays there
   useEffect(() => {
     if (orgType === 'DECA' && division === 'Middle School') {
@@ -92,25 +96,9 @@ const App: React.FC = () => {
     }
     if (isAnimalStaxPath()) {
       setView('animalstax');
-      window.scrollTo(0, 0);
-      return;
+    } else {
+      setView('landing');
     }
-    // Returning users skip the org landing page and go straight to their last division
-    const savedDiv = localStorage.getItem('prephub_division') as Division | null;
-    if (newPath === '/fblaprephub' && savedDiv) {
-      const subPath = savedDiv === 'Middle School' ? 'ms' : 'hs';
-      window.history.replaceState({}, '', `/fblaprephub/${subPath}`);
-      setDivision(savedDiv);
-      setView('portfolio');
-      window.scrollTo(0, 0);
-      return;
-    }
-    if (newPath === '/decaprephub' && savedDiv) {
-      setView('portfolio');
-      window.scrollTo(0, 0);
-      return;
-    }
-    setView('landing');
     window.scrollTo(0, 0);
   };
 
@@ -423,7 +411,7 @@ const App: React.FC = () => {
               )}
             </header>
 
-            <Dashboard onSelectEvent={startStudy} division={division} orgType={orgType} />
+            <Dashboard onSelectEvent={startStudy} division={division} orgType={orgType} isLoggedIn={isLoggedIn} />
           </div>
         )}
       </main>

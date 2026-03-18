@@ -28,9 +28,9 @@ const ORGS = [
   {
     name: 'DECA',
     logo: 'https://images.unsplash.com/vector-1769952554970-ec7722064e8c?q=80&w=1632&auto=format&fit=crop',
-    path: '/decaprephub',
-    active: true,
-    accent: 'rh-cyan'
+    path: '#',
+    active: false,
+    accent: 'rh-gray'
   },
   {
     name: 'HOSA',

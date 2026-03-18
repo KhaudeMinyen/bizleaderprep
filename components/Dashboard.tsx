@@ -1,11 +1,13 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Division, OrgType } from '../App';
+import { supabase } from '../src/lib/supabase';
 
 interface DashboardProps {
   onSelectEvent: (event: string) => void;
   division: Division;
   orgType: OrgType;
+  isLoggedIn: boolean;
 }
 
 // Official 2025-2026 FBLA High School Objective Test Events
@@ -92,11 +94,22 @@ const StarIcon: React.FC<{ filled: boolean; className?: string }> = ({ filled, c
   </svg>
 );
 
-const Dashboard: React.FC<DashboardProps> = ({ onSelectEvent, division, orgType }) => {
+const Dashboard: React.FC<DashboardProps> = ({ onSelectEvent, division, orgType, isLoggedIn }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [favorites, setFavorites] = useState<string[]>(() => {
     try { return JSON.parse(localStorage.getItem('prephub_favorites') || '[]'); } catch { return []; }
   });
+
+  // Load favorites from Supabase for logged-in users
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    supabase
+      .from('user_favorites')
+      .select('event_name')
+      .then(({ data }) => {
+        if (data) setFavorites(data.map(r => r.event_name));
+      });
+  }, [isLoggedIn]);
 
   const allEvents = orgType === 'DECA'
     ? (DECA_EVENTS['High School'] || [])
@@ -106,11 +119,18 @@ const Dashboard: React.FC<DashboardProps> = ({ onSelectEvent, division, orgType 
 
   const toggleFavorite = (evt: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    setFavorites(prev => {
-      const next = prev.includes(evt) ? prev.filter(f => f !== evt) : [...prev, evt];
+    const isPinned = favorites.includes(evt);
+    const next = isPinned ? favorites.filter(f => f !== evt) : [...favorites, evt];
+    setFavorites(next);
+    if (isLoggedIn) {
+      if (isPinned) {
+        supabase.from('user_favorites').delete().eq('event_name', evt).then(() => {});
+      } else {
+        supabase.from('user_favorites').insert({ event_name: evt, org_type: orgType }).then(() => {});
+      }
+    } else {
       localStorage.setItem('prephub_favorites', JSON.stringify(next));
-      return next;
-    });
+    }
   };
 
   let events = allEvents;
