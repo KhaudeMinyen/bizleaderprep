@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BizLeaderPrep — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface2: #181818;
+    --surface3: #1e1e1e;
+    --border: #222222;
+    --border2: #2a2a2a;
+    --green: #00ff6a;
+    --green-glow: rgba(0,255,106,0.08);
+    --purple: #a855f7;
+    --purple-glow: rgba(168,85,247,0.18);
+    --text: #f0f0f0;
+    --text2: #aaaaaa;
+    --muted: #666666;
+    --muted2: #444444;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --blue: #3b82f6;
+  }
+
+  html, body { height: 100%; overflow: hidden; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 256px;
+    min-width: 256px;
+    height: 100vh;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+  }
+
+  .sidebar-logo {
+    padding: 14px 20px 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 57px;
+  }
+
+  .sidebar-logo img {
+    height: 34px;
+    width: auto;
+    flex-shrink: 0;
+  }
+
+  .logo-text {
+    font-family: 'Instrument Sans', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.1px;
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  .logo-text span { color: var(--green); }
+
+  .sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .sidebar-nav::-webkit-scrollbar { width: 0; }
+
+  .nav-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.4px;
+    color: var(--muted);
+    text-transform: uppercase;
+    padding: 10px 10px 5px;
+    margin-top: 4px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    color: var(--muted);
+    font-size: 13.5px;
+    font-weight: 400;
+    user-select: none;
+  }
+
+  .nav-item:hover { background: var(--surface2); color: var(--text2); }
+  .nav-item.active { background: var(--green-glow); color: var(--green); font-weight: 500; }
+
+  .nav-item .nav-icon {
+    width: 17px; height: 17px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; opacity: 0.9;
+  }
+
+  .nav-badge {
+    margin-left: auto;
+    background: var(--green);
+    color: #000;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 20px;
+    line-height: 1.6;
+  }
+
+  .nav-divider { height: 1px; background: var(--border); margin: 8px 0; }
+
+  .sidebar-bottom {
+    padding: 12px 12px;
+    border-top: 1px solid var(--border);
+  }
+
+  .user-chip {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 10px; border-radius: 9px;
+    background: var(--surface2); cursor: pointer;
+    transition: background 0.15s; border: 1px solid var(--border);
+  }
+  .user-chip:hover { background: var(--surface3); }
+
+  .user-avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--green), #00aaff);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: #000; flex-shrink: 0;
+  }
+
+  .user-info { flex: 1; min-width: 0; }
+  .user-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .user-plan { font-size: 11px; color: var(--muted); }
+  .user-settings { color: var(--muted); flex-shrink: 0; }
+
+  /* MAIN */
+  .main { flex: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; min-width: 0; position: relative; z-index: 1; }
+
+  /* TOPBAR */
+  .topbar {
+    height: 57px; min-height: 57px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center;
+    padding: 0 24px; gap: 14px;
+    background: var(--surface);
+  }
+
+  .topbar-title {
+    font-family: 'Instrument Sans', sans-serif;
+    font-weight: 600; font-size: 15px; white-space: nowrap;
+  }
+
+  .topbar-sep { width: 1px; height: 18px; background: var(--border2); }
+
+  .topbar-right {
+    margin-left: auto; display: flex; align-items: center; gap: 10px;
+  }
+
+  .search-bar {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 7px 14px; cursor: text;
+    transition: border-color 0.15s; width: 200px;
+  }
+  .search-bar:hover { border-color: var(--border2); }
+  .search-bar span { font-size: 12.5px; color: var(--muted); }
+
+  .streak-pill {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2);
+    color: var(--amber); font-size: 12.5px; font-weight: 600;
+    padding: 6px 14px; border-radius: 20px; white-space: nowrap;
+  }
+
+  .notif-btn {
+    width: 34px; height: 34px; border-radius: 8px;
+    background: var(--surface2); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--muted); position: relative; transition: color 0.15s;
+  }
+  .notif-btn:hover { color: var(--text); }
+  .notif-dot {
+    position: absolute; top: 6px; right: 6px;
+    width: 6px; height: 6px; background: var(--green);
+    border-radius: 50%; border: 1.5px solid var(--surface);
+  }
+
+  /* CONTENT */
+  .content {
+    flex: 1; overflow-y: auto; padding: 22px 24px;
+    display: flex; flex-direction: column; gap: 22px;
+  }
+  .content::-webkit-scrollbar { width: 5px; }
+  .content::-webkit-scrollbar-track { background: transparent; }
+  .content::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+  /* STATS */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+  .stat-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 18px;
+    display: flex; flex-direction: column; gap: 8px;
+    cursor: default; transition: border-color 0.2s, transform 0.2s;
+    animation: fadeUp 0.4s ease both;
+  }
+  .stat-card:hover { border-color: var(--border2); transform: translateY(-1px); }
+  .stat-card:nth-child(1) { animation-delay: 0.05s; }
+  .stat-card:nth-child(2) { animation-delay: 0.1s; }
+  .stat-card:nth-child(3) { animation-delay: 0.15s; }
+  .stat-card:nth-child(4) { animation-delay: 0.2s; }
+
+  .stat-top { display: flex; align-items: center; justify-content: space-between; }
+  .stat-label { font-size: 12px; color: var(--muted); font-weight: 500; }
+  .stat-icon { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; }
+
+  /* Conservative numeric font — use tabular nums with DM Sans */
+  .stat-value {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 26px; font-weight: 600;
+    line-height: 1; letter-spacing: -0.5px;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-value.green { color: var(--green); }
+  .stat-value.purple { color: var(--purple); }
+  .stat-value.amber { color: var(--amber); }
+
+  .stat-delta { font-size: 11.5px; color: var(--muted); display: flex; align-items: center; gap: 4px; }
+  .delta-up { color: var(--green); font-weight: 600; }
+
+  /* CONTENT GRID */
+  .content-grid { display: grid; grid-template-columns: 1fr 310px; gap: 16px; min-height: 0; }
+  .left-col { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+  .right-col { display: flex; flex-direction: column; gap: 14px; }
+
+  /* SECTION HEADER */
+  .section-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .section-title { font-family: 'Instrument Sans', sans-serif; font-weight: 600; font-size: 14px; }
+  .section-link { font-size: 12px; color: var(--green); cursor: pointer; font-weight: 500; transition: opacity 0.15s; }
+  .section-link:hover { opacity: 0.75; }
+
+  /* EVENTS GRID */
+  .events-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+
+  .event-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 15px; cursor: pointer;
+    transition: all 0.18s ease; display: flex; flex-direction: column; gap: 11px;
+    animation: fadeUp 0.4s ease both;
+  }
+  .event-card:nth-child(1) { animation-delay: 0.1s; }
+  .event-card:nth-child(2) { animation-delay: 0.15s; }
+  .event-card:nth-child(3) { animation-delay: 0.2s; }
+  .event-card:nth-child(4) { animation-delay: 0.25s; }
+  .event-card:nth-child(5) { animation-delay: 0.3s; }
+  .event-card:nth-child(6) { animation-delay: 0.35s; }
+  .event-card:hover {
+    border-color: rgba(0,255,106,0.4); background: rgba(0,255,106,0.02);
+    transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+
+  .event-top { display: flex; align-items: flex-start; justify-content: space-between; }
+  .event-icon { width: 38px; height: 38px; border-radius: 10px; background: var(--surface2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .diff-pill { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.4px; }
+  .diff-b { background: rgba(0,255,106,0.1); color: var(--green); }
+  .diff-i { background: rgba(245,158,11,0.1); color: var(--amber); }
+  .diff-a { background: rgba(239,68,68,0.1); color: var(--red); }
+  .event-name { font-size: 13px; font-weight: 500; line-height: 1.35; color: var(--text); }
+  .progress-wrap { display: flex; flex-direction: column; gap: 5px; }
+  .progress-bar { height: 3px; background: var(--surface3); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 2px; background: var(--green); transition: width 0.6s ease; }
+  .progress-fill.amber { background: var(--amber); }
+  .progress-fill.red { background: var(--red); }
+  .event-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
+
+  /* QUIZ PREVIEW */
+  .quiz-card { background: var(--surface); border: 1px solid var(--border); border-radius: 13px; padding: 18px 20px; animation: fadeUp 0.4s ease 0.3s both; }
+  .quiz-tag { background: var(--surface2); border: 1px solid var(--border); padding: 2px 8px; border-radius: 5px; font-size: 11px; }
+  .quiz-q { font-size: 14px; font-weight: 500; line-height: 1.55; margin-bottom: 14px; color: var(--text); }
+  .quiz-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .quiz-opt { background: var(--surface2); border: 1px solid var(--border); border-radius: 9px; padding: 10px 13px; font-size: 12.5px; cursor: pointer; transition: all 0.15s; line-height: 1.4; color: var(--text2); }
+  .quiz-opt:hover { border-color: var(--border2); color: var(--text); background: var(--surface3); }
+  .quiz-opt.correct { border-color: rgba(0,255,106,0.4); background: rgba(0,255,106,0.06); color: var(--green); }
+  .quiz-opt.wrong { border-color: rgba(239,68,68,0.3); background: rgba(239,68,68,0.05); color: var(--red); }
+
+  /* LEADERBOARD */
+  .lb-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px; animation: fadeUp 0.4s ease 0.2s both; }
+  .lb-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); }
+  .lb-row:last-child { border-bottom: none; padding-bottom: 2px; }
+  .lb-row:first-child { padding-top: 2px; }
+  .lb-rank { font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 13px; font-variant-numeric: tabular-nums; width: 22px; text-align: center; color: var(--muted); flex-shrink: 0; }
+  .lb-rank.g { color: #ffd700; }
+  .lb-rank.s { color: #c0c0c0; }
+  .lb-rank.b { color: #cd7f32; }
+  .lb-av { width: 28px; height: 28px; border-radius: 50%; font-size: 10.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; color: #000; flex-shrink: 0; }
+  .lb-info { flex: 1; min-width: 0; }
+  .lb-name { font-size: 12.5px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .lb-events { font-size: 10.5px; color: var(--muted); margin-top: 1px; }
+  .lb-score { font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 13px; color: var(--green); font-variant-numeric: tabular-nums; flex-shrink: 0; }
+  .lb-you { background: rgba(0,255,106,0.05); border-radius: 7px; padding-left: 4px; margin: 0 -4px; }
+
+  /* APEX CARD */
+  .apex-card {
+    background: var(--surface);
+    border: 2px solid rgba(168,85,247,0.5);
+    border-radius: 14px; padding: 18px;
+    position: relative; overflow: hidden;
+    animation: fadeUp 0.4s ease 0.25s both;
+    box-shadow: 0 0 0 1px rgba(168,85,247,0.1), inset 0 0 20px rgba(168,85,247,0.03);
+  }
+  .apex-glow {
+    position: absolute; top: -40px; right: -40px;
+    width: 140px; height: 140px;
+    background: var(--purple-glow);
+    border-radius: 50%; filter: blur(30px); pointer-events: none;
+  }
+  .apex-header { display: flex; align-items: center; gap: 11px; margin-bottom: 14px; }
+  .apex-orb {
+    width: 40px; height: 40px;
+    background: #0d0d0d; border-radius: 50%;
+    border: 2px solid rgba(168,85,247,0.6);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; flex-shrink: 0;
+    box-shadow: 0 0 16px rgba(168,85,247,0.25), inset 0 0 10px rgba(168,85,247,0.1);
+  }
+  .eye-l, .eye-r {
+    width: 7px; height: 9px; background: var(--purple);
+    border-radius: 50%; box-shadow: 0 0 8px var(--purple);
+    animation: blink 3.5s infinite;
+  }
+  .eye-r { animation-delay: 0.1s; }
+  .apex-eyes { display: flex; gap: 5px; align-items: center; }
+  @keyframes blink {
+    0%, 88%, 100% { transform: scaleY(1); }
+    93% { transform: scaleY(0.08); }
+  }
+  .apex-name { font-family: 'Instrument Sans', sans-serif; font-weight: 600; font-size: 14px; }
+  .apex-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+  .apex-online { margin-left: auto; width: 7px; height: 7px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); flex-shrink: 0; }
+  .apex-bubble { background: var(--surface2); border: 1px solid rgba(168,85,247,0.2); border-radius: 10px 10px 10px 3px; padding: 12px 14px; font-size: 13px; line-height: 1.55; color: var(--text2); margin-bottom: 13px; }
+  .apex-bubble b { color: var(--purple); font-weight: 600; }
+  .apex-input-row { display: flex; gap: 7px; }
+  .apex-input { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 9px; padding: 8px 13px; font-size: 13px; color: var(--text); outline: none; font-family: 'DM Sans', sans-serif; transition: border-color 0.15s; }
+  .apex-input:focus { border-color: rgba(168,85,247,0.5); }
+  .apex-input::placeholder { color: var(--muted); }
+  .apex-send-btn { width: 36px; height: 36px; background: var(--purple); border: none; border-radius: 9px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: opacity 0.15s, transform 0.1s; }
+  .apex-send-btn:hover { opacity: 0.85; }
+  .apex-send-btn:active { transform: scale(0.95); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+<canvas id="grid-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <img src="TransparentLogo.png" alt="BizLeaderPrep" />
+    <div class="logo-text"><span>Biz</span>LeaderPrep</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-label">Study</div>
+    <div class="nav-item active">
+      <span class="nav-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
+      Dashboard
+    </div>
+    <div class="nav-item">
+      <span class="nav-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>
+      All Events
+      <span class="nav-badge">17</span>
+    </div>
+    <div class="nav-item">
+      <span class="nav-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
+      Practice Quiz
+    </div>
+    <div class="nav-item">
+      <span class="nav-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
+      My Progress
+    </div>
+    <div class="nav-item">
+      <span class="nav-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></span>
+      Flashcards
+    </div>
+
+    <div class="nav-divider"></div>
+    <div class="nav-label">Compete</div>
+    <div class="nav-item">
+      <span class="nav-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg></span>
+      Leaderboard
+    </div>
+    <div class="nav-item">
+      <span class="nav-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></span>
+      Mock Exam
+    </div>
+
+    <div class="nav-divider"></div>
+    <div class="nav-label">Organization</div>
+    <div class="nav-item active" style="background:var(--green-glow);color:var(--green)">
+      <span class="nav-icon" style="font-size:15px">📗</span>
+      FBLA Middle School
+      <span class="nav-badge">MS</span>
+    </div>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <div class="user-chip">
+      <div class="user-avatar">MK</div>
+      <div class="user-info">
+        <div class="user-name">minhk</div>
+        <div class="user-plan">Free plan</div>
+      </div>
+      <div class="user-settings">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-title">Dashboard</div>
+    <div class="topbar-sep"></div>
+    <div style="font-size:12.5px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);padding:4px 12px;border-radius:7px;font-family:'Instrument Sans',sans-serif;">
+      📗 FBLA Middle School
+    </div>
+    <div class="topbar-right">
+      <div class="search-bar">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <span>Search events...</span>
+      </div>
+      <div class="streak-pill">🔥 7 day streak</div>
+      <div class="notif-btn">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="notif-dot"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-top">
+          <div class="stat-label">Questions Answered</div>
+          <div class="stat-icon" style="background:rgba(0,255,106,0.08)">
+            <svg width="14" height="14" fill="none" stroke="var(--green)" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+        </div>
+        <div class="stat-value green">1,284</div>
+        <div class="stat-delta"><span class="delta-up">+48</span> this week</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top">
+          <div class="stat-label">Accuracy Rate</div>
+          <div class="stat-icon" style="background:rgba(59,130,246,0.08)">
+            <svg width="14" height="14" fill="none" stroke="var(--blue)" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+        </div>
+        <div class="stat-value">78%</div>
+        <div class="stat-delta"><span class="delta-up">+3%</span> vs last week</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top">
+          <div class="stat-label">Events Studied</div>
+          <div class="stat-icon" style="background:rgba(168,85,247,0.08)">
+            <svg width="14" height="14" fill="none" stroke="var(--purple)" stroke-width="2" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+        </div>
+        <div class="stat-value purple">8<span style="font-size:16px;color:var(--muted);font-weight:400">/17</span></div>
+        <div class="stat-delta">events in progress</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top">
+          <div class="stat-label">Study Time</div>
+          <div class="stat-icon" style="background:rgba(245,158,11,0.08)">
+            <svg width="14" height="14" fill="none" stroke="var(--amber)" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+        </div>
+        <div class="stat-value amber">4.2h</div>
+        <div class="stat-delta">this week</div>
+      </div>
+    </div>
+
+    <!-- CONTENT GRID -->
+    <div class="content-grid">
+
+      <!-- LEFT COL -->
+      <div class="left-col">
+        <div>
+          <div class="section-hd">
+            <div class="section-title">Your Events</div>
+            <div class="section-link">View all 17 →</div>
+          </div>
+          <div class="events-grid">
+            <div class="event-card">
+              <div class="event-top"><div class="event-icon">🧭</div><div class="diff-pill diff-b">Beginner</div></div>
+              <div class="event-name">Career Exploration</div>
+              <div class="progress-wrap">
+                <div class="progress-bar"><div class="progress-fill" style="width:72%"></div></div>
+                <div class="event-meta"><span>72% done</span><span>36 / 50 qs</span></div>
+              </div>
+            </div>
+            <div class="event-card">
+              <div class="event-top"><div class="event-icon">💻</div><div class="diff-pill diff-i">Inter</div></div>
+              <div class="event-name">Digital Citizenship</div>
+              <div class="progress-wrap">
+                <div class="progress-bar"><div class="progress-fill amber" style="width:45%"></div></div>
+                <div class="event-meta"><span>45% done</span><span>22 / 50 qs</span></div>
+              </div>
+            </div>
+            <div class="event-card">
+              <div class="event-top"><div class="event-icon">💰</div><div class="diff-pill diff-a">Advanced</div></div>
+              <div class="event-name">Exploring Personal Finance</div>
+              <div class="progress-wrap">
+                <div class="progress-bar"><div class="progress-fill red" style="width:20%"></div></div>
+                <div class="event-meta"><span>20% done</span><span>10 / 50 qs</span></div>
+              </div>
+            </div>
+            <div class="event-card">
+              <div class="event-top"><div class="event-icon">🌱</div><div class="diff-pill diff-b">Beginner</div></div>
+              <div class="event-name">Exploring Agribusiness</div>
+              <div class="progress-wrap">
+                <div class="progress-bar"><div class="progress-fill" style="width:88%"></div></div>
+                <div class="event-meta"><span>88% done</span><span>44 / 50 qs</span></div>
+              </div>
+            </div>
+            <div class="event-card">
+              <div class="event-top"><div class="event-icon">🤝</div><div class="diff-pill diff-i">Inter</div></div>
+              <div class="event-name">Exploring Leadership</div>
+              <div class="progress-wrap">
+                <div class="progress-bar"><div class="progress-fill amber" style="width:55%"></div></div>
+                <div class="event-meta"><span>55% done</span><span>27 / 50 qs</span></div>
+              </div>
+            </div>
+            <div class="event-card">
+              <div class="event-top"><div class="event-icon">📢</div><div class="diff-pill diff-b">Beginner</div></div>
+              <div class="event-name">Exploring Marketing</div>
+              <div class="progress-wrap">
+                <div class="progress-bar"><div class="progress-fill" style="width:30%"></div></div>
+                <div class="event-meta"><span>30% done</span><span>15 / 50 qs</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- QUIZ -->
+        <div>
+          <div class="section-hd">
+            <div class="section-title">Quick Question</div>
+            <div style="display:flex;gap:6px">
+              <span class="quiz-tag">Digital Citizenship</span>
+              <span class="quiz-tag" style="color:var(--amber);border-color:rgba(245,158,11,0.2);background:rgba(245,158,11,0.05)">Intermediate</span>
+            </div>
+          </div>
+          <div class="quiz-card">
+            <div class="quiz-q">What is the term for the trail of data you leave behind when using the internet?</div>
+            <div class="quiz-opts">
+              <div class="quiz-opt wrong">Internet history</div>
+              <div class="quiz-opt correct">Digital footprint ✓</div>
+              <div class="quiz-opt">Data cache</div>
+              <div class="quiz-opt">Browser log</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT COL — Leaderboard first, then Apex -->
+      <div class="right-col">
+
+        <!-- LEADERBOARD -->
+        <div class="lb-card">
+          <div class="section-hd" style="margin-bottom:10px">
+            <div class="section-title">Top This Week</div>
+            <div class="section-link">Full board →</div>
+          </div>
+          <div class="lb-row">
+            <div class="lb-rank g">1</div>
+            <div class="lb-av" style="background:linear-gradient(135deg,#ffd700,#ff8c00)">JS</div>
+            <div class="lb-info"><div class="lb-name">Jordan S.</div><div class="lb-events">Career Exp · Digital</div></div>
+            <div class="lb-score">2,410</div>
+          </div>
+          <div class="lb-row lb-you">
+            <div class="lb-rank s">2</div>
+            <div class="lb-av" style="background:linear-gradient(135deg,#00ff6a,#00aaff)">MK</div>
+            <div class="lb-info"><div class="lb-name">minhk <span style="font-size:10px;color:var(--green)">(you)</span></div><div class="lb-events">Leadership · Finance</div></div>
+            <div class="lb-score">1,284</div>
+          </div>
+          <div class="lb-row">
+            <div class="lb-rank b">3</div>
+            <div class="lb-av" style="background:linear-gradient(135deg,#a855f7,#ec4899)">AL</div>
+            <div class="lb-info"><div class="lb-name">Alex L.</div><div class="lb-events">Marketing · FBLA</div></div>
+            <div class="lb-score">1,102</div>
+          </div>
+          <div class="lb-row">
+            <div class="lb-rank">4</div>
+            <div class="lb-av" style="background:linear-gradient(135deg,#3b82f6,#06b6d4)">PR</div>
+            <div class="lb-info"><div class="lb-name">Priya R.</div><div class="lb-events">Agribusiness</div></div>
+            <div class="lb-score">980</div>
+          </div>
+          <div class="lb-row">
+            <div class="lb-rank">5</div>
+            <div class="lb-av" style="background:linear-gradient(135deg,#f97316,#eab308)">TC</div>
+            <div class="lb-info"><div class="lb-name">Tyler C.</div><div class="lb-events">Professionalism</div></div>
+            <div class="lb-score">874</div>
+          </div>
+        </div>
+
+        <!-- APEX — below leaderboard -->
+        <div class="apex-card">
+          <div class="apex-glow"></div>
+          <div class="apex-header">
+            <div class="apex-orb">
+              <div class="apex-eyes">
+                <div class="eye-l"></div>
+                <div class="eye-r"></div>
+              </div>
+            </div>
+            <div>
+              <div class="apex-name">Apex</div>
+              <div class="apex-sub">Your study companion</div>
+            </div>
+            <div class="apex-online"></div>
+          </div>
+          <div class="apex-bubble">
+            <b>Lock in.</b> You're 3 questions away from finishing Agribusiness. That's district-level consistency. Keep it up. 🔥
+          </div>
+          <div class="apex-input-row">
+            <input class="apex-input" type="text" placeholder="Ask Apex anything..." />
+            <button class="apex-send-btn">
+              <svg width="14" height="14" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+(function() {
+  const canvas = document.getElementById('grid-canvas');
+  const ctx = canvas.getContext('2d');
+  const CELL = 40, RADIUS = 130, BASE_ALPHA = 0.07, MAX_ALPHA = 0.55;
+  let W, H, mouse = { x: -9999, y: -9999 };
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  window.addEventListener('mousemove', function(e) { mouse.x = e.clientX; mouse.y = e.clientY; });
+  resize();
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    const cols = Math.ceil(W / CELL) + 1;
+    const rows = Math.ceil(H / CELL) + 1;
+    for (let i = 0; i < cols; i++) {
+      for (let j = 0; j < rows; j++) {
+        const x = i * CELL, y = j * CELL;
+        const dx = mouse.x - x, dy = mouse.y - y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        const alpha = dist < RADIUS ? BASE_ALPHA + (MAX_ALPHA - BASE_ALPHA) * (1 - dist/RADIUS) : BASE_ALPHA;
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(160,160,160,' + alpha + ')';
+        ctx.lineWidth = 1;
+        ctx.moveTo(x, y); ctx.lineTo(x, y + CELL);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x, y); ctx.lineTo(x + CELL, y);
+        ctx.stroke();
+        if (dist < RADIUS) {
+          const dotAlpha = (1 - dist/RADIUS) * 0.9;
+          const dotR = (1 - dist/RADIUS) * 3;
+          ctx.beginPath();
+          ctx.arc(x, y, dotR, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(160,160,160,' + dotAlpha + ')';
+          ctx.fill();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
+
+</body>
+</html>

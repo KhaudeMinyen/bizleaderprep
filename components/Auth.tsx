@@ -14,14 +14,14 @@ type AuthView = 'login' | 'signup' | 'forgot_password';
 
 const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login', orgType = 'NONE' }) => {
   const [view, setView] = useState<AuthView>(defaultView);
-  const brandBgClass = orgType === 'FBLA' ? 'bg-rh-yellow' : orgType === 'DECA' ? 'bg-rh-cyan' : 'bg-rh-green';
-  const brandTextClass = orgType === 'FBLA' ? 'text-rh-yellow' : orgType === 'DECA' ? 'text-rh-cyan' : 'text-rh-green';
-  const brandBorderClass = orgType === 'FBLA' ? 'border-rh-yellow' : orgType === 'DECA' ? 'border-rh-cyan' : 'border-rh-green';
-  const brandShadowClass = orgType === 'FBLA' ? 'shadow-[0_0_40px_rgba(255,218,0,0.4)]' : orgType === 'DECA' ? 'shadow-[0_0_40px_rgba(0,166,224,0.4)]' : 'shadow-[0_0_40px_rgba(0,200,5,0.4)]';
-  const brandFocusClass = orgType === 'FBLA' ? 'focus:border-rh-yellow' : orgType === 'DECA' ? 'focus:border-rh-cyan' : 'focus:border-rh-green';
-  const brandSuccessBgClass = orgType === 'FBLA' ? 'bg-rh-yellow/10 border-rh-yellow/50 text-rh-yellow' : orgType === 'DECA' ? 'bg-rh-cyan/10 border-rh-cyan/50 text-rh-cyan' : 'bg-rh-green/10 border-rh-green/50 text-rh-green';
-  const brandButtonShadowClass = orgType === 'FBLA' ? 'shadow-[0_10px_30px_rgba(255,218,0,0.2)]' : orgType === 'DECA' ? 'shadow-[0_10px_30px_rgba(0,166,224,0.2)]' : 'shadow-[0_10px_30px_rgba(0,200,5,0.2)]';
-  const brandHoverClass = orgType === 'FBLA' ? 'hover:bg-rh-yellow' : orgType === 'DECA' ? 'hover:bg-rh-cyan' : 'hover:bg-rh-green';
+  const brandBgClass = 'bg-rh-green';
+  const brandTextClass = 'text-rh-green';
+  const brandBorderClass = 'border-rh-green';
+  const brandShadowClass = 'shadow-[0_0_40px_rgba(0,200,5,0.4)]';
+  const brandFocusClass = 'focus:border-rh-green';
+  const brandSuccessBgClass = 'bg-rh-green/10 border-rh-green/50 text-rh-green';
+  const brandButtonShadowClass = 'shadow-[0_10px_30px_rgba(0,200,5,0.2)]';
+  const brandHoverClass = 'hover:bg-rh-green';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -94,14 +94,12 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login', o
       <div className="w-full max-w-md">
         {/* Branding */}
         <div className="text-center mb-10">
-          <div className={`w-14 h-14 ${brandBgClass} rounded-xl rotate-45 flex items-center justify-center mx-auto mb-8 ${brandShadowClass}`}>
-            <div className="w-5 h-5 bg-black rounded-full"></div>
-          </div>
+          <img src="/TransparentLogo.png" alt="BizLeaderPrep" className="h-16 w-auto mx-auto mb-8" style={{ filter: 'drop-shadow(0 0 20px rgba(0,200,5,0.25))' }} />
           <h1 className="text-4xl font-bold tracking-tighter text-white mb-3">
-            {view === 'login' ? 'Mastery Awaits' : 'Join PrepHub'}
+            {view === 'login' ? 'Welcome Back' : view === 'signup' ? 'Join BizLeaderPrep' : 'Reset Password'}
           </h1>
           <p className="text-rh-gray text-sm font-medium tracking-wide">
-            {view === 'login' ? 'Secure access to your FBLA portfolio.' : 'The premium platform for competition success.'}
+            {view === 'login' ? 'Log in to access your FBLA study dashboard.' : view === 'signup' ? 'Free forever. No credit card required.' : 'We\'ll send you a reset link.'}
           </p>
         </div>
 
@@ -183,12 +181,12 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login', o
               onClick={() => setView(view === 'login' ? 'signup' : 'login')}
               className="text-xs font-bold text-rh-gray hover:text-white transition-colors"
             >
-              {view === 'login' ? "New to PrepHub? Create account" : "Have an account? Log in"}
+              {view === 'login' ? "New to BizLeaderPrep? Create account" : "Already have an account? Log in"}
             </button>
 
             <div className="pt-6 border-t border-white/5 flex flex-col items-center space-y-4">
               <button onClick={onCancel} className="text-[10px] font-black uppercase tracking-[0.2em] text-rh-gray/50 hover:text-white transition-colors">Return Home</button>
-              <a href="/privacy-policy.html" target="_blank" rel="noopener noreferrer" className="text-[9px] font-bold text-rh-gray/30 hover:text-white transition-colors uppercase tracking-widest">Privacy Policy</a>
+              <a href="/privacy-policy.html" target="_blank" rel="noopener noreferrer" className="text-[10px] font-black uppercase tracking-[0.2em] text-rh-gray/50 hover:text-white transition-colors">Privacy Policy</a>
             </div>
           </div>
 

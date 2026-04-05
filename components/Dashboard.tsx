@@ -64,29 +64,6 @@ const FBLA_EVENTS: Record<Division, string[]> = {
   ]
 };
 
-const DECA_EVENTS: Record<string, string[]> = {
-  'High School': [
-    'Principles of Business Management',
-    'Principles of Finance',
-    'Principles of Hospitality and Tourism',
-    'Principles of Marketing',
-    'Apparel and Accessories Marketing',
-    'Automotive Services Marketing',
-    'Business Services Marketing',
-    'Food Marketing Series',
-    'Marketing Communications',
-    'Retail Merchandising',
-    'Sports and Entertainment Marketing',
-    'Business Finance Series',
-    'Hotel and Lodging Management',
-    'Quick Serve Restaurant Management',
-    'Restaurant and Food Service Management',
-    'Business Law and Ethics Team Decision Making',
-    'Human Resources Management',
-    'Entrepreneurship Series',
-    'Personal Financial Literacy'
-  ]
-};
 
 const StarIcon: React.FC<{ filled: boolean; className?: string }> = ({ filled, className = '' }) => (
   <svg className={className} fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth={filled ? '0' : '2'} viewBox="0 0 24 24">
@@ -113,11 +90,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onSelectEvent, division, orgType,
     }
   }, [isLoggedIn]);
 
-  const allEvents = orgType === 'DECA'
-    ? (DECA_EVENTS['High School'] || [])
-    : orgType === 'FBLA'
-      ? (FBLA_EVENTS[division] || [])
-      : [];
+  const allEvents = FBLA_EVENTS['Middle School'];
 
   const toggleFavorite = (evt: string, e: React.MouseEvent) => {
     e.stopPropagation();

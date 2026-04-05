@@ -1,66 +1,29 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Hero from './components/Hero';
-import Features from './components/Features';
-import VisualShowcase from './components/VisualShowcase';
-import CallToAction from './components/CallToAction';
-import Footer from './components/Footer';
 import Dashboard from './components/Dashboard';
 import Sidebar from './components/Sidebar';
 import StudyView from './components/StudyView';
 import Auth from './components/Auth';
-import AnimalStaxHome from './components/animalstax/pages/Home';
-import AnimalStaxGame from './components/animalstax/pages/Game';
 import { supabase } from './supabaseClient';
 
-type ViewState = 'landing' | 'portfolio' | 'study' | 'auth' | 'animalstax';
+type ViewState = 'landing' | 'portfolio' | 'study' | 'auth';
 export type Division = 'Middle School' | 'High School';
 export type OrgType = 'FBLA' | 'DECA' | 'NONE';
 
 const FLASHCARD_LIMIT = 5;
 
-function getPathFromLocation(): string {
-  const p = window.location.pathname;
-  if (p.startsWith('/fblaprephub')) return '/fblaprephub';
-  if (p.startsWith('/decaprephub')) return '/decaprephub';
-  return '/';
-}
-
-function isAnimalStaxPath(): boolean {
-  return window.location.pathname.startsWith('/fblaprephub/animalstax');
-}
-
-function isAnimalStaxGamePath(): boolean {
-  return window.location.pathname.startsWith('/fblaprephub/animalstax/game');
-}
-
-function getDivisionFromPath(): Division {
-  if (window.location.pathname.startsWith('/fblaprephub/ms')) return 'Middle School';
-  return 'High School';
-}
-
 const App: React.FC = () => {
   const [view, setView] = useState<ViewState>(() => {
-    if (isAnimalStaxPath()) return 'animalstax';
     const savedEvent = localStorage.getItem('prephub_activeEvent');
-    const savedVPath = localStorage.getItem('prephub_virtualPath');
-    const path = getPathFromLocation();
-    const effectivePath = path !== '/' ? path : (savedVPath || '/');
-    if (savedEvent && (effectivePath === '/fblaprephub' || effectivePath === '/decaprephub')) return 'study';
+    if (savedEvent) return 'study';
     return 'landing';
   });
-  const [virtualPath, setVirtualPath] = useState(getPathFromLocation);
   const [activeEvent, setActiveEvent] = useState<string | null>(
     () => localStorage.getItem('prephub_activeEvent')
   );
-  const [animalStaxInGame, setAnimalStaxInGame] = useState(isAnimalStaxGamePath);
-  const [animalStaxDifficulty, setAnimalStaxDifficulty] = useState('easy');
-  // Where to return when exiting AnimalStax ('study' if opened from StudyView)
-  const [animalStaxReturnView, setAnimalStaxReturnView] = useState<ViewState>('portfolio');
-  const [division, setDivision] = useState<Division>(() => {
-    const saved = localStorage.getItem('prephub_division') as Division | null;
-    return saved === 'Middle School' ? 'Middle School' : getDivisionFromPath();
-  });
+  const division: Division = 'Middle School';
+  const orgType: OrgType = 'FBLA';
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [flashcardsUsed, setFlashcardsUsed] = useState(() => {
@@ -69,54 +32,9 @@ const App: React.FC = () => {
   });
   const [authInitialView, setAuthInitialView] = useState<'login' | 'signup'>('login');
 
-  const isFBLA = virtualPath === '/fblaprephub';
-  const isDECA = virtualPath === '/decaprephub';
-  const orgType: OrgType = isFBLA ? 'FBLA' : isDECA ? 'DECA' : 'NONE';
-
-  // Restore org path for study sessions loaded from root URL (runs while spinner is shown)
-  useEffect(() => {
-    if (virtualPath === '/' && localStorage.getItem('prephub_activeEvent')) {
-      const savedVPath = localStorage.getItem('prephub_virtualPath');
-      if (savedVPath) setVirtualPath(savedVPath);
-    }
-  }, []);
-
-  // Ensure DECA defaults to High School and stays there
-  useEffect(() => {
-    if (orgType === 'DECA' && division === 'Middle School') {
-      setDivision('High School');
-    }
-  }, [orgType, division]);
-
-  const navigateTo = (path: string) => {
-    window.history.pushState({ path }, '', path);
-    const newPath = getPathFromLocation();
-    setVirtualPath(newPath);
-    if (newPath === '/fblaprephub' || newPath === '/decaprephub') {
-      localStorage.setItem('prephub_virtualPath', newPath);
-    }
-    if (isAnimalStaxPath()) {
-      setView('animalstax');
-    } else {
-      setView('landing');
-    }
-    window.scrollTo(0, 0);
-  };
-
   useEffect(() => {
     const handlePopState = () => {
-      setVirtualPath(getPathFromLocation());
-      if (isAnimalStaxPath()) {
-        setView('animalstax');
-      } else if (window.location.pathname.startsWith('/fblaprephub/hs')) {
-        setDivision('High School');
-        setView('portfolio');
-      } else if (window.location.pathname.startsWith('/fblaprephub/ms')) {
-        setDivision('Middle School');
-        setView('portfolio');
-      } else {
-        setView('landing');
-      }
+      setView('landing');
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
@@ -134,28 +52,12 @@ const App: React.FC = () => {
       if (!mounted) return;
       if (session) {
         setIsLoggedIn(true);
-        const currentOrgType = getPathFromLocation();
         const savedEvent = localStorage.getItem('prephub_activeEvent');
-        if (currentOrgType === '/fblaprephub' && !isAnimalStaxPath()) {
-          const div = getDivisionFromPath();
-          setDivision(div);
-          const subPath = div === 'Middle School' ? 'ms' : 'hs';
-          if (!window.location.pathname.startsWith(`/fblaprephub/${subPath}`)) {
-            window.history.replaceState({}, '', `/fblaprephub/${subPath}`);
-          }
-          if (savedEvent) {
-            setActiveEvent(savedEvent);
-            setView('study');
-          } else {
-            setView('portfolio');
-          }
-        } else if (currentOrgType === '/decaprephub') {
-          if (savedEvent) {
-            setActiveEvent(savedEvent);
-            setView('study');
-          } else {
-            setView('portfolio');
-          }
+        if (savedEvent) {
+          setActiveEvent(savedEvent);
+          setView('study');
+        } else {
+          setView('portfolio');
         }
       }
       setIsLoading(false);
@@ -172,7 +74,7 @@ const App: React.FC = () => {
       if (!mounted) return;
       if (event === 'SIGNED_IN' && session) {
         setIsLoggedIn(true);
-        navigateTo('/');
+        setView('portfolio');
         setIsLoading(false);
       } else if (event === 'SIGNED_OUT') {
         setIsLoggedIn(false);
@@ -186,7 +88,7 @@ const App: React.FC = () => {
       clearTimeout(safetyTimeout);
       subscription.unsubscribe();
     };
-  }, [virtualPath]);
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('prephub_usage', flashcardsUsed.toString());
@@ -195,31 +97,11 @@ const App: React.FC = () => {
   const startStudy = (eventName: string) => {
     setActiveEvent(eventName);
     localStorage.setItem('prephub_activeEvent', eventName);
-    localStorage.setItem('prephub_virtualPath', virtualPath);
-    localStorage.setItem('prephub_division', division);
     setView('study');
   };
 
-  const scrollToFeatures = () => {
-    if (view !== 'landing') {
-      setView('landing');
-      setTimeout(() => {
-        document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
-    } else {
-      document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  const goToPortfolio = (div?: Division) => {
+  const goToPortfolio = () => {
     localStorage.removeItem('prephub_activeEvent');
-    localStorage.removeItem('prephub_virtualPath');
-    const effectiveDivision = div ?? division;
-    localStorage.setItem('prephub_division', effectiveDivision);
-    if (isFBLA) {
-      const subPath = effectiveDivision === 'Middle School' ? 'ms' : 'hs';
-      window.history.pushState({}, '', `/fblaprephub/${subPath}`);
-    }
     setView('portfolio');
   };
 
@@ -229,14 +111,13 @@ const App: React.FC = () => {
 
   const handleLogin = () => {
     setIsLoggedIn(true);
-    navigateTo('/');
+    setView('portfolio');
   };
 
   if (isLoading) {
-    const spinnerBorder = virtualPath === '/fblaprephub' ? 'border-rh-yellow' : virtualPath === '/decaprephub' ? 'border-rh-cyan' : 'border-rh-green';
     return (
       <div className="min-h-screen bg-rh-black flex items-center justify-center">
-        <div className={`w-8 h-8 border-2 ${spinnerBorder} border-t-transparent rounded-full animate-spin`}></div>
+        <div className="w-8 h-8 border-2 border-rh-green border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -268,159 +149,371 @@ const App: React.FC = () => {
     );
   }
 
-  // AnimalStax — rendered full-screen, state-based (no URL changes)
-  if (view === 'animalstax') {
-    if (animalStaxInGame) {
-      return (
-        <AnimalStaxGame
-          difficulty={animalStaxDifficulty}
-          onBack={() => {
-            setAnimalStaxInGame(false);
-            setView(animalStaxReturnView);
-          }}
-        />
-      );
-    }
+  if (view === 'landing') {
     return (
-      <AnimalStaxHome
-        onBack={() => setView(animalStaxReturnView)}
-        onPlayGame={(difficulty: string) => {
-          setAnimalStaxDifficulty(difficulty);
-          setAnimalStaxInGame(true);
-        }}
+      <Hero
+        onGetStarted={() => goToPortfolio()}
+        onLoginRequest={() => { setAuthInitialView('login'); setView('auth'); }}
+        onSignupRequest={() => { setAuthInitialView('signup'); setView('auth'); }}
+        isLoggedIn={isLoggedIn}
+        onSignOut={() => supabase.auth.signOut()}
       />
     );
   }
 
-  const brandColor = isFBLA ? 'bg-rh-yellow' : isDECA ? 'bg-rh-cyan' : 'bg-rh-green';
-  const brandText = isFBLA ? 'text-rh-yellow' : isDECA ? 'text-rh-cyan' : 'text-rh-green';
+  // ── Derived stats from localStorage ──────────────────────────────────────
+  const totalAnswered = flashcardsUsed;
+  const masteryScores: Record<string, number> = (() => {
+    try { return JSON.parse(localStorage.getItem('prephub_mastery') || '{}'); } catch { return {}; }
+  })();
+  const studiedEvents = Object.keys(masteryScores);
+  const eventsStudiedCount = studiedEvents.length;
+  const avgAccuracy = studiedEvents.length > 0
+    ? Math.round(studiedEvents.reduce((s, e) => s + masteryScores[e], 0) / studiedEvents.length)
+    : 0;
 
+  const MS_EVENTS = [
+    'Career Exploration','Digital Citizenship','Exploring Accounting & Finance',
+    'Exploring Agribusiness','Exploring Business Communication','Exploring Business Concepts',
+    'Exploring Computer Science','Exploring Economics','Exploring FBLA','Exploring Leadership',
+    'Exploring Marketing Concepts','Exploring Parliamentary Procedure','Exploring Personal Finance',
+    'Exploring Professionalism','Exploring Technology','Interpersonal Communication',
+  ];
+
+  // ── Favorites ─────────────────────────────────────────────────────────────
+  const [favorites, setFavorites] = useState<string[]>(() => {
+    try { return JSON.parse(localStorage.getItem('prephub_favorites') || '[]'); } catch { return []; }
+  });
+
+  // Sync favorites from Supabase when logged in
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    supabase.from('user_favorites').select('event_name').then(({ data }) => {
+      if (data) setFavorites(data.map((r: any) => r.event_name));
+    });
+  }, [isLoggedIn]);
+
+  const hasFavorites = isLoggedIn && favorites.length > 0;
+
+  // ── Quick Question from Supabase ──────────────────────────────────────────
+  type QuickQ = { question: string; options: string[]; answer: string; event: string; difficulty: string };
+  const [quickQ, setQuickQ] = useState<QuickQ | null>(null);
+  const [quickAnswered, setQuickAnswered] = useState<string | null>(null);
+  const quickFetched = useRef(false);
+
+  useEffect(() => {
+    if (quickFetched.current) return;
+    quickFetched.current = true;
+    const fetchQuick = async () => {
+      // Pick event: random from favorites if any, else random MS event
+      const pool = favorites.length > 0 ? favorites.filter(f => MS_EVENTS.includes(f)) : MS_EVENTS;
+      const eventName = pool[Math.floor(Math.random() * pool.length)];
+      const { data } = await supabase.from('FBLA MS Questions').select('*').eq('event', eventName).limit(50);
+      if (!data || data.length === 0) return;
+      const row = data[Math.floor(Math.random() * data.length)];
+      const opts = [row.answer_choice_1, row.answer_choice_2, row.answer_choice_3, row.answer_choice_4].filter(Boolean);
+      const ca = String(row.correct_answer ?? '').trim().toUpperCase();
+      const answerMap: Record<string, string> = { A: opts[0], B: opts[1], C: opts[2], D: opts[3], '1': opts[0], '2': opts[1], '3': opts[2], '4': opts[3] };
+      const answer = answerMap[ca] ?? ca;
+      // Shuffle options
+      const shuffled = [...opts].sort(() => Math.random() - 0.5);
+      setQuickQ({ question: row.question, options: shuffled, answer, event: eventName, difficulty: row.difficulty ?? 'Beginner' });
+    };
+    fetchQuick();
+  }, []);
+
+  const diffColor = (d: string) => d === 'Advanced' ? '#ef4444' : d === 'Intermediate' ? '#f59e0b' : '#00ff6a';
+  const diffBg   = (d: string) => d === 'Advanced' ? 'rgba(239,68,68,0.1)' : d === 'Intermediate' ? 'rgba(245,158,11,0.1)' : 'rgba(0,255,106,0.1)';
+
+  // portfolio view — full redesign layout
   return (
-    <div className={`min-h-screen bg-rh-black text-white selection:${isFBLA ? 'bg-rh-yellow' : isDECA ? 'bg-rh-cyan' : 'bg-rh-green'} selection:text-black font-sans`}>
-      <nav className="px-6 py-4 flex justify-between items-center bg-black/50 backdrop-blur-md sticky top-0 z-[100]">
-        <div className="flex flex-col items-start">
-          <div
-            className="flex items-center space-x-2 cursor-pointer mb-1"
-            onClick={() => orgType !== 'NONE' ? navigateTo(virtualPath) : navigateTo('/')}
-          >
-            <div className={`w-6 h-6 ${brandColor} rounded-sm rotate-45 flex items-center justify-center transition-colors duration-500`}>
-              <div className="w-2 h-2 bg-black rounded-full"></div>
-            </div>
-            <span className="font-black tracking-tight text-xl uppercase">
-              {orgType === 'NONE' ? 'BIZLEADERPREP' : `${orgType} PREPHUB`}
-            </span>
+    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: '#0a0a0a', color: '#f0f0f0', fontFamily: "'DM Sans', sans-serif" }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
+        .ds-stat-card { background:#111;border:1px solid #222;border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:8px;transition:border-color 0.2s,transform 0.2s;animation:dsFadeUp 0.4s ease both; }
+        .ds-stat-card:hover { border-color:#2a2a2a;transform:translateY(-1px); }
+        .ds-quiz-opt { background:#181818;border:1px solid #222;border-radius:9px;padding:10px 13px;font-size:12.5px;cursor:pointer;transition:all 0.15s;line-height:1.4;color:#aaa; }
+        .ds-quiz-opt:hover { border-color:#2a2a2a;color:#f0f0f0;background:#1e1e1e; }
+        .ds-quiz-opt.correct { border-color:rgba(0,255,106,0.4);background:rgba(0,255,106,0.06);color:#00ff6a; }
+        .ds-quiz-opt.wrong { border-color:rgba(239,68,68,0.3);background:rgba(239,68,68,0.05);color:#ef4444; }
+        .ds-lb-row { display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #222; }
+        .ds-lb-row:last-child { border-bottom:none; }
+        .ds-saved-event { display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:9px;border:1px solid #222;background:#181818;cursor:pointer;transition:all 0.15s; }
+        .ds-saved-event:hover { border-color:rgba(0,255,106,0.35);background:rgba(0,255,106,0.03); }
+        @keyframes dsFadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes dsBlink { 0%,88%,100%{transform:scaleY(1)} 93%{transform:scaleY(0.08)} }
+        .apex-input-ds { flex:1;background:#181818;border:1px solid rgba(168,85,247,0.2);border-radius:9px;padding:9px 13px;font-size:13px;color:#f0f0f0;outline:none;font-family:'DM Sans',sans-serif;transition:border-color 0.15s; }
+        .apex-input-ds:focus { border-color:rgba(168,85,247,0.5); }
+        .apex-input-ds::placeholder { color:#55555f; }
+      `}</style>
+      <Sidebar isLoggedIn={isLoggedIn} onBack={() => setView('landing')} />
+      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', minWidth: 0 }}>
+        {/* Topbar */}
+        <div style={{ height: 57, minHeight: 57, borderBottom: '1px solid #222', display: 'flex', alignItems: 'center', padding: '0 24px', gap: 14, background: '#111', flexShrink: 0 }}>
+          <div style={{ fontFamily: "'Instrument Sans',sans-serif", fontWeight: 600, fontSize: 15 }}>Dashboard</div>
+          <div style={{ width: 1, height: 18, background: '#2a2a2a' }}></div>
+          <div style={{ fontSize: 12.5, color: '#666', background: '#181818', border: '1px solid #222', padding: '4px 12px', borderRadius: 7, fontFamily: "'Instrument Sans',sans-serif" }}>
+            📗 FBLA Middle School
           </div>
-          {orgType !== 'NONE' && (
-            <button
-              onClick={() => navigateTo('/')}
-              className="text-[10px] font-bold text-rh-gray hover:text-white uppercase tracking-widest transition-colors flex items-center space-x-1"
-            >
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
-              <span>Back to hub</span>
-            </button>
-          )}
-        </div>
-
-        <div className="flex items-center space-x-6">
-          {orgType !== 'NONE' && (
-            <button
-              onClick={scrollToFeatures}
-              className={`text-sm font-bold transition-colors ${view === 'landing' ? brandText : 'text-rh-gray hover:text-white'}`}
-            >
-              Explore
-            </button>
-          )}
-          {!isLoggedIn ? (
-            <>
-              <button
-                onClick={() => { setAuthInitialView('signup'); setView('auth'); }}
-                className={`text-sm font-bold px-4 py-2 rounded-lg text-black transition-colors ${orgType === 'NONE' ? 'bg-rh-green hover:bg-rh-green/90' : isFBLA ? 'bg-rh-yellow hover:bg-rh-yellow/90' : 'bg-rh-cyan hover:bg-rh-cyan/90'
-                  }`}
-              >
-                Sign up
-              </button>
-              <button
-                onClick={() => { setAuthInitialView('login'); setView('auth'); }}
-                className="text-sm font-bold text-rh-gray hover:text-white transition-colors"
-              >
-                Log in
-              </button>
-            </>
-          ) : (
-            <button
-              onClick={() => supabase.auth.signOut()}
-              className="text-sm font-bold text-rh-gray hover:text-white transition-colors"
-            >
-              Sign Out
-            </button>
-          )}
-        </div>
-      </nav>
-
-      <main>
-        {view === 'landing' ? (
-          <>
-            <Hero
-              orgType={orgType}
-              onGetStarted={() => goToPortfolio()}
-              onNavigate={(path) => navigateTo(path)}
-            />
-            {orgType !== 'NONE' && (
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 10 }}>
+            {!isLoggedIn ? (
               <>
-                <Features orgType={orgType} />
-                <VisualShowcase orgType={orgType} />
-                <CallToAction orgType={orgType} onGetStarted={() => goToPortfolio()} />
+                <button onClick={() => { setAuthInitialView('signup'); setView('auth'); }} style={{ fontSize: 13, fontWeight: 600, color: '#000', padding: '7px 16px', borderRadius: 8, background: '#00ff6a', border: 'none', cursor: 'pointer', fontFamily: "'Instrument Sans',sans-serif" }}>Sign up free</button>
+                <button onClick={() => { setAuthInitialView('login'); setView('auth'); }} style={{ fontSize: 13, color: '#aaa', padding: '7px 14px', borderRadius: 8, border: '1px solid #2a2a2a', background: 'transparent', cursor: 'pointer', fontFamily: "'Instrument Sans',sans-serif" }}>Log in</button>
               </>
+            ) : (
+              <button onClick={() => supabase.auth.signOut()} style={{ fontSize: 13, color: '#aaa', padding: '7px 14px', borderRadius: 8, border: '1px solid #2a2a2a', background: 'transparent', cursor: 'pointer', fontFamily: "'Instrument Sans',sans-serif" }}>Sign out</button>
             )}
-          </>
-        ) : (
-          <div className="flex min-h-[calc(100vh-64px)]">
-            {isFBLA && <Sidebar isLoggedIn={isLoggedIn} />}
-            <div className="flex-1 max-w-4xl mx-auto pt-12 px-6 animate-slide-up">
-            <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
-              <div className="flex-1">
-                <p className="text-rh-gray text-xs font-bold uppercase tracking-widest mb-1">
-                  Competitive Event Mastery
-                </p>
-                <h1 className="text-4xl md:text-5xl font-bold tracking-tighter text-white leading-tight">
-                  {orgType === 'DECA' ? 'High School' : division} <br /> {orgType} Events
-                </h1>
-                {!isLoggedIn && flashcardsUsed >= FLASHCARD_LIMIT && (
-                  <p className="text-red-500 text-xs font-bold mt-2 uppercase tracking-widest">
-                    Free Trial Limit Reached — Log in to continue
-                  </p>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '22px 24px', display: 'flex', flexDirection: 'column', gap: 22 }}>
+
+          {/* Stats grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12 }}>
+            {([
+              {
+                label: 'Questions Answered',
+                value: totalAnswered.toLocaleString(),
+                color: '#00ff6a',
+                delta: totalAnswered > 0 ? 'keep it up!' : 'start studying',
+                deltaUp: totalAnswered > 0,
+                iconColor: 'rgba(0,255,106,0.08)', iconStroke: '#00ff6a',
+                svgPath: <polyline points="20 6 9 17 4 12"/>,
+              },
+              {
+                label: 'Accuracy Rate',
+                value: eventsStudiedCount > 0 ? `${avgAccuracy}%` : '—',
+                color: '#f0f0f0',
+                delta: eventsStudiedCount > 0 ? 'avg across events' : 'no data yet',
+                deltaUp: avgAccuracy >= 70,
+                iconColor: 'rgba(59,130,246,0.08)', iconStroke: '#3b82f6',
+                svgPath: <><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>,
+              },
+              {
+                label: 'Events Studied',
+                value: `${eventsStudiedCount}/${MS_EVENTS.length}`,
+                color: '#a855f7',
+                delta: eventsStudiedCount > 0 ? 'events in progress' : 'none yet',
+                deltaUp: eventsStudiedCount > 0,
+                iconColor: 'rgba(168,85,247,0.08)', iconStroke: '#a855f7',
+                svgPath: <><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></>,
+              },
+              {
+                label: 'Saved Events',
+                value: favorites.length > 0 ? String(favorites.length) : '—',
+                color: '#f59e0b',
+                delta: favorites.length > 0 ? 'pinned events' : isLoggedIn ? 'star events to save' : 'sign in to save',
+                deltaUp: favorites.length > 0,
+                iconColor: 'rgba(245,158,11,0.08)', iconStroke: '#f59e0b',
+                svgPath: <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>,
+              },
+            ] as const).map((s, i) => (
+              <div key={i} className="ds-stat-card" style={{ animationDelay: `${i * 0.05}s` }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: 12, color: '#666', fontWeight: 500 }}>{s.label}</span>
+                  <div style={{ width: 28, height: 28, borderRadius: 7, background: s.iconColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <svg width="14" height="14" fill="none" stroke={s.iconStroke} strokeWidth="2" viewBox="0 0 24 24">{s.svgPath}</svg>
+                  </div>
+                </div>
+                <div style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 26, fontWeight: 600, lineHeight: 1, letterSpacing: '-0.5px', color: s.color }}>{s.value}</div>
+                <div style={{ fontSize: 11.5, color: '#666' }}>
+                  {s.deltaUp && <span style={{ color: '#00ff6a', fontWeight: 600 }}>↑ </span>}
+                  {s.delta}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Content grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 370px', gap: 16 }}>
+            {/* Left col */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 18, minWidth: 0 }}>
+
+              {/* Saved Events box */}
+              <div style={{ background: '#111', border: '1px solid #222', borderRadius: 12, padding: '16px 18px', animation: 'dsFadeUp 0.4s ease 0.1s both' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: hasFavorites ? 14 : 0 }}>
+                  <div style={{ fontFamily: "'Instrument Sans',sans-serif", fontWeight: 600, fontSize: 14 }}>Saved Events</div>
+                  {hasFavorites && (
+                    <button onClick={() => startStudy(favorites[0])} style={{ fontSize: 12, color: '#00ff6a', cursor: 'pointer', fontWeight: 500, background: 'none', border: 'none', padding: 0 }}>
+                      View all {MS_EVENTS.length} →
+                    </button>
+                  )}
+                </div>
+                {!isLoggedIn || !hasFavorites ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px 0', gap: 10 }}>
+                    <svg width="28" height="28" fill="none" stroke="#444" strokeWidth="1.5" viewBox="0 0 24 24">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                    <span style={{ fontSize: 13, color: '#555' }}>{isLoggedIn ? 'Star events to save them here' : 'Sign in to save events'}</span>
+                    <button
+                      onClick={() => setView('portfolio')}
+                      style={{ fontSize: 13, color: '#00ff6a', fontWeight: 500, background: 'none', border: '1px solid rgba(0,255,106,0.25)', borderRadius: 8, padding: '6px 16px', cursor: 'pointer', fontFamily: "'Instrument Sans',sans-serif" }}
+                    >
+                      View all events →
+                    </button>
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {favorites.filter(f => MS_EVENTS.includes(f)).slice(0, 6).map(evt => {
+                      const score = masteryScores[evt];
+                      return (
+                        <div key={evt} className="ds-saved-event" onClick={() => startStudy(evt)}>
+                          <div style={{ display: 'flex', flex: 1, alignItems: 'center', gap: 10, minWidth: 0 }}>
+                            <span style={{ fontSize: 13, fontWeight: 500, color: '#f0f0f0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{evt}</span>
+                            {score !== undefined && (
+                              <span style={{ fontSize: 10, fontWeight: 700, background: 'rgba(0,255,106,0.1)', color: '#00ff6a', borderRadius: 20, padding: '1px 7px', flexShrink: 0 }}>
+                                {Math.round(score)}%
+                              </span>
+                            )}
+                          </div>
+                          <svg width="14" height="14" fill="none" stroke="#444" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+                        </div>
+                      );
+                    })}
+                  </div>
                 )}
               </div>
 
-              {orgType !== 'DECA' && (
-                <div className="flex bg-rh-dark p-1 rounded-xl border border-white/5 h-fit shrink-0">
-                  {(['Middle School', 'High School'] as Division[]).map((d) => (
-                    <button
-                      key={d}
-                      onClick={() => {
-                        setDivision(d);
-                        localStorage.setItem('prephub_division', d);
-                        if (isFBLA) {
-                          const subPath = d === 'Middle School' ? 'ms' : 'hs';
-                          window.history.replaceState({}, '', `/fblaprephub/${subPath}`);
-                        }
-                      }}
-                      className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${division === d ? (`${brandColor} text-black`) : 'text-rh-gray hover:text-white'}`}
-                    >
-                      {d}
-                    </button>
-                  ))}
+              {/* Quick Question */}
+              <div style={{ animation: 'dsFadeUp 0.4s ease 0.15s both' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                  <div style={{ fontFamily: "'Instrument Sans',sans-serif", fontWeight: 600, fontSize: 14 }}>Quick Question</div>
+                  {quickQ && (
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <span style={{ background: '#181818', border: '1px solid #222', padding: '2px 8px', borderRadius: 5, fontSize: 11, color: '#aaa' }}>{quickQ.event}</span>
+                      <span style={{ background: diffBg(quickQ.difficulty), border: `1px solid ${diffColor(quickQ.difficulty)}33`, color: diffColor(quickQ.difficulty), padding: '2px 8px', borderRadius: 5, fontSize: 11 }}>{quickQ.difficulty}</span>
+                    </div>
+                  )}
                 </div>
-              )}
-            </header>
+                <div style={{ background: '#111', border: '1px solid #222', borderRadius: 13, padding: '18px 20px' }}>
+                  {!quickQ ? (
+                    <div style={{ color: '#555', fontSize: 13, textAlign: 'center', padding: '12px 0' }}>Loading question…</div>
+                  ) : (
+                    <>
+                      <div style={{ fontSize: 14, fontWeight: 500, lineHeight: 1.55, marginBottom: 14, color: '#f0f0f0' }}>{quickQ.question}</div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                        {quickQ.options.map((opt) => {
+                          const isCorrect = opt === quickQ.answer;
+                          const isChosen = opt === quickAnswered;
+                          let cls = 'ds-quiz-opt';
+                          if (quickAnswered) cls += isCorrect ? ' correct' : isChosen ? ' wrong' : '';
+                          return (
+                            <div
+                              key={opt}
+                              className={cls}
+                              onClick={() => !quickAnswered && setQuickAnswered(opt)}
+                            >
+                              {opt}{quickAnswered && isCorrect ? ' ✓' : ''}
+                            </div>
+                          );
+                        })}
+                      </div>
+                      {quickAnswered && (
+                        <button
+                          onClick={() => {
+                            setQuickQ(null);
+                            setQuickAnswered(null);
+                            quickFetched.current = false;
+                            // re-trigger fetch
+                            const pool = favorites.length > 0 ? favorites.filter((f: string) => MS_EVENTS.includes(f)) : MS_EVENTS;
+                            const eventName = pool[Math.floor(Math.random() * pool.length)];
+                            supabase.from('FBLA MS Questions').select('*').eq('event', eventName).limit(50).then(({ data }) => {
+                              if (!data || data.length === 0) return;
+                              const row = data[Math.floor(Math.random() * data.length)];
+                              const opts = [row.answer_choice_1, row.answer_choice_2, row.answer_choice_3, row.answer_choice_4].filter(Boolean);
+                              const ca = String(row.correct_answer ?? '').trim().toUpperCase();
+                              const ansMap: Record<string, string> = { A: opts[0], B: opts[1], C: opts[2], D: opts[3], '1': opts[0], '2': opts[1], '3': opts[2], '4': opts[3] };
+                              const answer = ansMap[ca] ?? ca;
+                              setQuickQ({ question: row.question, options: [...opts].sort(() => Math.random() - 0.5), answer, event: eventName, difficulty: row.difficulty ?? 'Beginner' });
+                            });
+                          }}
+                          style={{ marginTop: 12, fontSize: 12, color: '#00ff6a', fontWeight: 500, background: 'none', border: '1px solid rgba(0,255,106,0.2)', borderRadius: 7, padding: '5px 14px', cursor: 'pointer', fontFamily: "'Instrument Sans',sans-serif" }}
+                        >
+                          Next question →
+                        </button>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
 
-            <Dashboard onSelectEvent={startStudy} division={division} orgType={orgType} isLoggedIn={isLoggedIn} />
+            {/* Right col */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {/* Leaderboard */}
+              <div style={{ background: '#111', border: '1px solid #222', borderRadius: 14, padding: 18, animation: 'dsFadeUp 0.4s ease 0.2s both' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                  <div style={{ fontFamily: "'Instrument Sans',sans-serif", fontWeight: 600, fontSize: 14 }}>Top This Week</div>
+                  <div style={{ fontSize: 12, color: '#00ff6a', cursor: 'pointer', fontWeight: 500 }}>Full board →</div>
+                </div>
+                {[
+                  { rank: '1', rankColor: '#ffd700', av: 'JS', avBg: 'linear-gradient(135deg,#ffd700,#ff8c00)', name: 'Jordan S.', events: 'Career Exp · Digital', score: '2,410', you: false },
+                  { rank: '2', rankColor: '#c0c0c0', av: 'MK', avBg: 'linear-gradient(135deg,#00ff6a,#00aaff)', name: 'minhk', events: 'Leadership · Finance', score: '1,284', you: true },
+                  { rank: '3', rankColor: '#cd7f32', av: 'AL', avBg: 'linear-gradient(135deg,#a855f7,#ec4899)', name: 'Alex L.', events: 'Marketing · FBLA', score: '1,102', you: false },
+                  { rank: '4', rankColor: '#666', av: 'PR', avBg: 'linear-gradient(135deg,#3b82f6,#06b6d4)', name: 'Priya R.', events: 'Agribusiness', score: '980', you: false },
+                  { rank: '5', rankColor: '#666', av: 'TC', avBg: 'linear-gradient(135deg,#f97316,#eab308)', name: 'Tyler C.', events: 'Professionalism', score: '874', you: false },
+                ].map((r) => (
+                  <div key={r.rank} className="ds-lb-row" style={r.you ? { background: 'rgba(0,255,106,0.05)', borderRadius: 7, paddingLeft: 4, margin: '0 -4px' } : {}}>
+                    <div style={{ fontWeight: 700, fontSize: 13, width: 22, textAlign: 'center', color: r.rankColor, flexShrink: 0 }}>{r.rank}</div>
+                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: r.avBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10.5, fontWeight: 700, color: '#000', flexShrink: 0 }}>{r.av}</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 12.5, fontWeight: 500 }}>{r.name}{r.you && <span style={{ fontSize: 10, color: '#00ff6a', marginLeft: 4 }}>(you)</span>}</div>
+                      <div style={{ fontSize: 10.5, color: '#666', marginTop: 1 }}>{r.events}</div>
+                    </div>
+                    <div style={{ fontWeight: 600, fontSize: 13, color: '#00ff6a', flexShrink: 0 }}>{r.score}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Apex card — enlarged */}
+              <div style={{ background: '#111', border: '2px solid rgba(168,85,247,0.5)', borderRadius: 14, padding: 22, position: 'relative', overflow: 'hidden', animation: 'dsFadeUp 0.4s ease 0.25s both', boxShadow: '0 0 0 1px rgba(168,85,247,0.1),inset 0 0 30px rgba(168,85,247,0.04)', flex: 1 }}>
+                <div style={{ position: 'absolute', top: -50, right: -50, width: 180, height: 180, background: 'rgba(168,85,247,0.18)', borderRadius: '50%', filter: 'blur(40px)', pointerEvents: 'none' }}></div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 11, marginBottom: 16 }}>
+                  <div style={{ width: 44, height: 44, background: '#0d0d0d', borderRadius: '50%', border: '2px solid rgba(168,85,247,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 0 18px rgba(168,85,247,0.3)' }}>
+                    <div style={{ display: 'flex', gap: 5, alignItems: 'center' }}>
+                      <div style={{ width: 8, height: 10, background: '#a855f7', borderRadius: '50%', boxShadow: '0 0 10px #a855f7', animation: 'dsBlink 3.5s infinite' }}></div>
+                      <div style={{ width: 8, height: 10, background: '#a855f7', borderRadius: '50%', boxShadow: '0 0 10px #a855f7', animation: 'dsBlink 3.5s 0.1s infinite' }}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontFamily: "'Instrument Sans',sans-serif", fontWeight: 600, fontSize: 15 }}>Apex</div>
+                    <div style={{ fontSize: 11, color: '#666', marginTop: 1 }}>Your study companion</div>
+                  </div>
+                  <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <div style={{ width: 7, height: 7, background: '#00ff6a', borderRadius: '50%', boxShadow: '0 0 6px #00ff6a' }}></div>
+                    <span style={{ fontSize: 11, color: '#00ff6a' }}>online</span>
+                  </div>
+                </div>
+                {/* Chat bubbles */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 16 }}>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                    <div style={{ width: 26, height: 26, background: '#0d0d0d', border: '1px solid rgba(168,85,247,0.35)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <div style={{ display: 'flex', gap: 3 }}>
+                        <div style={{ width: 5, height: 6, background: '#a855f7', borderRadius: '50%', boxShadow: '0 0 5px #a855f7', animation: 'dsBlink 3.5s infinite' }}></div>
+                        <div style={{ width: 5, height: 6, background: '#a855f7', borderRadius: '50%', boxShadow: '0 0 5px #a855f7', animation: 'dsBlink 3.5s 0.1s infinite' }}></div>
+                      </div>
+                    </div>
+                    <div style={{ background: '#181818', border: '1px solid rgba(168,85,247,0.15)', borderRadius: '10px 10px 10px 3px', padding: '10px 13px', fontSize: 13, lineHeight: 1.55, color: '#aaa', maxWidth: '90%' }}>
+                      <b style={{ color: '#a855f7' }}>Lock in.</b>{' '}
+                      {eventsStudiedCount > 0
+                        ? `You've studied ${eventsStudiedCount} event${eventsStudiedCount !== 1 ? 's' : ''} with ${avgAccuracy}% avg accuracy. Keep pushing. 🔥`
+                        : `Start with any event to begin building your mastery. District-level consistency starts today. 🔥`}
+                    </div>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 7 }}>
+                  <input className="apex-input-ds" placeholder="Ask Apex anything about FBLA..." />
+                  <button style={{ width: 38, height: 38, background: '#a855f7', border: 'none', borderRadius: 9, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'opacity 0.15s' }}>
+                    <svg width="14" height="14" fill="none" stroke="white" strokeWidth="2.5" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-        )}
+        </div>
       </main>
-
-      <Footer orgType={orgType} />
     </div>
   );
 };

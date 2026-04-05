@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BizLeaderPrep — FBLA Middle School Study Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #070709;
+  --surface: #0f0f12;
+  --surface2: #161619;
+  --surface3: #1c1c20;
+  --border: #1e1e24;
+  --border2: #2a2a32;
+  --green: #00ff6a;
+  --purple: #a855f7;
+  --text: #f2f2f4;
+  --text2: #9999aa;
+  --muted: #55555f;
+  --amber: #f59e0b;
+  --blue: #3b82f6;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Instrument Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* NAV */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  padding: 0 48px;
+  height: 64px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.nav-logo img {
+  height: 48px;
+  width: auto;
+  display: block;
+}
+
+.nav-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-ghost {
+  font-size: 13.5px;
+  color: var(--text2);
+  padding: 7px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  cursor: pointer;
+  font-family: 'Instrument Sans', sans-serif;
+  transition: all 0.15s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+.btn-ghost:hover { color: var(--text); background: var(--surface2); }
+
+.btn-green {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #000;
+  padding: 7px 18px;
+  border-radius: 8px;
+  background: var(--green);
+  border: none;
+  cursor: pointer;
+  font-family: 'Instrument Sans', sans-serif;
+  transition: opacity 0.15s, transform 0.1s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-green:hover { opacity: 0.88; }
+.btn-green:active { transform: scale(0.98); }
+
+/* HERO */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 48px 100px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  z-index: 2;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero-logo {
+  margin-bottom: 28px;
+  animation: fadeUp 0.5s ease both;
+}
+.hero-logo img {
+  height: 130px;
+  width: auto;
+  filter: drop-shadow(0 0 28px rgba(0,180,60,0.2));
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  padding: 6px 16px 6px 10px;
+  font-size: 12.5px;
+  color: var(--text2);
+  margin-bottom: 28px;
+  animation: fadeUp 0.5s ease 0.05s both;
+}
+
+.badge-dot {
+  width: 7px; height: 7px;
+  background: var(--green);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--green);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.75); }
+}
+
+.hero-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 800;
+  font-size: clamp(38px, 5.5vw, 68px);
+  line-height: 1.05;
+  letter-spacing: -2px;
+  margin-bottom: 22px;
+  animation: fadeUp 0.5s ease 0.1s both;
+}
+.hero-title .accent { color: var(--green); }
+
+.hero-sub {
+  font-size: 17px;
+  color: var(--text2);
+  max-width: 500px;
+  margin: 0 auto 14px;
+  line-height: 1.65;
+  animation: fadeUp 0.5s ease 0.15s both;
+}
+
+.hero-free {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  color: var(--green);
+  font-weight: 600;
+  margin-bottom: 32px;
+  animation: fadeUp 0.5s ease 0.18s both;
+}
+
+/* PRIMARY CTA */
+.hero-primary-cta {
+  animation: fadeUp 0.5s ease 0.2s both;
+  margin-bottom: 14px;
+}
+
+.btn-lg {
+  font-size: 15px;
+  font-weight: 600;
+  color: #000;
+  padding: 13px 32px;
+  border-radius: 10px;
+  background: var(--green);
+  border: none;
+  cursor: pointer;
+  font-family: 'Instrument Sans', sans-serif;
+  transition: opacity 0.15s, transform 0.1s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-lg:hover { opacity: 0.88; }
+.btn-lg:active { transform: scale(0.98); }
+
+/* SECONDARY CTAS — both matching outline style */
+.hero-secondary-ctas {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 44px;
+  animation: fadeUp 0.5s ease 0.25s both;
+}
+
+.btn-outline {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--green);
+  padding: 10px 22px;
+  border-radius: 10px;
+  border: 1px solid rgba(0,255,106,0.3);
+  background: rgba(0,255,106,0.04);
+  cursor: pointer;
+  font-family: 'Instrument Sans', sans-serif;
+  transition: all 0.15s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.btn-outline:hover {
+  background: rgba(0,255,106,0.09);
+  border-color: rgba(0,255,106,0.55);
+}
+
+/* LOGO PAIR beneath buttons */
+.hero-logo-pair {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  animation: fadeUp 0.5s ease 0.3s both;
+  margin-bottom: 44px;
+}
+
+.hero-logo-pair img {
+  height: 52px;
+  width: auto;
+  opacity: 0.9;
+  filter: drop-shadow(0 0 10px rgba(0,180,60,0.15));
+  transition: opacity 0.15s, transform 0.15s;
+}
+
+.hero-logo-pair img:hover {
+  opacity: 1;
+  transform: scale(1.04);
+}
+
+.logo-divider {
+  width: 1px;
+  height: 36px;
+  background: var(--border2);
+}
+
+.org-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface2);
+  border: 1px solid rgba(0,255,106,0.2);
+  border-radius: 12px;
+  padding: 12px 22px;
+  animation: fadeUp 0.5s ease 0.35s both;
+}
+.org-chip-icon { font-size: 22px; }
+.org-chip-name {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--green);
+}
+.org-chip-sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
+
+/* STATS BAR */
+.stats-bar {
+  background: transparent;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 36px 48px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  position: relative;
+  z-index: 2;
+}
+.stat-item {
+  text-align: center;
+  padding: 0 24px;
+  border-right: 1px solid var(--border);
+}
+.stat-item:last-child { border-right: none; }
+.stat-num {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 38px;
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  color: var(--green);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.stat-desc { font-size: 13px; color: var(--text2); }
+
+/* WHY SECTION */
+.why-section {
+  padding: 96px 48px;
+  max-width: 1160px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+.why-header {
+  text-align: center;
+  margin-bottom: 52px;
+}
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 14px;
+}
+.section-heading {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 800;
+  font-size: clamp(28px, 3.5vw, 44px);
+  letter-spacing: -1.5px;
+  line-height: 1.1;
+}
+
+/* BENTO GRID */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto auto auto;
+  gap: 14px;
+}
+.bento-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s, transform 0.2s;
+  cursor: default;
+}
+.bento-card:hover {
+  border-color: var(--border2);
+  transform: translateY(-2px);
+}
+.bento-card.big { grid-column: span 2; }
+.bento-card.tall { grid-row: span 2; }
+.bento-card.green-accent { border-color: rgba(0,255,106,0.2); background: linear-gradient(135deg, rgba(0,255,106,0.04) 0%, var(--surface) 60%); }
+.bento-card.green-accent:hover { border-color: rgba(0,255,106,0.4); }
+.bento-card.purple-accent { border-color: rgba(168,85,247,0.2); background: linear-gradient(135deg, rgba(168,85,247,0.04) 0%, var(--surface) 60%); }
+.bento-card.purple-accent:hover { border-color: rgba(168,85,247,0.4); }
+.bento-card.amber-accent { border-color: rgba(245,158,11,0.2); background: linear-gradient(135deg, rgba(245,158,11,0.04) 0%, var(--surface) 60%); }
+.bento-card.amber-accent:hover { border-color: rgba(245,158,11,0.4); }
+.bento-card.blue-accent { border-color: rgba(59,130,246,0.2); background: linear-gradient(135deg, rgba(59,130,246,0.04) 0%, var(--surface) 60%); }
+.bento-card.blue-accent:hover { border-color: rgba(59,130,246,0.4); }
+
+.bento-tag {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 20px;
+  margin-bottom: 14px;
+}
+.tag-green { background: rgba(0,255,106,0.1); color: var(--green); }
+.tag-purple { background: rgba(168,85,247,0.1); color: var(--purple); }
+.tag-amber { background: rgba(245,158,11,0.1); color: var(--amber); }
+.tag-blue { background: rgba(59,130,246,0.1); color: var(--blue); }
+
+.bento-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  margin-bottom: 10px;
+  line-height: 1.2;
+}
+.bento-desc { font-size: 13.5px; color: var(--text2); line-height: 1.65; }
+
+/* Leaderboard mini */
+.lb-mini { display: flex; flex-direction: column; gap: 8px; margin-top: 18px; }
+.lb-mini-row {
+  display: flex; align-items: center; gap: 9px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 8px 12px;
+}
+.lb-mini-rank {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 800; font-size: 12px;
+  width: 18px; text-align: center; flex-shrink: 0;
+}
+.lb-mini-av {
+  width: 24px; height: 24px; border-radius: 50%;
+  font-size: 9px; font-weight: 700; color: #000;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.lb-mini-name { flex: 1; font-size: 12px; font-weight: 500; }
+.lb-mini-score { font-family: 'Bricolage Grotesque', sans-serif; font-size: 12px; font-weight: 700; color: var(--green); }
+
+/* Timer */
+.timer-display {
+  margin-top: 20px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+}
+.timer-digits {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 44px; font-weight: 800;
+  letter-spacing: -2px;
+  color: var(--amber);
+  line-height: 1; margin-bottom: 6px;
+}
+.timer-label { font-size: 11.5px; color: var(--muted); }
+.timer-bar-wrap { margin-top: 14px; height: 4px; background: var(--surface3); border-radius: 2px; overflow: hidden; }
+.timer-bar-fill {
+  height: 100%; width: 65%;
+  background: var(--amber); border-radius: 2px;
+  animation: timer-tick 8s linear infinite;
+}
+@keyframes timer-tick {
+  from { width: 65%; }
+  to { width: 5%; }
+}
+
+/* AI mini */
+.ai-mini { margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+.ai-mini-msg { display: flex; gap: 8px; align-items: flex-start; }
+.ai-mini-orb {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: #0d0d0d; border: 1px solid rgba(168,85,247,0.35);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.ai-mini-eyes { display: flex; gap: 3px; }
+.ai-mini-eye {
+  width: 5px; height: 6px; background: var(--purple);
+  border-radius: 50%; box-shadow: 0 0 5px var(--purple);
+  animation: blink 3.5s infinite;
+}
+.ai-mini-eye:last-child { animation-delay: 0.1s; }
+@keyframes blink {
+  0%, 88%, 100% { transform: scaleY(1); }
+  93% { transform: scaleY(0.08); }
+}
+.ai-mini-bubble {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 8px 8px 8px 2px;
+  padding: 8px 12px; font-size: 12px; color: var(--text2); line-height: 1.45;
+}
+.ai-mini-bubble b { color: var(--purple); }
+
+/* APEX SECTION */
+.apex-section {
+  padding: 0 48px 96px;
+  max-width: 1160px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+.apex-showcase {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+.section-sub { font-size: 15.5px; color: var(--text2); line-height: 1.7; }
+.apex-check-list { display: flex; flex-direction: column; gap: 11px; margin-top: 26px; }
+.apex-check { display: flex; align-items: center; gap: 11px; font-size: 13.5px; color: var(--text2); }
+.check-icon {
+  width: 20px; height: 20px; background: rgba(168,85,247,0.15);
+  border-radius: 5px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.apex-right {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 20px; padding: 28px; position: relative; overflow: hidden;
+}
+.apex-right::before {
+  content: ''; position: absolute; top: -60px; right: -60px;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(168,85,247,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.chat-messages { display: flex; flex-direction: column; gap: 14px; margin-bottom: 16px; }
+.chat-msg { display: flex; gap: 10px; align-items: flex-start; }
+.chat-msg.user { flex-direction: row-reverse; }
+.chat-orb {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: #0d0d0d; border: 1px solid rgba(168,85,247,0.3);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.chat-eyes { display: flex; gap: 4px; }
+.chat-eye {
+  width: 6px; height: 8px; background: var(--purple);
+  border-radius: 50%; box-shadow: 0 0 6px var(--purple);
+  animation: blink 3.5s infinite;
+}
+.chat-eye:last-child { animation-delay: 0.1s; }
+.user-orb {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--green), #00aaff);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: #000; flex-shrink: 0;
+}
+.bubble { max-width: 78%; padding: 10px 14px; font-size: 13px; line-height: 1.5; border-radius: 12px; }
+.bubble.apex {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 12px 12px 12px 3px; color: var(--text2);
+}
+.bubble.apex b { color: var(--purple); }
+.bubble.user {
+  background: rgba(0,255,106,0.08); border: 1px solid rgba(0,255,106,0.15);
+  border-radius: 12px 12px 3px 12px; color: var(--text);
+}
+.chat-input-mock {
+  display: flex; gap: 8px; background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 14px; align-items: center;
+}
+.chat-placeholder { flex: 1; font-size: 13px; color: var(--muted); }
+.chat-send {
+  width: 30px; height: 30px; background: var(--purple);
+  border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+
+/* CTA */
+.cta-section {
+  padding: 100px 48px; text-align: center;
+  position: relative; overflow: hidden;
+  border-top: 1px solid var(--border);
+  z-index: 2;
+}
+.cta-glow {
+  position: absolute; width: 500px; height: 300px;
+  background: radial-gradient(ellipse, rgba(0,255,106,0.07) 0%, transparent 70%);
+  top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;
+}
+.cta-content { position: relative; z-index: 1; }
+.cta-title {
+  font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800;
+  font-size: clamp(32px, 5vw, 54px); letter-spacing: -2px; line-height: 1.05; margin-bottom: 18px;
+}
+.cta-title span { color: var(--green); }
+.cta-sub { font-size: 16px; color: var(--text2); margin-bottom: 40px; }
+.cta-free-badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: rgba(0,255,106,0.06); border: 1px solid rgba(0,255,106,0.2);
+  border-radius: 20px; padding: 6px 16px;
+  font-size: 13px; color: var(--green); font-weight: 600; margin-bottom: 32px;
+}
+.cta-btns { display: flex; align-items: center; justify-content: center; gap: 12px; }
+
+/* FOOTER */
+footer {
+  border-top: 1px solid var(--border); padding: 28px 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--bg);
+  position: relative;
+  z-index: 200;
+}
+.footer-logo img { height: 48px; width: auto; display: block; }
+.footer-copy { font-size: 12.5px; color: var(--muted); }
+.footer-links { display: flex; gap: 20px; }
+.footer-link { font-size: 12.5px; color: var(--muted); text-decoration: none; transition: color 0.15s; }
+.footer-link:hover { color: var(--text2); }
+
+/* ANIMATIONS */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  animation: revealDefault 0.6s ease 0.3s forwards;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); animation: none; }
+@keyframes revealDefault {
+  to { opacity: 1; transform: translateY(0); }
+}
+/* Fallback: show all reveals after 1s in case observer fails */
+@keyframes revealFallback {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+<canvas id="grid-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none;"></canvas>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <img src="TransparentLogo.png" alt="BizLeaderPrep" />
+  </a>
+  <div class="nav-right">
+    <a href="bizleaderprep_redesign.html" class="btn-ghost">Log In</a>
+    <a href="bizleaderprep_redesign.html" class="btn-green">
+      Start Free
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+
+    <div class="hero-logo">
+      <img src="TransparentLogo.png" alt="BizLeaderPrep Logo" />
+    </div>
+
+    <div class="hero-badge">
+      <div class="badge-dot"></div>
+      Now with Apex AI — your competitive study companion
+    </div>
+
+    <h1 class="hero-title">
+      Study Smarter.<br><span class="accent">Place Higher.</span>
+    </h1>
+
+    <p class="hero-sub">
+      The practice platform built for FBLA Middle School students. 850+ questions across all 17 events — with AI explanations and a coach that actually pushes you.
+    </p>
+
+    <div class="hero-free">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      100% free. No credit card. No catch.
+    </div>
+
+    <!-- Primary CTA -->
+    <div class="hero-primary-cta">
+      <a href="bizleaderprep_redesign.html" class="btn-lg">
+        Start Studying Free
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+
+    <!-- Secondary CTAs — both matching outline -->
+    <div class="hero-secondary-ctas">
+      <a href="#apex" class="btn-outline">
+        Meet Apex
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </a>
+      <a href="#why" class="btn-outline">
+        Why BizLeaderPrep?
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </a>
+    </div>
+
+    <!-- Logo pair -->
+    <div class="hero-logo-pair">
+      <img src="TransparentLogo.png" alt="BizLeaderPrep" />
+      <div class="logo-divider"></div>
+      <img src="TransparentLogo.png" alt="BizLeaderPrep" />
+    </div>
+
+    <div class="org-chip">
+      <div class="org-chip-icon">📗</div>
+      <div>
+        <div class="org-chip-name">FBLA Middle School — Available Now</div>
+        <div class="org-chip-sub">17 events · 850+ questions · All difficulty levels</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat-item reveal">
+    <div class="stat-num">850+</div>
+    <div class="stat-desc">Practice questions</div>
+  </div>
+  <div class="stat-item reveal">
+    <div class="stat-num">17</div>
+    <div class="stat-desc">MS events covered</div>
+  </div>
+  <div class="stat-item reveal">
+    <div class="stat-num">3</div>
+    <div class="stat-desc">Difficulty levels each</div>
+  </div>
+  <div class="stat-item reveal">
+    <div class="stat-num">$0</div>
+    <div class="stat-desc">Forever free</div>
+  </div>
+</div>
+
+<!-- WHY SECTION — BENTO -->
+<section class="why-section" id="why">
+  <div class="why-header">
+    <div class="section-label">Why BizLeaderPrep</div>
+    <h2 class="section-heading">Everything you need.<br>Nothing you don't.</h2>
+  </div>
+
+  <div class="bento-grid">
+
+    <!-- AI Powered — big -->
+    <div class="bento-card big purple-accent reveal">
+      <span class="bento-tag tag-purple">AI Powered</span>
+      <div class="bento-title">Apex explains every answer — right or wrong.</div>
+      <div class="bento-desc">Powered by Claude AI, Apex breaks down exactly why you got something wrong and what concept to remember. Not just "incorrect" — actual understanding.</div>
+      <div class="ai-mini">
+        <div class="ai-mini-msg">
+          <div class="ai-mini-orb">
+            <div class="ai-mini-eyes">
+              <div class="ai-mini-eye"></div>
+              <div class="ai-mini-eye"></div>
+            </div>
+          </div>
+          <div class="ai-mini-bubble"><b>Locked.</b> Digital citizenship = responsible online behavior. The key: it's about how you act, not just what you know.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Leaderboard — tall -->
+    <div class="bento-card tall green-accent reveal">
+      <span class="bento-tag tag-green">Leaderboard</span>
+      <div class="bento-title">Compete with your chapter.</div>
+      <div class="bento-desc">See who's putting in the reps. Weekly rankings keep you motivated and accountable — just like competition day.</div>
+      <div class="lb-mini">
+        <div class="lb-mini-row">
+          <div class="lb-mini-rank" style="color:#ffd700">1</div>
+          <div class="lb-mini-av" style="background:linear-gradient(135deg,#ffd700,#ff8c00)">JS</div>
+          <div class="lb-mini-name">Jordan S.</div>
+          <div class="lb-mini-score">2,410</div>
+        </div>
+        <div class="lb-mini-row" style="background:rgba(0,255,106,0.05);border-color:rgba(0,255,106,0.2)">
+          <div class="lb-mini-rank" style="color:#c0c0c0">2</div>
+          <div class="lb-mini-av" style="background:linear-gradient(135deg,#00ff6a,#00aaff)">MK</div>
+          <div class="lb-mini-name">you</div>
+          <div class="lb-mini-score">1,284</div>
+        </div>
+        <div class="lb-mini-row">
+          <div class="lb-mini-rank" style="color:#cd7f32">3</div>
+          <div class="lb-mini-av" style="background:linear-gradient(135deg,#a855f7,#ec4899)">AL</div>
+          <div class="lb-mini-name">Alex L.</div>
+          <div class="lb-mini-score">1,102</div>
+        </div>
+        <div class="lb-mini-row">
+          <div class="lb-mini-rank">4</div>
+          <div class="lb-mini-av" style="background:linear-gradient(135deg,#3b82f6,#06b6d4)">PR</div>
+          <div class="lb-mini-name">Priya R.</div>
+          <div class="lb-mini-score">980</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Timed Exams -->
+    <div class="bento-card amber-accent reveal">
+      <span class="bento-tag tag-amber">Timed Exams</span>
+      <div class="bento-title">Practice under pressure.</div>
+      <div class="bento-desc">Simulate real competition conditions with timed exams. Build speed and confidence before district and state.</div>
+      <div class="timer-display">
+        <div class="timer-digits">12:34</div>
+        <div class="timer-label">Digital Citizenship · 25 questions</div>
+        <div class="timer-bar-wrap">
+          <div class="timer-bar-fill"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 100% Free -->
+    <div class="bento-card green-accent reveal">
+      <span class="bento-tag tag-green">100% Free</span>
+      <div class="bento-title">No paywalls. No limits.</div>
+      <div class="bento-desc">Every question. Every event. Every Apex explanation. Completely free — because competition prep shouldn't cost money.</div>
+      <div style="margin-top:20px;display:flex;flex-direction:column;gap:9px">
+        <div style="display:flex;align-items:center;gap:9px;font-size:13px;color:var(--text2)">
+          <svg width="14" height="14" fill="none" stroke="var(--green)" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          All 850+ questions unlocked
+        </div>
+        <div style="display:flex;align-items:center;gap:9px;font-size:13px;color:var(--text2)">
+          <svg width="14" height="14" fill="none" stroke="var(--green)" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          Apex AI included
+        </div>
+        <div style="display:flex;align-items:center;gap:9px;font-size:13px;color:var(--text2)">
+          <svg width="14" height="14" fill="none" stroke="var(--green)" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          Leaderboard access
+        </div>
+        <div style="display:flex;align-items:center;gap:9px;font-size:13px;color:var(--text2)">
+          <svg width="14" height="14" fill="none" stroke="var(--green)" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          No credit card ever
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress Tracking -->
+    <div class="bento-card blue-accent reveal" style="grid-column: span 3;">
+      <span class="bento-tag tag-blue">Progress</span>
+      <div class="bento-title">Track every event, every difficulty.</div>
+      <div class="bento-desc">Know exactly where you stand across all 17 MS events. Per-event accuracy shows what to focus on next.</div>
+      <div style="margin-top:18px;display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;color:var(--text2);width:130px;flex-shrink:0">Career Exploration</span>
+          <div style="flex:1;height:4px;background:var(--surface3);border-radius:2px;overflow:hidden"><div style="height:100%;width:82%;background:var(--blue);border-radius:2px"></div></div>
+          <span style="font-size:11px;color:var(--blue);font-weight:600;width:30px;text-align:right">82%</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;color:var(--text2);width:130px;flex-shrink:0">Digital Citizenship</span>
+          <div style="flex:1;height:4px;background:var(--surface3);border-radius:2px;overflow:hidden"><div style="height:100%;width:60%;background:var(--blue);border-radius:2px"></div></div>
+          <span style="font-size:11px;color:var(--blue);font-weight:600;width:30px;text-align:right">60%</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;color:var(--text2);width:130px;flex-shrink:0">Exploring FBLA</span>
+          <div style="flex:1;height:4px;background:var(--surface3);border-radius:2px;overflow:hidden"><div style="height:100%;width:45%;background:var(--amber);border-radius:2px"></div></div>
+          <span style="font-size:11px;color:var(--amber);font-weight:600;width:30px;text-align:right">45%</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;color:var(--text2);width:130px;flex-shrink:0">Personal Finance</span>
+          <div style="flex:1;height:4px;background:var(--surface3);border-radius:2px;overflow:hidden"><div style="height:100%;width:22%;background:#ef4444;border-radius:2px"></div></div>
+          <span style="font-size:11px;color:#ef4444;font-weight:600;width:30px;text-align:right">22%</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- APEX SECTION -->
+<section class="apex-section" id="apex">
+  <div class="apex-showcase">
+    <div class="apex-left reveal">
+      <div class="section-label">Apex AI</div>
+      <h2 class="section-heading">A study companion<br>that actually<br><span style="color:var(--purple)">gets it.</span></h2>
+      <p class="section-sub">Apex isn't a generic chatbot. It's a competitive coach powered by AI — built to explain wrong answers clearly, keep you motivated, and push you toward your best performance.</p>
+      <div class="apex-check-list">
+        <div class="apex-check">
+          <div class="check-icon"><svg width="11" height="11" fill="none" stroke="var(--purple)" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Explains why every wrong answer is wrong
+        </div>
+        <div class="apex-check">
+          <div class="check-icon"><svg width="11" height="11" fill="none" stroke="var(--purple)" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Keeps you motivated with personalized encouragement
+        </div>
+        <div class="apex-check">
+          <div class="check-icon"><svg width="11" height="11" fill="none" stroke="var(--purple)" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Answers any FBLA concept question on demand
+        </div>
+        <div class="apex-check">
+          <div class="check-icon"><svg width="11" height="11" fill="none" stroke="var(--purple)" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Always free — no limits on Apex questions
+        </div>
+      </div>
+    </div>
+    <div class="apex-right reveal">
+      <div class="chat-messages">
+        <div class="chat-msg">
+          <div class="chat-orb"><div class="chat-eyes"><div class="chat-eye"></div><div class="chat-eye"></div></div></div>
+          <div class="bubble apex"><b>Lock in.</b> You're on a 5-question streak in Digital Citizenship. That's the consistency that wins districts. Keep going. 🔥</div>
+        </div>
+        <div class="chat-msg user">
+          <div class="user-orb">MS</div>
+          <div class="bubble user">Why was my answer on cyberbullying wrong?</div>
+        </div>
+        <div class="chat-msg">
+          <div class="chat-orb"><div class="chat-eyes"><div class="chat-eye"></div><div class="chat-eye"></div></div></div>
+          <div class="bubble apex"><b>Good question.</b> Cyberbullying requires repeated harmful behavior — a single rude comment doesn't qualify. The key concept: it's the pattern and intent that define it.</div>
+        </div>
+      </div>
+      <div class="chat-input-mock">
+        <div class="chat-placeholder">Ask Apex anything about FBLA...</div>
+        <div class="chat-send">
+          <svg width="12" height="12" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-glow"></div>
+  <div class="cta-content reveal">
+    <div class="cta-free-badge">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      100% Free — No credit card required
+    </div>
+    <h2 class="cta-title">Ready to <span>lock in</span>?</h2>
+    <p class="cta-sub">850+ questions. Apex AI. Leaderboard. Timed exams. All free — built for FBLA Middle School students.</p>
+    <div class="cta-btns">
+      <a href="bizleaderprep_redesign.html" class="btn-lg">
+        Start Studying Free
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">
+    <img src="TransparentLogo.png" alt="BizLeaderPrep" />
+  </div>
+  <div class="footer-copy">© 2026 BizLeaderPrep. Built for FBLA Middle School competitors.</div>
+  <div class="footer-links">
+    <a href="#" class="footer-link">Privacy</a>
+    <a href="#" class="footer-link">Terms</a>
+    <a href="/cdn-cgi/l/email-protection#44272b2a3025273004262d3e282125202136343621346a272b29" class="footer-link">Contact</a>
+  </div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+         observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+</script>
+
+<script>
+(function() {
+  const canvas = document.getElementById('grid-canvas');
+  const ctx = canvas.getContext('2d');
+  const CELL = 40, RADIUS = 130, BASE_ALPHA = 0.07, MAX_ALPHA = 0.55;
+  let W, H, mouse = { x: -9999, y: -9999 };
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  window.addEventListener('mousemove', function(e) { mouse.x = e.clientX; mouse.y = e.clientY; });
+  resize();
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    const cols = Math.ceil(W / CELL) + 1;
+    const rows = Math.ceil(H / CELL) + 1;
+    for (let i = 0; i < cols; i++) {
+      for (let j = 0; j < rows; j++) {
+        const x = i * CELL, y = j * CELL;
+        const dx = mouse.x - x, dy = mouse.y - y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        const alpha = dist < RADIUS ? BASE_ALPHA + (MAX_ALPHA - BASE_ALPHA) * (1 - dist/RADIUS) : BASE_ALPHA;
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(160,160,160,' + alpha + ')';
+        ctx.lineWidth = 1;
+        ctx.moveTo(x, y); ctx.lineTo(x, y + CELL);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x, y); ctx.lineTo(x + CELL, y);
+        ctx.stroke();
+        if (dist < RADIUS) {
+          const dotAlpha = (1 - dist/RADIUS) * 0.9;
+          const dotR = (1 - dist/RADIUS) * 3;
+          ctx.beginPath();
+          ctx.arc(x, y, dotR, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(160,160,160,' + dotAlpha + ')';
+          ctx.fill();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
+
+</body>
+</html>
