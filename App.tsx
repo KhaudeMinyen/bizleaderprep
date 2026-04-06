@@ -14,7 +14,10 @@ export type OrgType = 'FBLA' | 'DECA' | 'NONE';
 const FLASHCARD_LIMIT = 5;
 
 const App: React.FC = () => {
+  const isOAuthRedirect = window.location.hash.startsWith('#access_token=') || window.location.hash.includes('access_token');
   const [view, setView] = useState<ViewState>(() => {
+    if (window.location.pathname === '/dashboard') return 'portfolio';
+    if (window.location.hash.includes('access_token')) return 'portfolio';
     const savedEvent = localStorage.getItem('prephub_activeEvent');
     if (savedEvent) return 'study';
     return 'landing';
@@ -32,9 +35,23 @@ const App: React.FC = () => {
   });
   const [authInitialView, setAuthInitialView] = useState<'login' | 'signup'>('login');
 
+  // ── Favorites (must be at top level — Rules of Hooks) ─────────────────────
+  const [favorites, setFavorites] = useState<string[]>(() => {
+    try { return JSON.parse(localStorage.getItem('prephub_favorites') || '[]'); } catch { return []; }
+  });
+
+  // ── Quick Question state ───────────────────────────────────────────────────
+  type QuickQ = { question: string; options: string[]; answer: string; event: string; difficulty: string };
+  const [quickQ, setQuickQ] = useState<QuickQ | null>(null);
+  const [quickAnswered, setQuickAnswered] = useState<string | null>(null);
+  const quickFetched = useRef(false);
+
   useEffect(() => {
-    const handlePopState = () => {
-      setView('landing');
+    const handlePopState = (e: PopStateEvent) => {
+      const state = e.state as { view?: string } | null;
+      if (state?.view === 'portfolio') setView('portfolio');
+      else if (state?.view === 'landing') setView('landing');
+      else setView('landing');
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
@@ -57,28 +74,40 @@ const App: React.FC = () => {
           setActiveEvent(savedEvent);
           setView('study');
         } else {
+          window.history.replaceState({ view: 'portfolio' }, '', '/dashboard');
           setView('portfolio');
         }
+        setIsLoading(false);
+        clearTimeout(safetyTimeout);
+      } else if (!isOAuthRedirect) {
+        // No session and not an OAuth redirect — safe to stop loading
+        setIsLoading(false);
+        clearTimeout(safetyTimeout);
       }
-      setIsLoading(false);
+      // If OAuth redirect: wait for onAuthStateChange SIGNED_IN to fire
     }).catch((err) => {
       console.error("Auth check failed:", err);
       if (mounted) setIsLoading(false);
-    }).finally(() => {
-      clearTimeout(safetyTimeout);
     });
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (!mounted) return;
-      if (event === 'SIGNED_IN' && session) {
+      if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
         setIsLoggedIn(true);
+        window.history.replaceState({ view: 'portfolio' }, '', '/dashboard');
         setView('portfolio');
         setIsLoading(false);
       } else if (event === 'SIGNED_OUT') {
-        setIsLoggedIn(false);
-        setView('landing');
+        setIsLoggedIn(prev => {
+          if (prev) {
+            // Only redirect to landing if user was actually logged in
+            window.history.pushState({ view: 'landing' }, '', '/');
+            setView('landing');
+          }
+          return false;
+        });
         setIsLoading(false);
       }
     });
@@ -94,6 +123,41 @@ const App: React.FC = () => {
     localStorage.setItem('prephub_usage', flashcardsUsed.toString());
   }, [flashcardsUsed]);
 
+  // Sync favorites from Supabase when logged in
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    supabase.from('user_favorites').select('event_name').then(({ data }) => {
+      if (data) setFavorites(data.map((r: any) => r.event_name));
+    });
+  }, [isLoggedIn]);
+
+  // Fetch quick question once on mount
+  useEffect(() => {
+    if (quickFetched.current) return;
+    quickFetched.current = true;
+    const MS_EVENTS_LOCAL = [
+      'Career Exploration','Digital Citizenship','Exploring Accounting & Finance',
+      'Exploring Agribusiness','Exploring Business Communication','Exploring Business Concepts',
+      'Exploring Computer Science','Exploring Economics','Exploring FBLA','Exploring Leadership',
+      'Exploring Marketing Concepts','Exploring Parliamentary Procedure','Exploring Personal Finance',
+      'Exploring Professionalism','Exploring Technology','Interpersonal Communication',
+    ];
+    const fetchQuick = async () => {
+      const pool = favorites.length > 0 ? favorites.filter(f => MS_EVENTS_LOCAL.includes(f)) : MS_EVENTS_LOCAL;
+      const eventName = pool[Math.floor(Math.random() * pool.length)];
+      const { data } = await supabase.from('FBLA MS Questions').select('*').eq('event', eventName).limit(50);
+      if (!data || data.length === 0) return;
+      const row = data[Math.floor(Math.random() * data.length)];
+      const opts = [row.answer_choice_1, row.answer_choice_2, row.answer_choice_3, row.answer_choice_4].filter(Boolean);
+      const ca = String(row.correct_answer ?? '').trim().toUpperCase();
+      const answerMap: Record<string, string> = { A: opts[0], B: opts[1], C: opts[2], D: opts[3], '1': opts[0], '2': opts[1], '3': opts[2], '4': opts[3] };
+      const answer = answerMap[ca] ?? ca;
+      const shuffled = [...opts].sort(() => Math.random() - 0.5);
+      setQuickQ({ question: row.question, options: shuffled, answer, event: eventName, difficulty: row.difficulty ?? 'Beginner' });
+    };
+    fetchQuick();
+  }, []);
+
   const startStudy = (eventName: string) => {
     setActiveEvent(eventName);
     localStorage.setItem('prephub_activeEvent', eventName);
@@ -102,6 +166,7 @@ const App: React.FC = () => {
 
   const goToPortfolio = () => {
     localStorage.removeItem('prephub_activeEvent');
+    window.history.pushState({ view: 'portfolio' }, '', '/dashboard');
     setView('portfolio');
   };
 
@@ -111,6 +176,7 @@ const App: React.FC = () => {
 
   const handleLogin = () => {
     setIsLoggedIn(true);
+    window.history.pushState({ view: 'portfolio' }, '', '/dashboard');
     setView('portfolio');
   };
 
@@ -180,48 +246,7 @@ const App: React.FC = () => {
     'Exploring Professionalism','Exploring Technology','Interpersonal Communication',
   ];
 
-  // ── Favorites ─────────────────────────────────────────────────────────────
-  const [favorites, setFavorites] = useState<string[]>(() => {
-    try { return JSON.parse(localStorage.getItem('prephub_favorites') || '[]'); } catch { return []; }
-  });
-
-  // Sync favorites from Supabase when logged in
-  useEffect(() => {
-    if (!isLoggedIn) return;
-    supabase.from('user_favorites').select('event_name').then(({ data }) => {
-      if (data) setFavorites(data.map((r: any) => r.event_name));
-    });
-  }, [isLoggedIn]);
-
   const hasFavorites = isLoggedIn && favorites.length > 0;
-
-  // ── Quick Question from Supabase ──────────────────────────────────────────
-  type QuickQ = { question: string; options: string[]; answer: string; event: string; difficulty: string };
-  const [quickQ, setQuickQ] = useState<QuickQ | null>(null);
-  const [quickAnswered, setQuickAnswered] = useState<string | null>(null);
-  const quickFetched = useRef(false);
-
-  useEffect(() => {
-    if (quickFetched.current) return;
-    quickFetched.current = true;
-    const fetchQuick = async () => {
-      // Pick event: random from favorites if any, else random MS event
-      const pool = favorites.length > 0 ? favorites.filter(f => MS_EVENTS.includes(f)) : MS_EVENTS;
-      const eventName = pool[Math.floor(Math.random() * pool.length)];
-      const { data } = await supabase.from('FBLA MS Questions').select('*').eq('event', eventName).limit(50);
-      if (!data || data.length === 0) return;
-      const row = data[Math.floor(Math.random() * data.length)];
-      const opts = [row.answer_choice_1, row.answer_choice_2, row.answer_choice_3, row.answer_choice_4].filter(Boolean);
-      const ca = String(row.correct_answer ?? '').trim().toUpperCase();
-      const answerMap: Record<string, string> = { A: opts[0], B: opts[1], C: opts[2], D: opts[3], '1': opts[0], '2': opts[1], '3': opts[2], '4': opts[3] };
-      const answer = answerMap[ca] ?? ca;
-      // Shuffle options
-      const shuffled = [...opts].sort(() => Math.random() - 0.5);
-      setQuickQ({ question: row.question, options: shuffled, answer, event: eventName, difficulty: row.difficulty ?? 'Beginner' });
-    };
-    fetchQuick();
-  }, []);
-
   const diffColor = (d: string) => d === 'Advanced' ? '#ef4444' : d === 'Intermediate' ? '#f59e0b' : '#00ff6a';
   const diffBg   = (d: string) => d === 'Advanced' ? 'rgba(239,68,68,0.1)' : d === 'Intermediate' ? 'rgba(245,158,11,0.1)' : 'rgba(0,255,106,0.1)';
 
@@ -272,49 +297,19 @@ const App: React.FC = () => {
 
           {/* Stats grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12 }}>
-            {([
-              {
-                label: 'Questions Answered',
-                value: totalAnswered.toLocaleString(),
-                color: '#00ff6a',
-                delta: totalAnswered > 0 ? 'keep it up!' : 'start studying',
-                deltaUp: totalAnswered > 0,
-                iconColor: 'rgba(0,255,106,0.08)', iconStroke: '#00ff6a',
-                svgPath: <polyline points="20 6 9 17 4 12"/>,
-              },
-              {
-                label: 'Accuracy Rate',
-                value: eventsStudiedCount > 0 ? `${avgAccuracy}%` : '—',
-                color: '#f0f0f0',
-                delta: eventsStudiedCount > 0 ? 'avg across events' : 'no data yet',
-                deltaUp: avgAccuracy >= 70,
-                iconColor: 'rgba(59,130,246,0.08)', iconStroke: '#3b82f6',
-                svgPath: <><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>,
-              },
-              {
-                label: 'Events Studied',
-                value: `${eventsStudiedCount}/${MS_EVENTS.length}`,
-                color: '#a855f7',
-                delta: eventsStudiedCount > 0 ? 'events in progress' : 'none yet',
-                deltaUp: eventsStudiedCount > 0,
-                iconColor: 'rgba(168,85,247,0.08)', iconStroke: '#a855f7',
-                svgPath: <><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></>,
-              },
-              {
-                label: 'Saved Events',
-                value: favorites.length > 0 ? String(favorites.length) : '—',
-                color: '#f59e0b',
-                delta: favorites.length > 0 ? 'pinned events' : isLoggedIn ? 'star events to save' : 'sign in to save',
-                deltaUp: favorites.length > 0,
-                iconColor: 'rgba(245,158,11,0.08)', iconStroke: '#f59e0b',
-                svgPath: <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>,
-              },
-            ] as const).map((s, i) => (
+            {[
+              { label: 'Questions Answered', value: totalAnswered.toLocaleString(), color: '#00ff6a', delta: totalAnswered > 0 ? 'keep it up!' : 'start studying', deltaUp: totalAnswered > 0, iconColor: 'rgba(0,255,106,0.08)', iconStroke: '#00ff6a' },
+              { label: 'Accuracy Rate', value: eventsStudiedCount > 0 ? `${avgAccuracy}%` : '—', color: '#f0f0f0', delta: eventsStudiedCount > 0 ? 'avg across events' : 'no data yet', deltaUp: avgAccuracy >= 70, iconColor: 'rgba(59,130,246,0.08)', iconStroke: '#3b82f6' },
+              { label: 'Events Studied', value: `${eventsStudiedCount}/${MS_EVENTS.length}`, color: '#a855f7', delta: eventsStudiedCount > 0 ? 'events in progress' : 'none yet', deltaUp: eventsStudiedCount > 0, iconColor: 'rgba(168,85,247,0.08)', iconStroke: '#a855f7' },
+              { label: 'Saved Events', value: favorites.length > 0 ? String(favorites.length) : '—', color: '#f59e0b', delta: favorites.length > 0 ? 'pinned events' : isLoggedIn ? 'star events to save' : 'sign in to save', deltaUp: favorites.length > 0, iconColor: 'rgba(245,158,11,0.08)', iconStroke: '#f59e0b' },
+            ].map((s, i) => (
               <div key={i} className="ds-stat-card" style={{ animationDelay: `${i * 0.05}s` }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span style={{ fontSize: 12, color: '#666', fontWeight: 500 }}>{s.label}</span>
                   <div style={{ width: 28, height: 28, borderRadius: 7, background: s.iconColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <svg width="14" height="14" fill="none" stroke={s.iconStroke} strokeWidth="2" viewBox="0 0 24 24">{s.svgPath}</svg>
+                    <svg width="14" height="14" fill="none" stroke={s.iconStroke} strokeWidth="2" viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="10"/>
+                    </svg>
                   </div>
                 </div>
                 <div style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 26, fontWeight: 600, lineHeight: 1, letterSpacing: '-0.5px', color: s.color }}>{s.value}</div>

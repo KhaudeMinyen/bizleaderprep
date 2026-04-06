@@ -15,6 +15,60 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
   const [heroView, setHeroView] = useState<HeroView>('home');
   const [featuresOpen, setFeaturesOpen] = useState(false);
   const featuresRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    const CELL = 40, RADIUS = 160, BASE_ALPHA = 0.18, MAX_ALPHA = 0.75;
+    let W = 0, H = 0;
+    const mouse = { x: -9999, y: -9999 };
+    let rafId: number;
+    const resize = () => {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    };
+    const onMouseMove = (e: MouseEvent) => { mouse.x = e.clientX; mouse.y = e.clientY; };
+    window.addEventListener('resize', resize);
+    window.addEventListener('mousemove', onMouseMove);
+    resize();
+    const draw = () => {
+      ctx.clearRect(0, 0, W, H);
+      const cols = Math.ceil(W / CELL) + 1;
+      const rows = Math.ceil(H / CELL) + 1;
+      for (let i = 0; i < cols; i++) {
+        for (let j = 0; j < rows; j++) {
+          const x = i * CELL, y = j * CELL;
+          const dx = mouse.x - x, dy = mouse.y - y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          const alpha = dist < RADIUS ? BASE_ALPHA + (MAX_ALPHA - BASE_ALPHA) * (1 - dist / RADIUS) : BASE_ALPHA;
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(200,200,200,${alpha})`;
+          ctx.lineWidth = 1;
+          ctx.moveTo(x, y); ctx.lineTo(x, y + CELL); ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(x, y); ctx.lineTo(x + CELL, y); ctx.stroke();
+          if (dist < RADIUS) {
+            const dotAlpha = (1 - dist / RADIUS) * 0.9;
+            const dotR = (1 - dist / RADIUS) * 3;
+            ctx.beginPath();
+            ctx.arc(x, y, dotR, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(200,200,200,${dotAlpha})`;
+            ctx.fill();
+          }
+        }
+      }
+      rafId = requestAnimationFrame(draw);
+    };
+    draw();
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener('resize', resize);
+      window.removeEventListener('mousemove', onMouseMove);
+    };
+  }, []);
 
   useEffect(() => {
     const reveals = document.querySelectorAll('.blp-reveal');
@@ -62,9 +116,9 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
         }
         .blp-root { font-family: 'Instrument Sans', sans-serif; background: var(--blp-bg); color: var(--blp-text); font-size: 15px; line-height: 1.6; overflow-x: hidden; }
         .blp-nav {
-          position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+          position: fixed; top: 0; left: 0; right: 0; z-index: 200;
           display: flex; align-items: center; padding: 0 48px; height: 64px;
-          background: rgba(7,7,9,0.92); backdrop-filter: blur(20px);
+          background: var(--blp-bg); backdrop-filter: blur(20px);
         }
         .blp-nav-logo img { height: 48px; width: auto; display: block; }
         .blp-nav-center { display: flex; align-items: center; gap: 4px; margin-left: 20px; }
@@ -109,7 +163,7 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
         .blp-hero {
           min-height: 100vh; display: flex; flex-direction: column;
           align-items: center; justify-content: center;
-          padding: 120px 48px 100px; text-align: center; position: relative; overflow: hidden;
+          padding: 120px 48px 100px; text-align: center; position: relative; overflow: hidden; z-index: 2;
         }
         .blp-hero-content { position: relative; z-index: 1; max-width: 720px; display: flex; flex-direction: column; align-items: center; }
         .blp-hero-logo { margin-bottom: 28px; animation: blpFadeUp 0.5s ease both; }
@@ -168,14 +222,15 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
         .blp-org-chip-name { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 15px; color: var(--blp-green); }
         .blp-org-chip-sub { font-size: 12px; color: var(--blp-muted); margin-top: 1px; }
         .blp-stats-bar {
-          background: var(--blp-surface); border-top: 1px solid var(--blp-border); border-bottom: 1px solid var(--blp-border);
+          background: var(--blp-bg); border-top: 1px solid var(--blp-border); border-bottom: 1px solid var(--blp-border);
           padding: 36px 48px; display: grid; grid-template-columns: repeat(4, 1fr);
+          position: relative; z-index: 200;
         }
         .blp-stat-item { text-align: center; padding: 0 24px; border-right: 1px solid var(--blp-border); }
         .blp-stat-item:last-child { border-right: none; }
         .blp-stat-num { font-family: 'Bricolage Grotesque', sans-serif; font-size: 38px; font-weight: 800; letter-spacing: -1.5px; color: var(--blp-green); line-height: 1; margin-bottom: 6px; }
         .blp-stat-desc { font-size: 13px; color: var(--blp-text2); }
-        .blp-why-section { padding: 96px 48px; max-width: 1160px; margin: 0 auto; }
+        .blp-why-section { padding: 96px 48px; max-width: 1160px; margin: 0 auto; position: relative; z-index: 2; }
         .blp-why-header { text-align: center; margin-bottom: 52px; }
         .blp-section-label { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--blp-green); margin-bottom: 14px; }
         .blp-section-heading { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: clamp(28px, 3.5vw, 44px); letter-spacing: -1.5px; line-height: 1.1; }
@@ -223,7 +278,7 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
         @keyframes blpBlink { 0%, 88%, 100% { transform: scaleY(1); } 93% { transform: scaleY(0.08); } }
         .blp-ai-mini-bubble { background: var(--blp-surface2); border: 1px solid var(--blp-border); border-radius: 8px 8px 8px 2px; padding: 8px 12px; font-size: 12px; color: var(--blp-text2); line-height: 1.45; }
         .blp-ai-mini-bubble b { color: var(--blp-purple); }
-        .blp-apex-section { padding: 0 48px 96px; max-width: 1160px; margin: 0 auto; }
+        .blp-apex-section { padding: 0 48px 96px; max-width: 1160px; margin: 0 auto; position: relative; z-index: 2; }
         .blp-apex-showcase { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
         .blp-section-sub { font-size: 15.5px; color: var(--blp-text2); line-height: 1.7; }
         .blp-apex-check-list { display: flex; flex-direction: column; gap: 11px; margin-top: 26px; }
@@ -246,7 +301,7 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
         .blp-chat-input-mock { display: flex; gap: 8px; background: var(--blp-surface2); border: 1px solid var(--blp-border); border-radius: 10px; padding: 10px 14px; align-items: center; }
         .blp-chat-placeholder { flex: 1; font-size: 13px; color: var(--blp-muted); }
         .blp-chat-send { width: 30px; height: 30px; background: var(--blp-purple); border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .blp-cta-section { padding: 100px 48px; text-align: center; position: relative; overflow: hidden; border-top: 1px solid var(--blp-border); }
+        .blp-cta-section { padding: 100px 48px; text-align: center; position: relative; overflow: hidden; border-top: 1px solid var(--blp-border); z-index: 200; background: var(--blp-bg); }
         .blp-cta-glow { position: absolute; width: 500px; height: 300px; background: radial-gradient(ellipse, rgba(0,255,106,0.07) 0%, transparent 70%); top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
         .blp-cta-content { position: relative; z-index: 1; }
         .blp-cta-title { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: clamp(32px, 5vw, 54px); letter-spacing: -2px; line-height: 1.05; margin-bottom: 18px; }
@@ -254,13 +309,32 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
         .blp-cta-sub { font-size: 16px; color: var(--blp-text2); margin-bottom: 40px; }
         .blp-cta-free-badge { display: inline-flex; align-items: center; gap: 7px; background: rgba(0,255,106,0.06); border: 1px solid rgba(0,255,106,0.2); border-radius: 20px; padding: 6px 16px; font-size: 13px; color: var(--blp-green); font-weight: 600; margin-bottom: 32px; }
         .blp-cta-btns { display: flex; align-items: center; justify-content: center; gap: 12px; }
-        footer.blp-footer { border-top: 1px solid var(--blp-border); padding: 28px 48px; display: flex; align-items: center; justify-content: space-between; background: var(--blp-surface); }
+        footer.blp-footer { border-top: 1px solid var(--blp-border); padding: 28px 48px; display: flex; align-items: center; justify-content: space-between; background: var(--blp-bg); position: relative; z-index: 200; }
         .blp-footer-logo img { height: 34px; width: auto; display: block; }
         .blp-footer-copy { font-size: 12.5px; color: var(--blp-muted); }
         .blp-footer-links { display: flex; gap: 20px; }
         .blp-footer-link { font-size: 12.5px; color: var(--blp-muted); text-decoration: none; transition: color 0.15s; }
         .blp-footer-link:hover { color: var(--blp-text2); }
         @keyframes blpFadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes blpSlideIn { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+        .blp-page-enter { animation: blpSlideIn 0.45s cubic-bezier(0.22,1,0.36,1) both; }
+        .blp-features-dropdown-wide {
+          position: fixed; top: 64px; right: 0; width: 34vw; min-width: 380px;
+          background: var(--blp-surface); border-left: 1px solid var(--blp-border2);
+          border-bottom: 1px solid var(--blp-border2);
+          padding: 12px; z-index: 300;
+          box-shadow: -12px 12px 48px rgba(0,0,0,0.7);
+          animation: blpFadeUp 0.15s ease both;
+        }
+        .blp-dd-item-wide {
+          display: flex; align-items: flex-start; padding: 13px 14px; border-radius: 10px;
+          cursor: pointer; transition: background 0.12s;
+          font-family: 'Instrument Sans', sans-serif;
+        }
+        .blp-dd-item-wide:hover { background: var(--blp-surface2); }
+        .blp-dd-item-wide:hover .blp-dd-label { color: var(--blp-text); }
+        .blp-dd-label { font-weight: 600; font-size: 13.5px; color: var(--blp-text); margin-bottom: 5px; }
+        .blp-dd-desc { font-size: 12px; color: var(--blp-text2); line-height: 1.6; }
         .blp-reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.5s ease, transform 0.5s ease; animation: blpRevealDefault 0.6s ease 0.3s forwards; }
         .blp-reveal.blp-visible { opacity: 1; transform: translateY(0); animation: none; }
         @keyframes blpRevealDefault { to { opacity: 1; transform: translateY(0); } }
@@ -279,6 +353,7 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
       <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
 
       <div className="blp-root">
+        <canvas ref={canvasRef} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1, pointerEvents: 'none' }} />
         {/* NAV */}
         <nav className="blp-nav">
           <div className="blp-nav-logo" style={{ cursor: 'pointer' }} onClick={() => setHeroView('home')}>
@@ -288,12 +363,12 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
           <div style={{ flex: 1 }} />
 
           <div className="blp-nav-right">
-            {/* Features dropdown */}
-            <div ref={featuresRef} style={{ position: 'relative' }}>
-              <button
-                className={`blp-nav-btn${featuresOpen ? ' active' : ''}`}
-                onClick={() => setFeaturesOpen(o => !o)}
-              >
+            {/* Features dropdown — hover triggered */}
+            <div ref={featuresRef} style={{ position: 'relative' }}
+              onMouseEnter={() => setFeaturesOpen(true)}
+              onMouseLeave={() => setFeaturesOpen(false)}
+            >
+              <button className={`blp-nav-btn${featuresOpen ? ' active' : ''}`}>
                 Features
                 <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"
                   style={{ transform: featuresOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}>
@@ -301,19 +376,18 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
                 </svg>
               </button>
               {featuresOpen && (
-                <div className="blp-features-dropdown" style={{ left: 'auto', right: 0, transform: 'none' }} onClick={() => setFeaturesOpen(false)}>
+                <div className="blp-features-dropdown-wide">
                   {[
-                    { icon: '🧠', label: 'Apex AI Tutor', desc: 'Explains every answer', onClick: () => { setHeroView('home'); setTimeout(() => scrollTo('apex'), 50); } },
-                    { icon: '📋', label: 'Practice Questions', desc: '850+ across 17 events', onClick: () => { setHeroView('home'); setTimeout(() => scrollTo('why'), 50); } },
-                    { icon: '🏆', label: 'Leaderboard', desc: 'Compete with your chapter', onClick: () => { setHeroView('home'); setTimeout(() => scrollTo('why'), 50); } },
-                    { icon: '⏱️', label: 'Timed Exams', desc: 'Simulate real conditions', onClick: () => { setHeroView('home'); setTimeout(() => scrollTo('why'), 50); } },
-                    { icon: '📈', label: 'Progress Tracking', desc: 'Per-event accuracy', onClick: () => { setHeroView('home'); setTimeout(() => scrollTo('why'), 50); } },
+                    { label: 'Apex AI Tutor', desc: 'Claude-powered explanations break down every right and wrong answer — so you actually understand the concept, not just memorize it.', onClick: () => { setHeroView('home'); setTimeout(() => scrollTo('apex'), 50); } },
+                    { label: 'Practice Questions', desc: '850+ questions spanning all 17 FBLA Middle School events, organized by difficulty. Beginner to advanced — you choose how hard to push.', onClick: () => { setHeroView('home'); setTimeout(() => scrollTo('why'), 50); } },
+                    { label: 'Chapter Leaderboard', desc: 'Compete against your classmates and chapter members on a live weekly leaderboard. See exactly who\'s putting in the reps before competition day.', onClick: () => { setHeroView('home'); setTimeout(() => scrollTo('why'), 50); } },
+                    { label: 'Timed Mock Exams', desc: 'Simulate real FBLA test conditions with timed sessions. Train under pressure so competition day feels familiar, not stressful.', onClick: () => { setHeroView('home'); setTimeout(() => scrollTo('why'), 50); } },
+                    { label: 'Progress Tracking', desc: 'Per-event accuracy scores show exactly where you\'re strong and where you need more reps. Study smarter, not just longer.', onClick: () => { setHeroView('home'); setTimeout(() => scrollTo('why'), 50); } },
                   ].map(item => (
-                    <div key={item.label} className="blp-dd-item" onClick={item.onClick}>
-                      <div className="blp-dd-icon" style={{ background: 'var(--blp-surface2)' }}>{item.icon}</div>
+                    <div key={item.label} className="blp-dd-item-wide" onClick={item.onClick}>
                       <div>
-                        <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--blp-text)' }}>{item.label}</div>
-                        <div style={{ fontSize: 11, color: 'var(--blp-text2)', marginTop: 1 }}>{item.desc}</div>
+                        <div className="blp-dd-label">{item.label}</div>
+                        <div className="blp-dd-desc">{item.desc}</div>
                       </div>
                     </div>
                   ))}
@@ -338,7 +412,7 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
 
         {heroView === 'pricing' ? (
           /* ── PRICING PAGE ─────────────────────────────────────────────── */
-          <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '120px 48px 80px', textAlign: 'center' }}>
+          <div className="blp-page-enter" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '120px 48px 80px', textAlign: 'center', position: 'relative', zIndex: 2 }}>
             <div style={{ maxWidth: 640 }}>
               {/* Big green badge */}
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(0,255,106,0.08)', border: '1px solid rgba(0,255,106,0.2)', borderRadius: 20, padding: '6px 18px', fontSize: 12.5, color: 'var(--blp-green)', fontWeight: 600, marginBottom: 32 }}>
@@ -372,7 +446,10 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
                   Start Studying Free
                   <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                 </button>
-                <button className="blp-btn-outline" onClick={() => setHeroView('home')}>← Back</button>
+                <button className="blp-btn-outline" onClick={() => setHeroView('home')}>
+                  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                  Back
+                </button>
               </div>
             </div>
           </div>
