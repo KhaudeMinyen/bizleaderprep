@@ -95,6 +95,14 @@ const App: React.FC = () => {
   });
   const [authInitialView, setAuthInitialView] = useState<'login' | 'signup'>('login');
 
+  // Username requirement modal state
+  const [needsUsername, setNeedsUsername] = useState(false);
+  const [pendingUsername, setPendingUsername] = useState('');
+  const [pendingUserId, setPendingUserId] = useState<string | null>(null);
+  const [pendingUserEmail, setPendingUserEmail] = useState<string | null>(null);
+  const [usernameError, setUsernameError] = useState<string | null>(null);
+  const [usernameLoading, setUsernameLoading] = useState(false);
+
   // ── Favorites (must be at top level — Rules of Hooks) ─────────────────────
   const [favorites, setFavorites] = useState<string[]>(() => {
     try { return JSON.parse(localStorage.getItem('prephub_favorites') || '[]'); } catch { return []; }
@@ -136,25 +144,36 @@ const App: React.FC = () => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!mounted) return;
       if (session) {
-        setIsLoggedIn(true);
-        // Fetch user profile for XP/rank
-        supabase.from('user_profiles').select('xp, rank, is_founder').eq('user_id', session.user.id).single().then(({ data }) => {
+        // Fetch user profile for XP/rank AND username check
+        supabase.from('user_profiles').select('xp, rank, is_founder, username').eq('user_id', session.user.id).single().then(({ data }) => {
           if (data) {
             setUserXP(data.xp);
             setIsFounder(data.is_founder);
             setUserRank(getRankFromXP(data.xp, data.is_founder));
+
+            // Check if user needs to set a username (old accounts without username)
+            if (!data.username) {
+              setPendingUserId(session.user.id);
+              setPendingUserEmail(session.user.email || null);
+              setNeedsUsername(true);
+              setIsLoading(false);
+              clearTimeout(safetyTimeout);
+              return;
+            }
+
+            setIsLoggedIn(true);
+            const savedEvent = localStorage.getItem('prephub_activeEvent');
+            if (savedEvent) {
+              setActiveEvent(savedEvent);
+              setView('study');
+            } else {
+              window.history.replaceState({ view: 'portfolio' }, '', '/dashboard');
+              setView('portfolio');
+            }
+            setIsLoading(false);
+            clearTimeout(safetyTimeout);
           }
         });
-        const savedEvent = localStorage.getItem('prephub_activeEvent');
-        if (savedEvent) {
-          setActiveEvent(savedEvent);
-          setView('study');
-        } else {
-          window.history.replaceState({ view: 'portfolio' }, '', '/dashboard');
-          setView('portfolio');
-        }
-        setIsLoading(false);
-        clearTimeout(safetyTimeout);
       } else if (!isOAuthRedirect) {
         // No session and not an OAuth redirect — safe to stop loading
         setIsLoading(false);
@@ -171,18 +190,28 @@ const App: React.FC = () => {
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (!mounted) return;
       if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
-        setIsLoggedIn(true);
-        // Fetch user profile for XP/rank
-        supabase.from('user_profiles').select('xp, rank, is_founder').eq('user_id', session.user.id).single().then(({ data }) => {
+        // Fetch user profile for XP/rank AND username check
+        supabase.from('user_profiles').select('xp, rank, is_founder, username').eq('user_id', session.user.id).single().then(({ data }) => {
           if (data) {
             setUserXP(data.xp);
             setIsFounder(data.is_founder);
             setUserRank(getRankFromXP(data.xp, data.is_founder));
+
+            // Check if user needs to set a username (old accounts without username)
+            if (!data.username) {
+              setPendingUserId(session.user.id);
+              setPendingUserEmail(session.user.email || null);
+              setNeedsUsername(true);
+              setIsLoading(false);
+              return;
+            }
+
+            setIsLoggedIn(true);
+            window.history.replaceState({ view: 'portfolio' }, '', '/dashboard');
+            setView('portfolio');
+            setIsLoading(false);
           }
         });
-        window.history.replaceState({ view: 'portfolio' }, '', '/dashboard');
-        setView('portfolio');
-        setIsLoading(false);
       } else if (event === 'SIGNED_OUT') {
         setIsLoggedIn(prev => {
           if (prev) {
@@ -192,6 +221,7 @@ const App: React.FC = () => {
           }
           return false;
         });
+        setNeedsUsername(false);
         setIsLoading(false);
       }
     });
@@ -243,6 +273,63 @@ const App: React.FC = () => {
     };
     fetchDaily();
   }, [division]);
+
+  const handleSetUsername = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!pendingUserId) return;
+
+    const trimmedUsername = pendingUsername.trim();
+    if (!trimmedUsername) {
+      setUsernameError('Username is required');
+      return;
+    }
+
+    if (trimmedUsername.length < 3) {
+      setUsernameError('Username must be at least 3 characters');
+      return;
+    }
+
+    if (trimmedUsername.length > 30) {
+      setUsernameError('Username must be 30 characters or less');
+      return;
+    }
+
+    // Check for valid characters (alphanumeric, underscore, dash)
+    if (!/^[a-zA-Z0-9_-]+$/.test(trimmedUsername)) {
+      setUsernameError('Username can only contain letters, numbers, underscores, and dashes');
+      return;
+    }
+
+    setUsernameLoading(true);
+    setUsernameError(null);
+
+    try {
+      const { error } = await supabase.from('user_profiles').update({ username: trimmedUsername }).eq('user_id', pendingUserId);
+
+      if (error) {
+        if (error.message.includes('duplicate') || error.message.includes('unique')) {
+          setUsernameError('Username already taken. Choose another.');
+        } else {
+          setUsernameError(error.message);
+        }
+        setUsernameLoading(false);
+        return;
+      }
+
+      // Username set successfully, complete login
+      setNeedsUsername(false);
+      setIsLoggedIn(true);
+      setPendingUsername('');
+      setPendingUserId(null);
+      setPendingUserEmail(null);
+      window.history.replaceState({ view: 'portfolio' }, '', '/dashboard');
+      setView('portfolio');
+      setUsernameLoading(false);
+    } catch (err: any) {
+      setUsernameError(err.message || 'Failed to set username');
+      setUsernameLoading(false);
+    }
+  };
 
   const showXPToast = (amount: number) => {
     setXpToast({ amount, visible: true });
@@ -298,6 +385,84 @@ const App: React.FC = () => {
     return (
       <div className="min-h-screen bg-rh-black flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-rh-green border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  // Username requirement modal (for existing accounts without username)
+  if (needsUsername && pendingUserId) {
+    return (
+      <div style={{ minHeight: '100vh', background: '#0a0a0a', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+        <div style={{ width: '100%', maxWidth: 420, background: '#111', border: '1px solid #222', borderRadius: 24, padding: 40, textAlign: 'center' }}>
+          <h2 style={{ fontSize: 26, fontWeight: 700, color: '#f0f0f0', marginBottom: 12 }}>Complete Your Profile</h2>
+          <p style={{ fontSize: 13, color: '#888', marginBottom: 28, lineHeight: 1.6 }}>
+            Your account needs a unique username to continue. This will be public and cannot be changed.
+          </p>
+
+          {usernameError && (
+            <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.5)', padding: 12, borderRadius: 12, marginBottom: 20, fontSize: 12, color: '#ef4444', fontWeight: 600 }}>
+              {usernameError}
+            </div>
+          )}
+
+          <form onSubmit={handleSetUsername} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div style={{ textAlign: 'left' }}>
+              <label style={{ display: 'block', fontSize: 10, fontWeight: 700, color: '#aaa', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.2em' }}>Username</label>
+              <input
+                type="text"
+                value={pendingUsername}
+                onChange={(e) => { setPendingUsername(e.target.value); setUsernameError(null); }}
+                placeholder="your_username"
+                disabled={usernameLoading}
+                style={{
+                  width: '100%',
+                  background: 'rgba(0,0,0,0.4)',
+                  border: '1px solid rgba(255,255,255,0.05)',
+                  borderRadius: 12,
+                  padding: '12px 16px',
+                  color: '#f0f0f0',
+                  fontSize: 14,
+                  fontFamily: 'inherit',
+                  outline: 'none',
+                  transition: 'all 0.2s',
+                  opacity: usernameLoading ? 0.6 : 1,
+                  cursor: usernameLoading ? 'not-allowed' : 'text',
+                }}
+                onFocus={(e) => { e.currentTarget.style.borderColor = 'rgba(0,255,106,0.3)'; }}
+                onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)'; }}
+              />
+              <p style={{ fontSize: 11, color: '#666', marginTop: 8 }}>3-30 characters, letters/numbers/underscore/dash only</p>
+            </div>
+
+            <button
+              type="submit"
+              disabled={usernameLoading || !pendingUsername.trim()}
+              style={{
+                width: '100%',
+                background: '#00ff6a',
+                color: '#000',
+                border: 'none',
+                borderRadius: 12,
+                padding: 14,
+                fontSize: 13,
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '0.2em',
+                cursor: usernameLoading || !pendingUsername.trim() ? 'not-allowed' : 'pointer',
+                opacity: usernameLoading || !pendingUsername.trim() ? 0.6 : 1,
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={(e) => { if (!usernameLoading && pendingUsername.trim()) e.currentTarget.style.transform = 'scale(1.01)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+            >
+              {usernameLoading ? 'Setting Username...' : 'Continue'}
+            </button>
+          </form>
+
+          <p style={{ fontSize: 11, color: '#666', marginTop: 20 }}>
+            {pendingUserEmail && <>Email: <strong style={{ color: '#888' }}>{pendingUserEmail}</strong></>}
+          </p>
+        </div>
       </div>
     );
   }
