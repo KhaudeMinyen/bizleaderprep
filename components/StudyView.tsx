@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Division, OrgType } from '../App';
 import { getQuestionsForEvent, QuestionData } from '../data/questionBank';
 import { supabase } from '../src/lib/supabase';
+import { XP_REWARDS } from '../utils/xp';
 
 interface StudyViewProps {
   eventName: string;
@@ -14,6 +15,9 @@ interface StudyViewProps {
   onAnswer: () => void;
   onLoginRequest: () => void;
   isLoggedIn: boolean;
+  onAwardXP?: (amount: number) => Promise<void>;
+  userXP?: number;
+  userRank?: string;
 }
 
 type StudyMode = 'difficulty' | 'selection' | 'flashcard' | 'test' | 'realistic' | 'summary' | 'review';
@@ -32,8 +36,8 @@ function shuffleOptions(card: QuestionData): QuestionData {
   return { ...card, options: shuffleArray(card.options) };
 }
 
-const REALISTIC_QTY: Record<Division, number> = { 'Middle School': 50, 'High School': 100 };
-const REALISTIC_SECS: Record<Division, number> = { 'Middle School': 30 * 60, 'High School': 50 * 60 };
+const REALISTIC_QTY: Record<Division, number> = { 'ms': 50, 'hs': 100 };
+const REALISTIC_SECS: Record<Division, number> = { 'ms': 30 * 60, 'hs': 50 * 60 };
 
 const getAnswerLetter = (card: QuestionData, text: string): string => {
   const i = card.options.indexOf(text);
@@ -45,8 +49,43 @@ const practiceKey = (evt: string, div: string, diff: string) => `prephub_practic
 const flashcardKey = (evt: string, div: string, diff: string) => `prephub_flashcard_${evt}_${div}_${diff}`;
 
 const StudyView: React.FC<StudyViewProps> = ({
-  eventName, division, orgType, onBack, flashcardsUsed, limit, onAnswer, onLoginRequest, isLoggedIn
+  eventName, division, orgType, onBack, flashcardsUsed, limit, onAnswer, onLoginRequest, isLoggedIn, onAwardXP
 }) => {
+  // Helper to get/update studied events
+  const getStudiedEvents = (): string[] => {
+    try { return JSON.parse(localStorage.getItem('prephub_studied_events') || '[]'); } catch { return []; }
+  };
+
+  const addStudiedEvent = (evt: string) => {
+    const studied = getStudiedEvents();
+    if (!studied.includes(evt)) {
+      studied.push(evt);
+      localStorage.setItem('prephub_studied_events', JSON.stringify(studied));
+    }
+  };
+
+  // Helper for streak tracking
+  const getStreakData = () => {
+    try { return JSON.parse(localStorage.getItem('prephub_streak') || '{"lastDate":"","count":0}'); } catch { return { lastDate: '', count: 0 }; }
+  };
+
+  const updateStreak = () => {
+    const now = new Date().toISOString().split('T')[0];
+    const data = getStreakData();
+    const yesterday = new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0];
+
+    if (data.lastDate === now) return; // already counted today
+
+    if (data.lastDate === yesterday) {
+      data.count++;
+    } else {
+      data.count = 1;
+    }
+    data.lastDate = now;
+    localStorage.setItem('prephub_streak', JSON.stringify(data));
+
+    return data.count;
+  };
   const [mode, setMode] = useState<StudyMode>(orgType === 'FBLA' ? 'difficulty' : 'selection');
   const [lastMode, setLastMode] = useState<StudyMode | null>(null);
   const [cards, setCards] = useState<QuestionData[]>([]);
@@ -95,8 +134,8 @@ const StudyView: React.FC<StudyViewProps> = ({
       setIsLoading(true);
       setAnswerHistory([]);
       try {
-        const isSupabaseEvent = orgType === 'FBLA' && (division === 'High School' || division === 'Middle School');
-        const tableName = division === 'High School' ? 'FBLA HS Questions' : 'FBLA MS Questions';
+        const isSupabaseEvent = orgType === 'FBLA' && (division === 'hs' || division === 'ms');
+        const tableName = division === 'hs' ? 'questions' : 'FBLA MS Questions';
 
         if (isSupabaseEvent) {
           let q = supabase.from(tableName).select('*').eq('event', eventName);
@@ -274,6 +313,14 @@ const StudyView: React.FC<StudyViewProps> = ({
     setIsFlipped(false);
     setAnswerHistory([]);
     setIsRetrying(false);
+
+    // Award "new event started" bonus if this is a new event
+    const studied = getStudiedEvents();
+    if (isLoggedIn && !studied.includes(eventName)) {
+      addStudiedEvent(eventName);
+      if (onAwardXP) onAwardXP(XP_REWARDS.NEW_EVENT_STARTED);
+    }
+
     setMode('flashcard');
     setLastMode('flashcard');
   };
@@ -313,6 +360,14 @@ const StudyView: React.FC<StudyViewProps> = ({
     setTimeLeft(deck.length * 45);
     setTimerActive(true);
     setIsRetrying(false);
+
+    // Award "new event started" bonus if this is a new event
+    const studied = getStudiedEvents();
+    if (isLoggedIn && !studied.includes(eventName)) {
+      addStudiedEvent(eventName);
+      if (onAwardXP) onAwardXP(XP_REWARDS.NEW_EVENT_STARTED);
+    }
+
     setMode('test');
     setLastMode('test');
   };
@@ -344,6 +399,13 @@ const StudyView: React.FC<StudyViewProps> = ({
     setRealisticIndex(0);
     setRealisticSubmitted(false);
     setTimerActive(true);
+
+    // Award "new event started" bonus if this is a new event
+    const studied = getStudiedEvents();
+    if (!studied.includes(eventName)) {
+      addStudiedEvent(eventName);
+      if (onAwardXP) onAwardXP(XP_REWARDS.NEW_EVENT_STARTED);
+    }
     setMode('realistic');
   };
 
@@ -362,6 +424,17 @@ const StudyView: React.FC<StudyViewProps> = ({
     if (acc > (scores[eventName] || 0)) {
       scores[eventName] = acc;
       localStorage.setItem('prephub_mastery', JSON.stringify(scores));
+    }
+
+    // Award event completion bonus (150 XP) + update streak on completion
+    if (isLoggedIn) {
+      if (onAwardXP) onAwardXP(XP_REWARDS.EVENT_COMPLETED);
+
+      // Update streak and award bonus on day 7, 14, etc.
+      const newStreak = updateStreak();
+      if (newStreak && newStreak % 7 === 0 && onAwardXP) {
+        onAwardXP(XP_REWARDS.STREAK_BONUS);
+      }
     }
   };
 
@@ -415,7 +488,13 @@ const StudyView: React.FC<StudyViewProps> = ({
     setSelectedOption(option);
     setIsAnswered(true);
     setAnswerHistory(prev => [...prev, { card: currentCard, chosen: option }]);
-    if (option === currentCard.answer) setCorrectCount(c => c + 1);
+    const isCorrect = option === currentCard.answer;
+    if (isCorrect) {
+      setCorrectCount(c => c + 1);
+      if (onAwardXP && isLoggedIn) onAwardXP(XP_REWARDS.CORRECT_ANSWER);
+    } else {
+      if (onAwardXP && isLoggedIn) onAwardXP(XP_REWARDS.WRONG_ANSWER);
+    }
   };
 
   const formatTime = (seconds: number) => {
@@ -502,6 +581,11 @@ const StudyView: React.FC<StudyViewProps> = ({
       if (accuracy > (scores[eventName] || 0)) {
         scores[eventName] = accuracy;
         localStorage.setItem('prephub_mastery', JSON.stringify(scores));
+      }
+
+      // Award Perfect Quiz bonus (75 XP for 100% on 5+ questions)
+      if (isLoggedIn && correctCount >= 5 && accuracy === 100 && onAwardXP) {
+        onAwardXP(XP_REWARDS.PERFECT_QUIZ);
       }
     }
     return (
@@ -790,7 +874,7 @@ const StudyView: React.FC<StudyViewProps> = ({
               <div className="flex items-center gap-3 mb-1">
                 <span className="text-lg font-black text-black">Realistic Exam</span>
                 <span className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-black/20 text-black/70">
-                  {division === 'Middle School' ? '30 min' : '50 min'}
+                  {division === 'ms' ? '30 min' : '50 min'}
                 </span>
               </div>
               <p className="text-black/60 text-sm font-medium">
