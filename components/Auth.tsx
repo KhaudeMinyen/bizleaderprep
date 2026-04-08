@@ -10,7 +10,7 @@ interface AuthProps {
   orgType?: OrgType;
 }
 
-type AuthView = 'login' | 'signup' | 'forgot_password';
+type AuthView = 'login' | 'signup' | 'forgot_password' | 'set_username';
 
 const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login', orgType = 'NONE' }) => {
   const [view, setView] = useState<AuthView>(defaultView);
@@ -24,10 +24,12 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login', o
   const brandHoverClass = 'hover:bg-rh-green';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [showConfigGuide, setShowConfigGuide] = useState(false);
+  const [newUserId, setNewUserId] = useState<string | null>(null);
 
   const supabaseUrl = (supabase as any).supabaseUrl || '';
 
@@ -72,9 +74,38 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login', o
         if (error) throw error;
         onLogin();
       } else if (view === 'signup') {
-        const { error } = await supabase.auth.signUp({ email, password });
+        const { data, error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
-        setSuccessMsg("Check your email for a verification link!");
+        if (data.user?.id) {
+          setNewUserId(data.user.id);
+          setView('set_username');
+          setEmail('');
+          setPassword('');
+          setErrorMsg(null);
+          setSuccessMsg(null);
+        }
+        return;
+      } else if (view === 'set_username') {
+        if (!username.trim()) {
+          setErrorMsg('Username is required');
+          return;
+        }
+        if (!newUserId) {
+          setErrorMsg('User not found');
+          return;
+        }
+        const { error } = await supabase.from('user_profiles').update({ username: username.trim() }).eq('user_id', newUserId);
+        if (error) {
+          if (error.message.includes('duplicate')) {
+            setErrorMsg('Username already taken. Choose another.');
+          } else {
+            setErrorMsg(error.message);
+          }
+          return;
+        }
+        setSuccessMsg('Username set! Check your email to verify your account.');
+        setTimeout(() => onLogin(), 2000);
+        return;
       } else if (view === 'forgot_password') {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
           redirectTo: window.location.origin,
@@ -107,7 +138,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login', o
         <div className="bg-rh-dark border border-white/5 rounded-[40px] p-8 md:p-12 shadow-2xl relative overflow-hidden">
 
           {/* Google Auth Button (Sign Up / Log In) */}
-          {view !== 'forgot_password' && (
+          {view !== 'forgot_password' && view !== 'set_username' && (
             <>
               <button
                 onClick={handleGoogleAuth}
@@ -136,46 +167,83 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login', o
             </>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {errorMsg && (
-              <div className="bg-red-500/10 border border-red-500/50 p-4 rounded-2xl text-red-500 text-[10px] font-black uppercase tracking-widest text-center leading-relaxed">
-                {errorMsg}
+          {view === 'set_username' ? (
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div style={{ textAlign: 'center', marginBottom: 20 }}>
+                <h2 style={{ fontSize: 22, fontWeight: 700, color: '#f0f0f0', marginBottom: 8 }}>Make your Username</h2>
+                <p style={{ fontSize: 13, color: '#888', lineHeight: 1.5 }}>Your username will be public and cannot be changed.</p>
               </div>
-            )}
-            {successMsg && (
-              <div className={`${brandSuccessBgClass} border p-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-center`}>
-                {successMsg}
-              </div>
-            )}
 
-            <div>
-              <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-rh-gray mb-3 ml-1">Account Email</label>
-              <input
-                type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-                className={`w-full bg-black/40 border border-white/5 rounded-2xl px-5 py-4 text-white ${brandFocusClass} outline-none transition-all placeholder:text-gray-700`}
-                placeholder="name@email.com"
-              />
-            </div>
-
-            {view !== 'forgot_password' && (
-              <div>
-                <div className="flex justify-between items-center mb-3">
-                  <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-rh-gray ml-1">Password</label>
-                  <button type="button" onClick={() => setView('forgot_password')} className="text-[10px] font-bold text-rh-gray hover:text-white underline underline-offset-4">Forgot?</button>
+              {errorMsg && (
+                <div className="bg-red-500/10 border border-red-500/50 p-4 rounded-2xl text-red-500 text-[10px] font-black uppercase tracking-widest text-center leading-relaxed">
+                  {errorMsg}
                 </div>
+              )}
+              {successMsg && (
+                <div className={`${brandSuccessBgClass} border p-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-center`}>
+                  {successMsg}
+                </div>
+              )}
+
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-rh-gray mb-3 ml-1">Username</label>
                 <input
-                  type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
+                  type="text"
+                  required
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   className={`w-full bg-black/40 border border-white/5 rounded-2xl px-5 py-4 text-white ${brandFocusClass} outline-none transition-all placeholder:text-gray-700`}
-                  placeholder="••••••••"
+                  placeholder="your_username"
                 />
               </div>
-            )}
 
-            <button type="submit" disabled={isLoading} className={`w-full ${brandBgClass} text-black font-black uppercase tracking-[0.2em] text-[11px] py-5 rounded-2xl hover:scale-[1.01] transition-all ${brandButtonShadowClass}`}>
-              {isLoading ? 'Processing...' : (view === 'login' ? 'Sign In' : (view === 'signup' ? 'Create Account' : 'Reset'))}
-            </button>
-          </form>
+              <button type="submit" disabled={isLoading} className={`w-full ${brandBgClass} text-black font-black uppercase tracking-[0.2em] text-[11px] py-5 rounded-2xl hover:scale-[1.01] transition-all ${brandButtonShadowClass}`}>
+                {isLoading ? 'Setting...' : 'Complete Setup'}
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {errorMsg && (
+                <div className="bg-red-500/10 border border-red-500/50 p-4 rounded-2xl text-red-500 text-[10px] font-black uppercase tracking-widest text-center leading-relaxed">
+                  {errorMsg}
+                </div>
+              )}
+              {successMsg && (
+                <div className={`${brandSuccessBgClass} border p-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-center`}>
+                  {successMsg}
+                </div>
+              )}
 
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-rh-gray mb-3 ml-1">Account Email</label>
+                <input
+                  type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
+                  className={`w-full bg-black/40 border border-white/5 rounded-2xl px-5 py-4 text-white ${brandFocusClass} outline-none transition-all placeholder:text-gray-700`}
+                  placeholder="name@email.com"
+                />
+              </div>
+
+              {view !== 'forgot_password' && (
+                <div>
+                  <div className="flex justify-between items-center mb-3">
+                    <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-rh-gray ml-1">Password</label>
+                    <button type="button" onClick={() => setView('forgot_password')} className="text-[10px] font-bold text-rh-gray hover:text-white underline underline-offset-4">Forgot?</button>
+                  </div>
+                  <input
+                    type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
+                    className={`w-full bg-black/40 border border-white/5 rounded-2xl px-5 py-4 text-white ${brandFocusClass} outline-none transition-all placeholder:text-gray-700`}
+                    placeholder="••••••••"
+                  />
+                </div>
+              )}
+
+              <button type="submit" disabled={isLoading} className={`w-full ${brandBgClass} text-black font-black uppercase tracking-[0.2em] text-[11px] py-5 rounded-2xl hover:scale-[1.01] transition-all ${brandButtonShadowClass}`}>
+                {isLoading ? 'Processing...' : (view === 'login' ? 'Sign In' : (view === 'signup' ? 'Create Account' : 'Reset'))}
+              </button>
+            </form>
+          )}
+
+          {view !== 'set_username' && (
           <div className="mt-10 text-center space-y-6">
             <button
               onClick={() => setView(view === 'login' ? 'signup' : 'login')}
@@ -189,6 +257,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login', o
               <a href="/privacy-policy.html" target="_blank" rel="noopener noreferrer" className="text-[10px] font-black uppercase tracking-[0.2em] text-rh-gray/50 hover:text-white transition-colors">Privacy Policy</a>
             </div>
           </div>
+          )}
 
           {/* Troubleshooting Guide Overlay */}
           {showConfigGuide && (

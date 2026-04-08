@@ -12,7 +12,7 @@ interface DashboardProps {
 
 // Official 2025-2026 FBLA High School Objective Test Events
 const FBLA_EVENTS: Record<Division, string[]> = {
-  'Middle School': [
+  'ms': [
     'Career Exploration',
     'Digital Citizenship',
     'Exploring Accounting & Finance',
@@ -30,7 +30,7 @@ const FBLA_EVENTS: Record<Division, string[]> = {
     'Exploring Technology',
     'Interpersonal Communication'
   ],
-  'High School': [
+  'hs': [
     'Accounting',
     'Advanced Accounting',
     'Advertising',

@@ -468,9 +468,9 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
             <h1 className="blp-hero-title">
               Study Smarter.<br /><span className="blp-accent">Place Higher.</span>
             </h1>
-            <p className="blp-hero-title" style={{ color: '#00ff6a', marginTop: -16, marginBottom: 22 }}>For Middle School.</p>
+            <p className="blp-hero-title" style={{ color: '#00ff6a', marginTop: -16, marginBottom: 22 }}>For FBLA.</p>
             <p className="blp-hero-sub">
-              The practice platform built for FBLA Middle School students. 850+ questions across all 17 events — with AI explanations and a coach that actually pushes you.
+              The practice platform for FBLA Middle School and High School students. 2,400+ questions across 48 competitive events — with AI explanations and a coach that actually pushes you.
             </p>
             <div className="blp-hero-free">
               <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
@@ -497,9 +497,9 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
 
         {/* STATS BAR */}
         <div className="blp-stats-bar">
-          <div className="blp-stat-item blp-reveal"><div className="blp-stat-num">850+</div><div className="blp-stat-desc">Practice questions</div></div>
-          <div className="blp-stat-item blp-reveal"><div className="blp-stat-num">17</div><div className="blp-stat-desc">MS events covered</div></div>
-          <div className="blp-stat-item blp-reveal"><div className="blp-stat-num">3</div><div className="blp-stat-desc">Difficulty levels each</div></div>
+          <div className="blp-stat-item blp-reveal"><div className="blp-stat-num">2,400+</div><div className="blp-stat-desc">Practice questions</div></div>
+          <div className="blp-stat-item blp-reveal"><div className="blp-stat-num">48</div><div className="blp-stat-desc">Competitive events</div></div>
+          <div className="blp-stat-item blp-reveal"><div className="blp-stat-num">2</div><div className="blp-stat-desc">Divisions (MS & HS)</div></div>
           <div className="blp-stat-item blp-reveal"><div className="blp-stat-num">$0</div><div className="blp-stat-desc">Forever free</div></div>
         </div>
 

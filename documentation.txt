@@ -1,0 +1,516 @@
+================================================================================
+                    BIZLEADERPREP - TECHNICAL DOCUMENTATION
+================================================================================
+
+PROJECT OVERVIEW
+================================================================================
+BizLeaderPrep is an FBLA Middle School competition prep application built with
+React 19, TypeScript, and Vite. It features a study dashboard, competitive event
+exploration, daily quizzes, leaderboard ranking, and Supabase authentication.
+
+Stack:
+  - Frontend: React 19 + TypeScript + Vite
+  - Backend: Supabase (PostgreSQL, Auth, Realtime)
+  - Hosting: Vercel (SPA with rewrites)
+  - Styling: Tailwind CSS + inline styles
+  - Data: FBLA MS Questions table, user_favorites table
+
+
+KEY FEATURES & ARCHITECTURE
+================================================================================
+
+1. AUTHENTICATION & SESSION MANAGEMENT
+   - Supabase OAuth (Google) with detectSessionInUrl: true
+   - Custom session detection for OAuth hash (#access_token=...)
+   - onAuthStateChange listeners for SIGNED_IN, INITIAL_SESSION, SIGNED_OUT
+   - Automatic redirect to portfolio on OAuth completion
+   - Session persists via localStorage + Supabase
+
+2. CLIENT-SIDE ROUTING (No React Router)
+   - ViewState union: 'landing' | 'portfolio' | 'study' | 'auth' | 'events'
+   - window.history.pushState/replaceState for URL management
+   - popstate listener syncs URL changes back to state
+   - Routes:
+     - / → landing (Hero page)
+     - /dashboard → portfolio (main dashboard)
+     - /dashboard/events → events (all 17 events explorer)
+   - Vercel SPA rewrites ensure all routes serve index.html
+
+3. DAILY QUESTION SYSTEM
+   - One question per day per user (localStorage-based)
+   - LocalStorage keys: prephub_daily_question_YYYY-MM-DD, prephub_daily_answered_YYYY-MM-DD
+   - Deterministic seed from date ensures same question for all users same day
+   - Seed calculation: parseInt(todayKey.replace(/-/g, ''), 10)
+   - Once answered, box grays out (opacity: 0.45, pointerEvents: none)
+   - Answer stored when user clicks option
+   - Next question appears automatically the following day
+   - Displayed as "Daily Question" in dashboard left panel
+
+4. FAVORITES / SAVED EVENTS
+   - Stored in Supabase user_favorites table (event_name, user_id)
+   - Also synced to localStorage (prephub_favorites)
+   - Populated on login via useEffect + supabase.from('user_favorites').select()
+   - Star icon toggles favorite status; shows "SAVED" badge when favorited
+   - Only available to logged-in users
+   - Used to filter daily question event selection if favorites exist
+
+5. STATS & MASTERY TRACKING
+   - Questions Answered: tracked via localStorage (prephub_usage)
+   - Accuracy Rate: calculated from masteryScores JSON (prephub_mastery)
+   - Events Studied: count of keys in masteryScores
+   - Saved Events: length of favorites array
+   - All stats populated on dashboard stats grid (4 cards)
+
+6. EVENTS PAGE (/dashboard/events)
+   - Two-column layout:
+     - Left (300px): All 17 MS competitive events list with star favorites
+     - Right (flex): Event details (type, description, knowledge areas, NACE)
+   - First event selected on page load
+   - Hover/click event on left to view details on right
+   - "Study this event" button navigates to StudyView
+   - Stars sync with Supabase favorites; prompt login if not authenticated
+   - Event info sourced from MS_EVENTS_INFO_DATA object (embedded in App.tsx)
+
+7. DASHBOARD (PORTFOLIO VIEW)
+   - Stats grid (4 columns): Questions, Accuracy, Events Studied, Saved Events
+   - Saved Events panel: shows up to 6 favorited events with scores
+   - Daily Question panel: one question per day, grayed out after answered
+   - Leaderboard panel: top 5 this week (hardcoded mock data)
+   - Apex card: study companion chat bot (mock implementation)
+   - All sections animate in via dsFadeUp keyframes
+
+
+COMPONENT STRUCTURE
+================================================================================
+
+App.tsx (Main Controller)
+  ├─ State Management:
+  │  ├─ view: ViewState (current page)
+  │  ├─ isLoggedIn: boolean
+  │  ├─ isLoading: boolean (OAuth redirect handler)
+  │  ├─ activeEvent: string | null (StudyView event name)
+  │  ├─ favorites: string[] (Supabase user_favorites)
+  │  ├─ quickQ: QuickQ | null (daily question object)
+  │  ├─ quickAnswered: string | null (selected answer)
+  │  ├─ flashcardsUsed: number (usage counter)
+  │  ├─ hoveredEvent: string | null (events page selection)
+  │  └─ authInitialView: 'login' | 'signup' (Auth modal initial state)
+  │
+  ├─ Hooks:
+  │  ├─ useEffect[]: popstate listener for URL syncing
+  │  ├─ useEffect[]: session check + auth state listener
+  │  ├─ useEffect[flashcardsUsed]: localStorage sync
+  │  ├─ useEffect[isLoggedIn]: Supabase favorites fetch
+  │  └─ useEffect[]: daily question fetch (once per day)
+  │
+  ├─ Render Paths:
+  │  ├─ if (isLoading) → spinner
+  │  ├─ if (view === 'auth') → Auth modal
+  │  ├─ if (view === 'study') → StudyView
+  │  ├─ if (view === 'landing') → Hero (landing page)
+  │  ├─ if (view === 'events') → Events explorer (two-column)
+  │  └─ else → Portfolio/Dashboard (default)
+  │
+  └─ Key Functions:
+     ├─ startStudy(eventName): navigate to StudyView
+     ├─ goToPortfolio(): reset and return to dashboard
+     ├─ incrementUsage(): increment flashcard counter
+     ├─ handleLogin(): sync auth state on login
+     └─ toggleFavorite(evt): add/remove from favorites
+
+Hero.tsx (Landing Page)
+  ├─ Canvas grid: rAF loop with mouse hover glow effect
+  │  ├─ Constants: CELL=40, RADIUS=160, BASE_ALPHA=0.18, MAX_ALPHA=0.75
+  │  ├─ Grid style: fixed position z-index:1, pointer-events:none
+  │  ├─ Content sections: z-index:2 (above grid)
+  │  └─ Nav/Footer: z-index:200 (opaque, grid excluded)
+  │
+  ├─ Sections:
+  │  ├─ Navigation: logo, features dropdown, pricing, log in, start free
+  │  ├─ Hero headline: "Lock in. Build district-level competition prep."
+  │  ├─ Stats bar: 17 events, X students, Y questions
+  │  ├─ Why section: benefits of BizLeaderPrep
+  │  ├─ Features dropdown: hover-triggered, 1/3 screen width
+  │  ├─ Pricing modal: slide-in animation (blp-page-enter)
+  │  ├─ CTA section: "Ready to lock in?" with Start Studying button
+  │  └─ Footer: logo, privacy/terms links
+  │
+  ├─ CSS Features:
+  │  ├─ blp-page-enter: slide-in from right animation
+  │  ├─ blp-features-dropdown-wide: fixed dropdown 34vw width, z-index:300
+  │  ├─ Grid mouse tracking: stores mouse pos, calculates distance to grid cells
+  │  └─ Glow effect: canvas context.shadowBlur + globalAlpha based on proximity
+  │
+  └─ Interactions:
+     ├─ Features dropdown: open on hover, close on mouse leave
+     ├─ Pricing modal: open on button click, close on back button
+     ├─ Start Studying: navigates to /dashboard
+     └─ Log In / Sign Up: opens Auth modal
+
+Dashboard.tsx (Legacy - may be unused)
+  - Old dashboard component; portfolio view now in App.tsx main return
+
+Sidebar.tsx (Navigation Sidebar)
+  ├─ Props: isLoggedIn, onBack, onViewAllEvents
+  ├─ Sections:
+  │  ├─ Logo & branding (48px height)
+  │  ├─ Study nav items: "All Events" (17), "Leaderboard"
+  │  ├─ "View all events" button (navigates to /dashboard/events)
+  │  └─ Back to home button
+  │
+  ├─ User section: profile avatar with "Your Profile" or "Sign in"
+  ├─ Styling: dark theme (#111 bg, #00ff6a accent)
+  └─ Organization section: REMOVED in latest session
+
+Auth.tsx (Authentication Modal)
+  ├─ Views: 'login', 'signup', 'forgot_password'
+  ├─ OAuth: Google sign-in button (white bg, SVG logo)
+  ├─ Email/Password: form inputs with validation
+  ├─ Success/Error messages: colored alert boxes
+  ├─ Troubleshooting guide: overlay with Supabase config instructions
+  ├─ Branding: green theme (#00ff6a, shadow effects)
+  └─ Redirect: window.location.origin (must match Supabase whitelist)
+
+StudyView.tsx (Question/Flashcard Study)
+  ├─ Displays questions from FBLA MS Questions table
+  ├─ Tracks answer streak, accuracy %, mastery score
+  ├─ Saves progress to localStorage (prephub_mastery)
+  ├─ Navigation: back button returns to dashboard
+  └─ Flashcard limit: FLASHCARD_LIMIT = 5 per session
+
+Quiz.tsx (Quiz/Question UI)
+  - Reusable quiz component for displaying single questions
+
+Header.tsx, Footer.tsx, Features.tsx, CallToAction.tsx, VisualShowcase.tsx
+  - Helper components for Hero page sections
+
+
+CONSTANTS & DATA
+================================================================================
+
+MS_EVENTS_LIST (17 FBLA Middle School Events):
+  'Career Exploration'
+  'Digital Citizenship'
+  'Exploring Accounting & Finance'
+  'Exploring Agribusiness'
+  'Exploring Business Communication'
+  'Exploring Business Concepts'
+  'Exploring Computer Science'
+  'Exploring Economics'
+  'Exploring FBLA'
+  'Exploring Leadership'
+  'Exploring Marketing Concepts'
+  'Exploring Parliamentary Procedure'
+  'Exploring Personal Finance'
+  'Exploring Professionalism'
+  'Exploring Technology'
+  'Interpersonal Communication'
+
+MS_EVENTS_INFO_DATA: Record<string, { type, desc, knowledge[], nace }>
+  - Full PDF info for each event (extracted from MS_Objective_Test_Events.pdf)
+  - Used in events page right panel and events view
+  - type: "Individual · Objective Test · 50 questions"
+  - desc: 1-2 sentence overview
+  - knowledge[]: array of 5-11 key knowledge areas
+  - nace: comma-separated NACE competencies
+
+
+DATA PERSISTENCE (localStorage)
+================================================================================
+
+User Progress:
+  - prephub_usage: (number) total flashcards answered
+  - prephub_mastery: (JSON) event name → accuracy % (e.g., {"Career Exploration": 78})
+  - prephub_activeEvent: (string) current StudyView event
+  - prephub_favorites: (JSON array) list of favorited event names
+
+Daily Question:
+  - prephub_daily_question_YYYY-MM-DD: (JSON) QuickQ object for today
+  - prephub_daily_answered_YYYY-MM-DD: (string) selected answer (or null if unanswered)
+
+Auth:
+  - Handled by Supabase session (no manual localStorage storage)
+
+
+RECENT CHANGES (CURRENT SESSION)
+================================================================================
+
+1. REMOVED ORGANIZATION SECTION
+   - File: components/Sidebar.tsx
+   - Deleted: Organization heading, FBLA Middle School badge/chip
+   - Reason: Streamline sidebar navigation
+
+2. ADDED "VIEW ALL EVENTS" BUTTON
+   - File: components/Sidebar.tsx
+   - Added: New nav item with grid icon in Study section
+   - Behavior: Navigates to /dashboard/events
+   - Props: Added onViewAllEvents callback to Sidebar component
+
+3. REMOVED "FBLA MIDDLE SCHOOL" CHIP FROM DASHBOARD TOPBAR
+   - File: App.tsx (portfolio view)
+   - Deleted: Divider + green chip showing org name
+   - Result: Cleaner topbar with just "Dashboard" label
+
+4. RENAMED "QUICK QUESTION" → "DAILY QUESTION"
+   - File: App.tsx (portfolio view)
+   - Changed: Header label, no functionality change
+   - Added: Status indicator when answered ("Answered · comes back tomorrow")
+
+5. DAILY QUESTION GRAYED OUT WHEN ANSWERED
+   - File: App.tsx
+   - Added: conditional opacity (0.45), pointerEvents: none
+   - Added: gray background color (#0e0e0e vs #111)
+   - Added: border color darkening (#1a1a1a vs #222)
+   - Effect: Visual feedback that question is complete for the day
+
+6. REMOVED "NEXT QUESTION" BUTTON
+   - File: App.tsx (Daily Question section)
+   - Deleted: entire button + onClick handler
+   - Reason: Only one question per day; next question arrives tomorrow
+
+7. MOVED "SAVED EVENTS" HEADER OUTSIDE BOX
+   - File: App.tsx
+   - Changed: Removed header from inside styled box
+   - Added: Wrapper div with marginBottom for spacing
+   - Pattern: Now matches Daily Question layout (header external)
+
+8. WIRED "VIEW ALL EVENTS" BUTTONS TO /dashboard/events
+   - File: App.tsx
+   - Updated: Sidebar button onClick
+   - Updated: Saved Events empty state button onClick
+   - Effect: Both buttons navigate to events page via window.history.pushState
+
+9. CREATED EVENTS EXPLORER PAGE (/dashboard/events)
+   - File: App.tsx (new if (view === 'events') render block)
+   - Layout: Two-column (300px left, flex right)
+   - Left panel:
+     ├─ All 17 MS events listed with hover/click states
+     ├─ Star button per event (toggles favorite)
+     ├─ "SAVED" badge shown when favorited
+     └─ Active event highlighted with green border
+   - Right panel:
+     ├─ Event type badge (Individual · Objective Test · 50 questions)
+     ├─ Event name heading
+     ├─ Description paragraph
+     ├─ Knowledge areas (as styled tags)
+     ├─ NACE competencies (as text)
+     └─ "Study this event" button
+   - Features:
+     ├─ Topbar with back button, event count, sign up / sign out
+     ├─ Stars sync with Supabase favorites
+     ├─ Login prompt if user tries to star while logged out
+     ├─ First event pre-selected on page load
+     └─ Custom CSS classes: ev-row, ev-star, ev-star.starred
+
+10. ADDED HOVEREVENT STATE
+    - File: App.tsx
+    - Hook: useState<string | null>(MS_EVENTS_LIST[0])
+    - Purpose: Track which event is selected on events page
+    - Used in: events view right panel display + left panel active state
+
+11. EXTRACTED MS_EVENTS_INFO_DATA
+    - File: App.tsx (before events render block)
+    - Structure: Record<string, { type, desc, knowledge[], nace }>
+    - All 17 FBLA MS events with full PDF info
+    - Previously duplicated, now consolidated
+    - Used by: events page detail view
+
+12. CREATED MS_EVENTS_LIST CONSTANT
+    - File: App.tsx (top level, before component)
+    - Contains: All 17 event names in array
+    - Replaces: Previously inline arrays throughout code
+    - Used by: Daily question seed selection, events page list, stats calculations
+
+
+STYLING & THEME
+================================================================================
+
+Color Scheme:
+  - Primary accent: #00ff6a (bright green)
+  - Background: #0a0a0a (near-black)
+  - Card backgrounds: #111 (dark gray)
+  - Borders: #222 (subtle)
+  - Text primary: #f0f0f0 (off-white)
+  - Text secondary: #aaa, #666, #555 (grays)
+  - Status colors:
+    ├─ Beginner: #00ff6a (green)
+    ├─ Intermediate: #f59e0b (orange)
+    └─ Advanced: #ef4444 (red)
+
+Fonts:
+  - Display/Headings: 'Instrument Sans' (600-700 weight)
+  - Body: 'DM Sans' (300-500 weight)
+
+Animations:
+  - dsFadeUp: opacity + translateY for card appearance
+  - dsBlink: dot animation for Apex online indicator
+  - blp-page-enter: slide-in from right (pricing modal)
+
+Responsive Design:
+  - Dashboard stats grid: 4 columns (no responsive breakpoints currently)
+  - Content grid: 1fr 370px (left content, right sidebar)
+  - Sidebar: fixed 256px width
+  - Events page: fixed 300px left, flex right
+
+
+BUILD & DEPLOYMENT
+================================================================================
+
+Build Command:
+  npm run build
+  - Runs TypeScript check (tsc)
+  - Vite bundles and minifies
+  - Output: dist/ folder
+
+Vercel Configuration (vercel.json):
+  {
+    "rewrites": [
+      { "source": "/(.*)", "destination": "/index.html" }
+    ]
+  }
+  - Ensures all routes serve index.html
+  - Allows client-side routing to work
+
+Environment Variables:
+  - VITE_SUPABASE_URL (public)
+  - VITE_SUPABASE_KEY (public, anon)
+  - In supabaseClient.ts
+
+Deployed at: https://bizleaderprep.com
+
+
+KNOWN LIMITATIONS & FUTURE IMPROVEMENTS
+================================================================================
+
+1. Leaderboard: Currently hardcoded mock data (not real-time from Supabase)
+2. Apex AI: Mock implementation (no actual chat API)
+3. Events page responsive: No mobile layout (assumes desktop)
+4. No back button state: Navigating directly to /dashboard/events on page load
+   may not preserve back button behavior perfectly
+5. Daily question seed: Uses date integer, so all users see same question
+   (by design, but not personalized)
+6. No event filtering by difficulty in events page
+7. Stats grid: No historical trends or time-based filtering
+
+
+TROUBLESHOOTING & DEBUGGING
+================================================================================
+
+Blank Dashboard on OAuth Login:
+  - Symptom: After Google sign-in, blank black screen
+  - Cause: OAuth hash (#access_token=...) not parsed before session check
+  - Fix: Check isOAuthRedirect flag, wait for onAuthStateChange SIGNED_IN
+  - Verify: Supabase redirectTo URL matches whitelisted URL in OAuth project
+
+Session Not Persisting:
+  - Check: localStorage for prephub_favorites, prephub_usage
+  - Check: Supabase session cookie in DevTools
+  - Verify: User_favorites table has correct user_id FK
+
+Daily Question Not Updating:
+  - Symptom: Same question showing multiple days
+  - Cause: localStorage prephub_daily_question_YYYY-MM-DD persists
+  - Fix: Manual localStorage clear or wait until date changes
+  - Verify: Today's date key changes at midnight local time
+
+Canvas Grid Not Visible:
+  - Check: Hero.tsx useEffect + rAF loop firing
+  - Check: Canvas z-index is 1, content is z-index 2 or higher
+  - Check: BASE_ALPHA not 0, MAX_ALPHA not 0
+  - Verify: Mouse movement triggers glow (check console for mouse events)
+
+Events Page Not Loading:
+  - Check: View state is 'events'
+  - Check: /dashboard/events URL is set via pushState
+  - Verify: MS_EVENTS_INFO_DATA fully populated (all 17 events)
+  - Check: hoveredEvent initialized to MS_EVENTS_LIST[0]
+
+
+TESTING CHECKLIST
+================================================================================
+
+Authentication:
+  ☐ Google OAuth login flows to dashboard (not blank)
+  ☐ Email/password signup works
+  ☐ Forgot password sends reset email
+  ☐ Sign out clears session and returns to landing
+  ☐ Logged-in state persists across page reloads
+
+Dashboard (Portfolio View):
+  ☐ All 4 stat cards display correct numbers
+  ☐ Saved Events shows favorited events (if logged in)
+  ☐ Daily Question appears once per day
+  ☐ Daily Question grays out after answered
+  ☐ Leaderboard displays mock data
+  ☐ Apex card shows correct message based on study progress
+
+Daily Question:
+  ☐ New question each day (compare across 2 different dates)
+  ☐ Same question all day long (refresh multiple times)
+  ☐ Answered state persists (reload page)
+  ☐ Box grayed out after answer
+  ☐ Cannot click options after answered
+
+Events Page (/dashboard/events):
+  ☐ Left panel shows all 17 events
+  ☐ Hover event highlights in list
+  ☐ Right panel shows event details for hovered event
+  ☐ First event selected on page load
+  ☐ Star button toggles favorite (shows SAVED badge)
+  ☐ Login prompt if user tries to star while logged out
+  ☐ Favorites persist in Supabase
+  ☐ "Study this event" button navigates to StudyView
+
+Sidebar:
+  ☐ "View all events" button navigates to /dashboard/events
+  ☐ "All Events (17)" badge displays
+  ☐ Organization section is hidden/removed
+  ☐ Back to home button returns to landing
+
+Navigation & Routing:
+  ☐ / loads landing page
+  ☐ /dashboard loads portfolio/dashboard view
+  ☐ /dashboard/events loads events page
+  ☐ Back button returns to previous view
+  ☐ Direct URL navigation works without error
+  ☐ Page reload preserves current view
+
+
+FILE STRUCTURE
+================================================================================
+
+/home/linuxpod/Downloads/bizleaderprep-main/
+├── App.tsx                          (main controller)
+├── supabaseClient.ts                (auth + DB config)
+├── vite.config.ts                   (build config)
+├── tsconfig.json                    (TypeScript config)
+├── package.json                     (dependencies)
+├── vercel.json                      (Vercel SPA config)
+├── dist/                            (build output)
+│
+├── components/
+│   ├── Auth.tsx                     (login/signup modal)
+│   ├── Hero.tsx                     (landing page + grid canvas)
+│   ├── Dashboard.tsx                (legacy, may be unused)
+│   ├── Sidebar.tsx                  (dashboard navigation)
+│   ├── StudyView.tsx                (flashcard study interface)
+│   ├── Quiz.tsx                     (question display)
+│   ├── Header.tsx                   (landing nav)
+│   ├── Footer.tsx                   (landing footer)
+│   ├── Features.tsx                 (landing features section)
+│   ├── CallToAction.tsx             (landing CTA section)
+│   └── VisualShowcase.tsx           (landing showcase section)
+│
+├── public/
+│   ├── TransparentLogo.png          (48px logo)
+│   ├── bizleaderprep-logo.png       (alt logo)
+│   ├── bizleaderprep_landing.html   (static HTML landing)
+│   └── bizleaderprep_redesign.html  (static HTML dashboard mockup)
+│
+└── utils/
+    └── index.ts                     (utility functions)
+
+
+================================================================================
+                            END OF DOCUMENTATION
+================================================================================
