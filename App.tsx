@@ -86,6 +86,7 @@ const App: React.FC = () => {
   const [userXP, setUserXP] = useState<number>(0);
   const [userRank, setUserRank] = useState<Rank>('Intern');
   const [isFounder, setIsFounder] = useState<boolean>(false);
+  const [username, setUsername] = useState<string | null>(null);
   const [xpToast, setXpToast] = useState<{ amount: number; visible: boolean }>({ amount: 0, visible: false });
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -102,6 +103,11 @@ const App: React.FC = () => {
   const [pendingUserEmail, setPendingUserEmail] = useState<string | null>(null);
   const [usernameError, setUsernameError] = useState<string | null>(null);
   const [usernameLoading, setUsernameLoading] = useState(false);
+
+  // APEX Chat state
+  const [apexMessages, setApexMessages] = useState<Array<{ role: 'user' | 'apex'; content: string }>>([]);
+  const [apexInput, setApexInput] = useState('');
+  const [apexLoading, setApexLoading] = useState(false);
 
   // ── Favorites (must be at top level — Rules of Hooks) ─────────────────────
   const [favorites, setFavorites] = useState<string[]>(() => {
@@ -150,6 +156,7 @@ const App: React.FC = () => {
             setUserXP(data.xp);
             setIsFounder(data.is_founder);
             setUserRank(getRankFromXP(data.xp, data.is_founder));
+            setUsername(data.username || null);
 
             // Check if user needs to set a username (old accounts without username)
             if (!data.username) {
@@ -196,6 +203,7 @@ const App: React.FC = () => {
             setUserXP(data.xp);
             setIsFounder(data.is_founder);
             setUserRank(getRankFromXP(data.xp, data.is_founder));
+            setUsername(data.username || null);
 
             // Check if user needs to set a username (old accounts without username)
             if (!data.username) {
@@ -328,6 +336,41 @@ const App: React.FC = () => {
     } catch (err: any) {
       setUsernameError(err.message || 'Failed to set username');
       setUsernameLoading(false);
+    }
+  };
+
+  const handleApexMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!apexInput.trim() || apexLoading) return;
+
+    const userMessage = apexInput.trim();
+    setApexInput('');
+    setApexMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+    setApexLoading(true);
+
+    try {
+      const response = await fetch('/api/apex', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: userMessage,
+          context: 'FBLA competitive exam preparation and study guidance',
+          division: division,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const apexResponse = data.response || data.message || 'I could not process that. Please try again.';
+      setApexMessages(prev => [...prev, { role: 'apex', content: apexResponse }]);
+    } catch (error: any) {
+      console.error('APEX error:', error);
+      setApexMessages(prev => [...prev, { role: 'apex', content: 'Sorry, I encountered an error. Please try again.' }]);
+    } finally {
+      setApexLoading(false);
     }
   };
 
@@ -590,7 +633,7 @@ const App: React.FC = () => {
           .ev-star:hover { color:#f59e0b;transform:scale(1.2); }
           .ev-star.starred { color:#f59e0b; }
         `}</style>
-        <Sidebar isLoggedIn={isLoggedIn} onBack={() => setView('landing')} division={division} onDivisionChange={(d) => { setDivision(d); setHoveredEvent(getEventsList(d)[0]); }} theme={theme} userXP={userXP} userRank={userRank} isFounder={isFounder} />
+        <Sidebar isLoggedIn={isLoggedIn} onBack={() => setView('landing')} division={division} onDivisionChange={(d) => { setDivision(d); setHoveredEvent(getEventsList(d)[0]); }} theme={theme} userXP={userXP} userRank={userRank} isFounder={isFounder} username={username} />
         <main style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', minWidth: 0 }}>
           {/* Topbar */}
           <div style={{ height: 57, minHeight: 57, borderBottom: '1px solid #222', display: 'flex', alignItems: 'center', padding: '0 24px', gap: 14, background: '#111', flexShrink: 0 }}>
@@ -874,7 +917,7 @@ const App: React.FC = () => {
                   <div style={{ fontSize: 12, color: '#00ff6a', cursor: 'pointer', fontWeight: 500 }}>Full board →</div>
                 </div>
                 {[
-                  { rank: '1', rankColor: '#ffd700', av: 'AU', avBg: 'linear-gradient(135deg,#888,#666)', name: 'Anonymous User', score: '', you: isLoggedIn },
+                  { rank: '1', rankColor: '#ffd700', av: isLoggedIn && username ? username.substring(0, 2).toUpperCase() : 'AU', avBg: 'linear-gradient(135deg,#888,#666)', name: isLoggedIn && username ? username : 'Anonymous User', score: '', you: isLoggedIn },
                   { rank: '2', rankColor: '#c0c0c0', av: '—', avBg: 'linear-gradient(135deg,#333,#222)', name: '—', score: '', you: false },
                   { rank: '3', rankColor: '#cd7f32', av: '—', avBg: 'linear-gradient(135deg,#333,#222)', name: '—', score: '', you: false },
                   { rank: '4', rankColor: '#666', av: '—', avBg: 'linear-gradient(135deg,#333,#222)', name: '—', score: '', you: false },
@@ -910,28 +953,92 @@ const App: React.FC = () => {
                   </div>
                 </div>
                 {/* Chat bubbles */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 16 }}>
-                  <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-                    <div style={{ width: 26, height: 26, background: '#0d0d0d', border: '1px solid rgba(168,85,247,0.35)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <div style={{ display: 'flex', gap: 3 }}>
-                        <div style={{ width: 5, height: 6, background: '#a855f7', borderRadius: '50%', boxShadow: '0 0 5px #a855f7', animation: 'dsBlink 3.5s infinite' }}></div>
-                        <div style={{ width: 5, height: 6, background: '#a855f7', borderRadius: '50%', boxShadow: '0 0 5px #a855f7', animation: 'dsBlink 3.5s 0.1s infinite' }}></div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 16, maxHeight: 250, overflowY: 'auto' }}>
+                  {apexMessages.length === 0 ? (
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                      <div style={{ width: 26, height: 26, background: '#0d0d0d', border: '1px solid rgba(168,85,247,0.35)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <div style={{ display: 'flex', gap: 3 }}>
+                          <div style={{ width: 5, height: 6, background: '#a855f7', borderRadius: '50%', boxShadow: '0 0 5px #a855f7', animation: 'dsBlink 3.5s infinite' }}></div>
+                          <div style={{ width: 5, height: 6, background: '#a855f7', borderRadius: '50%', boxShadow: '0 0 5px #a855f7', animation: 'dsBlink 3.5s 0.1s infinite' }}></div>
+                        </div>
+                      </div>
+                      <div style={{ background: '#181818', border: '1px solid rgba(168,85,247,0.15)', borderRadius: '10px 10px 10px 3px', padding: '10px 13px', fontSize: 13, lineHeight: 1.55, color: '#aaa', maxWidth: '90%' }}>
+                        <b style={{ color: '#a855f7' }}>Lock in.</b>{' '}
+                        {eventsStudiedCount > 0
+                          ? `You've studied ${eventsStudiedCount} event${eventsStudiedCount !== 1 ? 's' : ''} with ${avgAccuracy}% avg accuracy. Keep pushing. 🔥`
+                          : `Start with any event to begin building your mastery. District-level consistency starts today. 🔥`}
                       </div>
                     </div>
-                    <div style={{ background: '#181818', border: '1px solid rgba(168,85,247,0.15)', borderRadius: '10px 10px 10px 3px', padding: '10px 13px', fontSize: 13, lineHeight: 1.55, color: '#aaa', maxWidth: '90%' }}>
-                      <b style={{ color: '#a855f7' }}>Lock in.</b>{' '}
-                      {eventsStudiedCount > 0
-                        ? `You've studied ${eventsStudiedCount} event${eventsStudiedCount !== 1 ? 's' : ''} with ${avgAccuracy}% avg accuracy. Keep pushing. 🔥`
-                        : `Start with any event to begin building your mastery. District-level consistency starts today. 🔥`}
+                  ) : (
+                    apexMessages.map((msg, idx) => (
+                      <div key={idx} style={{ display: 'flex', gap: 8, alignItems: 'flex-start', justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start' }}>
+                        {msg.role === 'apex' && (
+                          <div style={{ width: 26, height: 26, background: '#0d0d0d', border: '1px solid rgba(168,85,247,0.35)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <div style={{ display: 'flex', gap: 3 }}>
+                              <div style={{ width: 5, height: 6, background: '#a855f7', borderRadius: '50%', boxShadow: '0 0 5px #a855f7' }}></div>
+                              <div style={{ width: 5, height: 6, background: '#a855f7', borderRadius: '50%', boxShadow: '0 0 5px #a855f7' }}></div>
+                            </div>
+                          </div>
+                        )}
+                        <div style={{
+                          background: msg.role === 'apex' ? '#181818' : '#a855f7',
+                          border: msg.role === 'apex' ? '1px solid rgba(168,85,247,0.15)' : 'none',
+                          borderRadius: msg.role === 'apex' ? '10px 10px 10px 3px' : '10px 10px 3px 10px',
+                          padding: '10px 13px',
+                          fontSize: 13,
+                          lineHeight: 1.55,
+                          color: msg.role === 'apex' ? '#aaa' : '#000',
+                          maxWidth: '85%',
+                          wordWrap: 'break-word',
+                        }}>
+                          {msg.content}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                  {apexLoading && (
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                      <div style={{ width: 26, height: 26, background: '#0d0d0d', border: '1px solid rgba(168,85,247,0.35)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <div style={{ display: 'flex', gap: 3 }}>
+                          <div style={{ width: 5, height: 6, background: '#a855f7', borderRadius: '50%', boxShadow: '0 0 5px #a855f7', animation: 'dsBlink 3.5s infinite' }}></div>
+                          <div style={{ width: 5, height: 6, background: '#a855f7', borderRadius: '50%', boxShadow: '0 0 5px #a855f7', animation: 'dsBlink 3.5s 0.1s infinite' }}></div>
+                        </div>
+                      </div>
+                      <div style={{ background: '#181818', border: '1px solid rgba(168,85,247,0.15)', borderRadius: '10px 10px 10px 3px', padding: '10px 13px', fontSize: 13, color: '#666' }}>
+                        Apex is thinking...
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
-                <div style={{ display: 'flex', gap: 7 }}>
-                  <input className="apex-input-ds" placeholder="Ask Apex anything about FBLA..." />
-                  <button style={{ width: 38, height: 38, background: '#a855f7', border: 'none', borderRadius: 9, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'opacity 0.15s' }}>
+                <form onSubmit={handleApexMessage} style={{ display: 'flex', gap: 7 }}>
+                  <input
+                    className="apex-input-ds"
+                    placeholder="Ask Apex anything about FBLA..."
+                    value={apexInput}
+                    onChange={(e) => setApexInput(e.target.value)}
+                    disabled={apexLoading}
+                    style={{ opacity: apexLoading ? 0.6 : 1 }}
+                  />
+                  <button
+                    type="submit"
+                    disabled={apexLoading || !apexInput.trim()}
+                    style={{
+                      width: 38,
+                      height: 38,
+                      background: '#a855f7',
+                      border: 'none',
+                      borderRadius: 9,
+                      cursor: apexLoading || !apexInput.trim() ? 'not-allowed' : 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                      transition: 'opacity 0.15s',
+                      opacity: apexLoading || !apexInput.trim() ? 0.5 : 1,
+                    }}>
                     <svg width="14" height="14" fill="none" stroke="white" strokeWidth="2.5" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                   </button>
-                </div>
+                </form>
               </div>
             </div>
           </div>

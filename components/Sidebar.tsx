@@ -25,6 +25,7 @@ interface SidebarProps {
   userXP?: number;
   userRank?: Rank;
   isFounder?: boolean;
+  username?: string | null;
 }
 
 const getNavItems = (division: Division) => [
@@ -53,7 +54,7 @@ const getNavItems = (division: Division) => [
   },
 ];
 
-const Sidebar: React.FC<SidebarProps> = ({ isLoggedIn, onBack, division, onDivisionChange, theme, userXP = 0, userRank = 'Intern', isFounder = false }) => {
+const Sidebar: React.FC<SidebarProps> = ({ isLoggedIn, onBack, division, onDivisionChange, theme, userXP = 0, userRank = 'Intern', isFounder = false, username = null }) => {
   const navItems = getNavItems(division);
   return (
     <>
@@ -148,10 +149,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isLoggedIn, onBack, division, onDivis
         <div style={{ padding: '12px', borderTop: `1px solid ${theme.border}` }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 10px', borderRadius: 9, background: theme.bgTertiary, cursor: 'pointer', border: `1px solid ${theme.border}` }}>
             <div style={{ width: 30, height: 30, borderRadius: '50%', background: 'linear-gradient(135deg,#00ff6a,#00aaff)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#000', flexShrink: 0 }}>
-              {isLoggedIn ? '✓' : '?'}
+              {isLoggedIn && username ? username.substring(0, 1).toUpperCase() : isLoggedIn ? '✓' : '?'}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 13, fontWeight: 500, color: theme.text }}>{isLoggedIn ? 'Your Profile' : 'Sign in'}</div>
+              <div style={{ fontSize: 13, fontWeight: 500, color: theme.text }}>{isLoggedIn && username ? username : isLoggedIn ? 'Your Profile' : 'Sign in'}</div>
               <div style={{ fontSize: 11, color: theme.textMuted }}>{isLoggedIn ? 'View stats & settings' : 'To save progress'}</div>
             </div>
           </div>
@@ -160,15 +161,17 @@ const Sidebar: React.FC<SidebarProps> = ({ isLoggedIn, onBack, division, onDivis
           {isLoggedIn && (
             <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: 8 }}>
               <div style={{
-                display: 'inline-flex',
+                display: 'flex',
                 alignItems: 'center',
-                gap: 6,
+                gap: 8,
                 padding: '6px 10px',
                 borderRadius: 20,
                 background: `${getRankColor(userRank)}20`,
                 border: `1px solid ${getRankColor(userRank)}40`,
                 width: 'fit-content',
               }}>
+                <span style={{ fontSize: 10, fontWeight: 600, color: getRankColor(userRank) }}>{userXP} XP</span>
+                <div style={{ width: 1, height: 14, background: `${getRankColor(userRank)}40` }} />
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: getRankColor(userRank) }} />
                 <span style={{ fontSize: 11, fontWeight: 600, color: getRankColor(userRank) }}>{userRank}</span>
               </div>
