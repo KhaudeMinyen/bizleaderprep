@@ -71,7 +71,17 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login', o
     try {
       if (view === 'login') {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        if (error) {
+          if (error.message.toLowerCase().includes('email not confirmed')) {
+            setErrorMsg('Please confirm your email before logging in. Check your inbox for a verification link.');
+          } else if (error.message.toLowerCase().includes('invalid login credentials')) {
+            setErrorMsg('Invalid email or password. Please try again.');
+          } else {
+            throw error;
+          }
+          setIsLoading(false);
+          return;
+        }
         onLogin();
       } else if (view === 'signup') {
         const { data, error } = await supabase.auth.signUp({ email, password });
