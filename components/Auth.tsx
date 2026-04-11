@@ -30,8 +30,53 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login', o
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [showConfigGuide, setShowConfigGuide] = useState(false);
   const [newUserId, setNewUserId] = useState<string | null>(null);
+  const [expiredLink, setExpiredLink] = useState(false);
+  const [resendingEmail, setResendingEmail] = useState(false);
 
   const supabaseUrl = (supabase as any).supabaseUrl || '';
+
+  // Check for email verification errors in URL
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash.includes('error=access_denied') && hash.includes('otp_expired')) {
+      setExpiredLink(true);
+      setErrorMsg('Verification link expired. Please request a new one.');
+    } else if (hash.includes('error=access_denied')) {
+      setErrorMsg('Verification link is invalid. Please try signing up again.');
+    }
+  }, []);
+
+  const handleResendVerificationEmail = async () => {
+    if (!email) {
+      setErrorMsg('Please enter your email address');
+      return;
+    }
+    setResendingEmail(true);
+    setErrorMsg(null);
+
+    try {
+      // Use the admin API to resend confirmation email
+      const { error } = await (supabase.auth as any).resendEnrollmentEmail(email);
+      if (error) {
+        // Fallback: Try signing up again (Supabase will resend if already exists)
+        const { error: signUpError } = await supabase.auth.signUp({
+          email,
+          password: Math.random().toString(36).slice(2),
+          options: {
+            emailRedirectTo: window.location.origin,
+          },
+        });
+        if (signUpError && !signUpError.message.includes('already registered')) throw signUpError;
+      }
+      setSuccessMsg('Verification email sent! Check your inbox and click the link within 24 hours.');
+      setExpiredLink(false);
+      setTimeout(() => setSuccessMsg(null), 5000);
+    } catch (error: any) {
+      setErrorMsg(error.message || 'Failed to resend email. Please try again.');
+    } finally {
+      setResendingEmail(false);
+    }
+  };
 
   const handleGoogleAuth = async () => {
     setIsLoading(true);
@@ -250,6 +295,17 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login', o
               <button type="submit" disabled={isLoading} className={`w-full ${brandBgClass} text-black font-black uppercase tracking-[0.2em] text-[11px] py-5 rounded-2xl hover:scale-[1.01] transition-all ${brandButtonShadowClass}`}>
                 {isLoading ? 'Processing...' : (view === 'login' ? 'Sign In' : (view === 'signup' ? 'Create Account' : 'Reset'))}
               </button>
+
+              {expiredLink && (
+                <button
+                  type="button"
+                  onClick={handleResendVerificationEmail}
+                  disabled={resendingEmail}
+                  className="w-full bg-white/10 text-white font-bold uppercase tracking-[0.2em] text-[11px] py-4 rounded-2xl hover:bg-white/20 transition-all border border-white/20"
+                >
+                  {resendingEmail ? 'Sending...' : 'Resend Verification Email'}
+                </button>
+              )}
             </form>
           )}
 
