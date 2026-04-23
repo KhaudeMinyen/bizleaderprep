@@ -14,8 +14,15 @@ type HeroView = 'home' | 'pricing';
 const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupRequest, isLoggedIn, onSignOut }) => {
   const [heroView, setHeroView] = useState<HeroView>('home');
   const [featuresOpen, setFeaturesOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const featuresRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -30,9 +37,11 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
       W = canvas.width = window.innerWidth;
       H = canvas.height = window.innerHeight;
     };
-    const onMouseMove = (e: MouseEvent) => { mouse.x = e.clientX; mouse.y = e.clientY; };
+    const onMouseMove = (e: MouseEvent) => {
+      if (!isMobile) { mouse.x = e.clientX; mouse.y = e.clientY; }
+    };
     window.addEventListener('resize', resize);
-    window.addEventListener('mousemove', onMouseMove);
+    if (!isMobile) window.addEventListener('mousemove', onMouseMove);
     resize();
     const draw = () => {
       ctx.clearRect(0, 0, W, H);
@@ -43,14 +52,14 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
           const x = i * CELL, y = j * CELL;
           const dx = mouse.x - x, dy = mouse.y - y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          const alpha = dist < RADIUS ? BASE_ALPHA + (MAX_ALPHA - BASE_ALPHA) * (1 - dist / RADIUS) : BASE_ALPHA;
+          const alpha = isMobile ? BASE_ALPHA : (dist < RADIUS ? BASE_ALPHA + (MAX_ALPHA - BASE_ALPHA) * (1 - dist / RADIUS) : BASE_ALPHA);
           ctx.beginPath();
           ctx.strokeStyle = `rgba(200,200,200,${alpha})`;
           ctx.lineWidth = 1;
           ctx.moveTo(x, y); ctx.lineTo(x, y + CELL); ctx.stroke();
           ctx.beginPath();
           ctx.moveTo(x, y); ctx.lineTo(x + CELL, y); ctx.stroke();
-          if (dist < RADIUS) {
+          if (!isMobile && dist < RADIUS) {
             const dotAlpha = (1 - dist / RADIUS) * 0.9;
             const dotR = (1 - dist / RADIUS) * 3;
             ctx.beginPath();
@@ -66,9 +75,9 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
     return () => {
       cancelAnimationFrame(rafId);
       window.removeEventListener('resize', resize);
-      window.removeEventListener('mousemove', onMouseMove);
+      if (!isMobile) window.removeEventListener('mousemove', onMouseMove);
     };
-  }, []);
+  }, [isMobile]);
 
   useEffect(() => {
     const reveals = document.querySelectorAll('.blp-reveal');
@@ -84,16 +93,18 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
     return () => observer.disconnect();
   }, [heroView]);
 
-  // Close features dropdown on outside click
+  // Close features dropdown on outside click (mobile only for click, desktop for hover)
   useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (featuresRef.current && !featuresRef.current.contains(e.target as Node)) {
-        setFeaturesOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
+    if (isMobile) {
+      const handler = (e: MouseEvent) => {
+        if (featuresRef.current && !featuresRef.current.contains(e.target as Node)) {
+          setFeaturesOpen(false);
+        }
+      };
+      document.addEventListener('mousedown', handler);
+      return () => document.removeEventListener('mousedown', handler);
+    }
+  }, [isMobile]);
 
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
@@ -118,7 +129,10 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
         .blp-nav {
           position: fixed; top: 0; left: 0; right: 0; z-index: 200;
           display: flex; align-items: center; padding: 0 48px; height: 64px;
-          background: var(--blp-bg); backdrop-filter: blur(20px);
+          background: var(--blp-bg); backdrop-filter: blur(20px); gap: 0;
+        }
+        @media (max-width: 768px) {
+          .blp-nav { padding: 0 20px; }
         }
         .blp-nav-logo img { height: 48px; width: auto; display: block; }
         .blp-nav-center { display: flex; align-items: center; gap: 4px; margin-left: 20px; }
@@ -146,20 +160,24 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
         .blp-dd-item:hover { background: var(--blp-surface2); color: var(--blp-text); }
         .blp-dd-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px; }
         .blp-btn-ghost {
-          font-size: 13.5px; color: var(--blp-text2); padding: 7px 16px; border-radius: 8px;
+          font-size: 12px; color: var(--blp-text2); padding: 6px 12px; border-radius: 8px;
           border: 1px solid var(--blp-border2); background: transparent; cursor: pointer;
           font-family: 'Instrument Sans', sans-serif; transition: all 0.15s; text-decoration: none;
-          display: inline-flex; align-items: center;
+          display: inline-flex; align-items: center; white-space: nowrap;
         }
         .blp-btn-ghost:hover { color: var(--blp-text); background: var(--blp-surface2); }
         .blp-btn-green {
-          font-size: 13.5px; font-weight: 600; color: #000; padding: 7px 18px; border-radius: 8px;
+          font-size: 12px; font-weight: 600; color: #000; padding: 6px 14px; border-radius: 8px;
           background: var(--blp-green); border: none; cursor: pointer;
           font-family: 'Instrument Sans', sans-serif; transition: opacity 0.15s, transform 0.1s;
-          display: inline-flex; align-items: center; gap: 6px;
+          display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
         }
         .blp-btn-green:hover { opacity: 0.88; }
         .blp-btn-green:active { transform: scale(0.98); }
+        @media (max-width: 768px) {
+          .blp-btn-ghost { font-size: 11px; padding: 5px 10px; }
+          .blp-btn-green { font-size: 11px; padding: 5px 12px; }
+        }
         .blp-hero {
           min-height: 100vh; display: flex; flex-direction: column;
           align-items: center; justify-content: center;
@@ -324,8 +342,19 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
           border-bottom: 1px solid var(--blp-border2);
           padding: 12px; z-index: 300;
           box-shadow: -12px 12px 48px rgba(0,0,0,0.7);
-          animation: blpFadeUp 0.15s ease both;
+          animation: blpSlideDown 0.2s cubic-bezier(0.4,0,0.2,1) both;
         }
+        @keyframes blpSlideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+        @media (max-width: 768px) {
+          .blp-features-dropdown-wide {
+            position: fixed; top: 64px; right: 0; left: 0; width: 100%;
+            min-width: auto; border-left: none;
+            border-radius: 0; padding: 12px 20px;
+            animation: blpSlideUp 0.25s cubic-bezier(0.4,0,0.2,1) both;
+            max-height: calc(100vh - 120px); overflow-y: auto;
+          }
+        }
+        @keyframes blpSlideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .blp-dd-item-wide {
           display: flex; align-items: flex-start; padding: 13px 14px; border-radius: 10px;
           cursor: pointer; transition: background 0.12s;
@@ -363,12 +392,14 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
           <div style={{ flex: 1 }} />
 
           <div className="blp-nav-right">
-            {/* Features dropdown — hover triggered */}
+            {/* Features dropdown — hover on desktop, click on mobile */}
             <div ref={featuresRef} style={{ position: 'relative' }}
-              onMouseEnter={() => setFeaturesOpen(true)}
-              onMouseLeave={() => setFeaturesOpen(false)}
+              onMouseEnter={() => !isMobile && setFeaturesOpen(true)}
+              onMouseLeave={() => !isMobile && setFeaturesOpen(false)}
             >
-              <button className={`blp-nav-btn${featuresOpen ? ' active' : ''}`}>
+              <button className={`blp-nav-btn${featuresOpen ? ' active' : ''}`}
+                onClick={() => isMobile && setFeaturesOpen(!featuresOpen)}
+              >
                 Features
                 <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"
                   style={{ transform: featuresOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}>
@@ -376,22 +407,26 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
                 </svg>
               </button>
               {featuresOpen && (
-                <div className="blp-features-dropdown-wide">
-                  {[
-                    { label: 'Apex AI Tutor', desc: 'Claude-powered explanations break down every right and wrong answer — so you actually understand the concept, not just memorize it.', onClick: () => { setHeroView('home'); setTimeout(() => scrollTo('apex'), 50); } },
-                    { label: 'Practice Questions', desc: '850+ questions spanning all 17 FBLA Middle School events, organized by difficulty. Beginner to advanced — you choose how hard to push.', onClick: () => { setHeroView('home'); setTimeout(() => scrollTo('why'), 50); } },
-                    { label: 'Chapter Leaderboard', desc: 'Compete against your classmates and chapter members on a live weekly leaderboard. See exactly who\'s putting in the reps before competition day.', onClick: () => { setHeroView('home'); setTimeout(() => scrollTo('why'), 50); } },
-                    { label: 'Timed Mock Exams', desc: 'Simulate real FBLA test conditions with timed sessions. Train under pressure so competition day feels familiar, not stressful.', onClick: () => { setHeroView('home'); setTimeout(() => scrollTo('why'), 50); } },
-                    { label: 'Progress Tracking', desc: 'Per-event accuracy scores show exactly where you\'re strong and where you need more reps. Study smarter, not just longer.', onClick: () => { setHeroView('home'); setTimeout(() => scrollTo('why'), 50); } },
-                  ].map(item => (
-                    <div key={item.label} className="blp-dd-item-wide" onClick={item.onClick}>
-                      <div>
-                        <div className="blp-dd-label">{item.label}</div>
-                        <div className="blp-dd-desc">{item.desc}</div>
+                <>
+                  {isMobile && <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 250, pointerEvents: 'auto' }} onClick={() => setFeaturesOpen(false)} />}
+                  <div className="blp-features-dropdown-wide" style={{ position: isMobile ? 'fixed' : 'absolute' }}>
+                    {[
+                      { label: 'Apex AI Tutor', desc: 'Claude-powered explanations break down every right and wrong answer — so you actually understand the concept, not just memorize it.', onClick: () => { setFeaturesOpen(false); setHeroView('home'); setTimeout(() => scrollTo('apex'), 50); } },
+                      { label: 'Practice Questions', desc: '850+ questions spanning all 17 FBLA Middle School events, organized by difficulty. Beginner to advanced — you choose how hard to push.', onClick: () => { setFeaturesOpen(false); setHeroView('home'); setTimeout(() => scrollTo('why'), 50); } },
+                      { label: 'Chapter Leaderboard', desc: 'Compete against your classmates and chapter members on a live weekly leaderboard. See exactly who\'s putting in the reps before competition day.', onClick: () => { setFeaturesOpen(false); setHeroView('home'); setTimeout(() => scrollTo('why'), 50); } },
+                      { label: 'Timed Mock Exams', desc: 'Simulate real FBLA test conditions with timed sessions. Train under pressure so competition day feels familiar, not stressful.', onClick: () => { setFeaturesOpen(false); setHeroView('home'); setTimeout(() => scrollTo('why'), 50); } },
+                      { label: 'Progress Tracking', desc: 'Per-event accuracy scores show exactly where you\'re strong and where you need more reps. Study smarter, not just longer.', onClick: () => { setFeaturesOpen(false); setHeroView('home'); setTimeout(() => scrollTo('why'), 50); } },
+                    ].map(item => (
+                      <div key={item.label} className="blp-dd-item-wide" onClick={item.onClick}>
+                        <div>
+                          <div className="blp-dd-label">{item.label}</div>
+                          <div className="blp-dd-desc">{item.desc}</div>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                    {isMobile && <div style={{ height: 16, cursor: 'pointer' }} onClick={() => setFeaturesOpen(false)} />}
+                  </div>
+                </>
               )}
             </div>
             <button className="blp-nav-btn" onClick={() => setHeroView('pricing')}>Pricing</button>
@@ -559,17 +594,17 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
               <span className="blp-bento-tag blp-tag-blue">Progress</span>
               <div className="blp-bento-title">Track every event, every difficulty.</div>
               <div className="blp-bento-desc">Know exactly where you stand across all 17 MS events. Per-event accuracy shows what to focus on next.</div>
-              <div style={{marginTop:18,display:'flex',flexDirection:'column',gap:8}}>
+              <div style={{marginTop:18,display:'flex',flexDirection:'column',gap:9}}>
                 {[
                   {name:'Career Exploration',pct:82,color:'var(--blp-blue)'},
                   {name:'Digital Citizenship',pct:60,color:'var(--blp-blue)'},
                   {name:'Exploring FBLA',pct:45,color:'var(--blp-amber)'},
                   {name:'Personal Finance',pct:22,color:'#ef4444'},
                 ].map(({name,pct,color}) => (
-                  <div key={name} style={{display:'flex',alignItems:'center',gap:10}}>
-                    <span style={{fontSize:12,color:'var(--blp-text2)',width:130,flexShrink:0}}>{name}</span>
-                    <div style={{flex:1,height:4,background:'var(--blp-surface3)',borderRadius:2,overflow:'hidden'}}><div style={{height:'100%',width:`${pct}%`,background:color,borderRadius:2}}></div></div>
-                    <span style={{fontSize:11,color,fontWeight:600,width:30,textAlign:'right'}}>{pct}%</span>
+                  <div key={name} style={{display:'flex',alignItems:'center',gap:10,fontSize:13}}>
+                    <span style={{fontSize:12,color:'var(--blp-text2)',minWidth:110,maxWidth:110,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',flexShrink:0}}>{name}</span>
+                    <div style={{flex:1,minWidth:80,height:5,background:'var(--blp-surface3)',borderRadius:2,overflow:'hidden'}}><div style={{height:'100%',width:`${pct}%`,background:color,borderRadius:2,transition:'width 0.3s ease'}}></div></div>
+                    <span style={{fontSize:11,color,fontWeight:700,minWidth:35,textAlign:'right',flexShrink:0}}>{pct}%</span>
                   </div>
                 ))}
               </div>

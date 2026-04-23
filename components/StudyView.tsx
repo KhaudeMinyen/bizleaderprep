@@ -15,9 +15,10 @@ interface StudyViewProps {
   onAnswer: () => void;
   onLoginRequest: () => void;
   isLoggedIn: boolean;
-  onAwardXP?: (amount: number) => Promise<void>;
+  onAwardXP?: (amount: number) => void;
   userXP?: number;
   userRank?: string;
+  isMobile?: boolean;
 }
 
 type StudyMode = 'difficulty' | 'selection' | 'flashcard' | 'test' | 'realistic' | 'summary' | 'review';
@@ -49,7 +50,7 @@ const practiceKey = (evt: string, div: string, diff: string) => `prephub_practic
 const flashcardKey = (evt: string, div: string, diff: string) => `prephub_flashcard_${evt}_${div}_${diff}`;
 
 const StudyView: React.FC<StudyViewProps> = ({
-  eventName, division, orgType, onBack, flashcardsUsed, limit, onAnswer, onLoginRequest, isLoggedIn, onAwardXP
+  eventName, division, orgType, onBack, flashcardsUsed, limit, onAnswer, onLoginRequest, isLoggedIn, onAwardXP, isMobile = false
 }) => {
   // Helper to get/update studied events
   const getStudiedEvents = (): string[] => {
@@ -64,28 +65,6 @@ const StudyView: React.FC<StudyViewProps> = ({
     }
   };
 
-  // Helper for streak tracking
-  const getStreakData = () => {
-    try { return JSON.parse(localStorage.getItem('prephub_streak') || '{"lastDate":"","count":0}'); } catch { return { lastDate: '', count: 0 }; }
-  };
-
-  const updateStreak = () => {
-    const now = new Date().toISOString().split('T')[0];
-    const data = getStreakData();
-    const yesterday = new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0];
-
-    if (data.lastDate === now) return; // already counted today
-
-    if (data.lastDate === yesterday) {
-      data.count++;
-    } else {
-      data.count = 1;
-    }
-    data.lastDate = now;
-    localStorage.setItem('prephub_streak', JSON.stringify(data));
-
-    return data.count;
-  };
   const [mode, setMode] = useState<StudyMode>(orgType === 'FBLA' ? 'difficulty' : 'selection');
   const [lastMode, setLastMode] = useState<StudyMode | null>(null);
   const [cards, setCards] = useState<QuestionData[]>([]);
@@ -420,20 +399,21 @@ const StudyView: React.FC<StudyViewProps> = ({
     setRealisticSubmitted(true);
     localStorage.removeItem(realisticKey(eventName, division));
     const acc = realisticCards.length > 0 ? (correct / realisticCards.length) * 100 : 0;
-    const scores = JSON.parse(localStorage.getItem('prephub_mastery') || '{}');
+    const masteryKey = `prephub_mastery_${division}`;
+    const scores = JSON.parse(localStorage.getItem(masteryKey) || '{}');
     if (acc > (scores[eventName] || 0)) {
       scores[eventName] = acc;
-      localStorage.setItem('prephub_mastery', JSON.stringify(scores));
+      localStorage.setItem(masteryKey, JSON.stringify(scores));
     }
 
-    // Award event completion bonus (150 XP) + update streak on completion
-    if (isLoggedIn) {
-      if (onAwardXP) onAwardXP(XP_REWARDS.EVENT_COMPLETED);
-
-      // Update streak and award bonus on day 7, 14, etc.
-      const newStreak = updateStreak();
-      if (newStreak && newStreak % 7 === 0 && onAwardXP) {
-        onAwardXP(XP_REWARDS.STREAK_BONUS);
+    // Award EVENT_COMPLETED once per event per division
+    if (isLoggedIn && onAwardXP) {
+      const completedKey = `prephub_completed_${division}`;
+      const completed: string[] = JSON.parse(localStorage.getItem(completedKey) || '[]');
+      if (!completed.includes(eventName)) {
+        completed.push(eventName);
+        localStorage.setItem(completedKey, JSON.stringify(completed));
+        onAwardXP(XP_REWARDS.EVENT_COMPLETED);
       }
     }
   };
@@ -577,10 +557,11 @@ const StudyView: React.FC<StudyViewProps> = ({
     const isTest = lastMode === 'test';
     const mistakes = answerHistory.filter(h => h.chosen !== h.card.answer);
     if (isTest) {
-      const scores = JSON.parse(localStorage.getItem('prephub_mastery') || '{}');
+      const masteryKey = `prephub_mastery_${division}`;
+      const scores = JSON.parse(localStorage.getItem(masteryKey) || '{}');
       if (accuracy > (scores[eventName] || 0)) {
         scores[eventName] = accuracy;
-        localStorage.setItem('prephub_mastery', JSON.stringify(scores));
+        localStorage.setItem(masteryKey, JSON.stringify(scores));
       }
 
       // Award Perfect Quiz bonus (75 XP for 100% on 5+ questions)

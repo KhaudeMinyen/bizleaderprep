@@ -39,15 +39,15 @@ const getEventsList = (div: Division) => div === 'ms' ? MS_EVENTS_LIST : HS_EVEN
 const getThemeColors = (div: Division) => {
   if (div === 'hs') {
     return {
-      bgPrimary: '#050505',
-      bgSecondary: '#0d0d0d',
-      bgTertiary: '#141414',
-      border: '#1a1a1a',
-      text: '#e0e0e0',
-      textMuted: '#808080',
-      accentGreen: '#00ff6a',
+      bgPrimary: '#000000',
+      bgSecondary: '#0a0a0a',
+      bgTertiary: '#0f0f0f',
+      border: '#151515',
+      text: '#d0d0d0',
+      textMuted: '#666666',
+      accentGreen: '#004d1a',
       accentPurple: '#a855f7',
-      accentBlue: '#3b82f6',
+      accentBlue: '#1e3a5f',
     };
   }
   // MS theme (lighter)
@@ -87,6 +87,9 @@ const App: React.FC = () => {
   const [userRank, setUserRank] = useState<Rank>('Intern');
   const [isFounder, setIsFounder] = useState<boolean>(false);
   const [username, setUsername] = useState<string | null>(null);
+  // Batching refs — accumulate XP from multiple simultaneous awards into one DB write + one toast
+  const pendingXPRef = useRef(0);
+  const xpFlushTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [xpToast, setXpToast] = useState<{ amount: number; visible: boolean }>({ amount: 0, visible: false });
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -109,6 +112,30 @@ const App: React.FC = () => {
   const [apexInput, setApexInput] = useState('');
   const [apexLoading, setApexLoading] = useState(false);
 
+  // Mobile state
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  // Division picker & event modal state
+  const [divisionPickerOpen, setDivisionPickerOpen] = useState(false);
+  const [divisionPickerClosing, setDivisionPickerClosing] = useState(false);
+  const [selectedEventModal, setSelectedEventModal] = useState<string | null>(null);
+  const [eventModalClosing, setEventModalClosing] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (!mobile) {
+        setIsMobileSidebarOpen(false);
+        setDivisionPickerOpen(false);
+        setSelectedEventModal(null);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // ── Favorites (must be at top level — Rules of Hooks) ─────────────────────
   const [favorites, setFavorites] = useState<string[]>(() => {
     try { return JSON.parse(localStorage.getItem('prephub_favorites') || '[]'); } catch { return []; }
@@ -119,13 +146,20 @@ const App: React.FC = () => {
   const todayKey = new Date().toISOString().slice(0, 10); // 'YYYY-MM-DD'
   const dailyAnsweredKey = `prephub_daily_answered_${division}_${todayKey}`;
   const dailyQuestionKey = `prephub_daily_question_${division}_${todayKey}`;
-  const isDailyAnswered = !!localStorage.getItem(dailyAnsweredKey);
   const [quickQ, setQuickQ] = useState<QuickQ | null>(() => {
     try { const s = localStorage.getItem(dailyQuestionKey); return s ? JSON.parse(s) : null; } catch { return null; }
   });
   const [quickAnswered, setQuickAnswered] = useState<string | null>(() => localStorage.getItem(dailyAnsweredKey));
+  const isDailyAnswered = !!quickAnswered;
   const quickFetched = useRef(!!localStorage.getItem(dailyQuestionKey));
   const [hoveredEvent, setHoveredEvent] = useState<string | null>(() => getEventsList('ms')[0]);
+
+  // Close sidebar and picker when view changes
+  useEffect(() => {
+    setIsMobileSidebarOpen(false);
+    setDivisionPickerOpen(false);
+    setDivisionPickerClosing(false);
+  }, [view]);
 
   useEffect(() => {
     const handlePopState = (e: PopStateEvent) => {
@@ -379,27 +413,35 @@ const App: React.FC = () => {
     setTimeout(() => setXpToast(t => ({ ...t, visible: false })), 2000);
   };
 
-  const awardXPToUser = async (amount: number) => {
+  // awardXPToUser batches rapid successive calls (e.g. correct + new event + completed)
+  // into a single DB write and a single combined toast shown after a 50ms debounce.
+  const awardXPToUser = (amount: number): void => {
     if (!isLoggedIn) return;
-    const session = await supabase.auth.getSession();
-    if (!session.data.session?.user?.id) return;
-
-    const newXP = userXP + amount;
-    const newRank = getRankFromXP(newXP, isFounder);
-
-    try {
-      await supabase.from('user_profiles').update({
-        xp: newXP,
-        rank: newRank,
-        updated_at: new Date().toISOString(),
-      }).eq('user_id', session.data.session.user.id);
-
-      setUserXP(newXP);
-      setUserRank(newRank);
-      showXPToast(amount);
-    } catch (error) {
-      console.error('Failed to award XP:', error);
-    }
+    pendingXPRef.current += amount;
+    if (xpFlushTimerRef.current) clearTimeout(xpFlushTimerRef.current);
+    xpFlushTimerRef.current = setTimeout(async () => {
+      const total = pendingXPRef.current;
+      pendingXPRef.current = 0;
+      xpFlushTimerRef.current = null;
+      if (total <= 0) return;
+      const session = await supabase.auth.getSession();
+      if (!session.data.session?.user?.id) return;
+      // Use a functional read of userXP via the ref to avoid stale closure
+      setUserXP(prev => {
+        const newXP = prev + total;
+        const newRank = getRankFromXP(newXP, isFounder);
+        supabase.from('user_profiles').update({
+          xp: newXP,
+          rank: newRank,
+          updated_at: new Date().toISOString(),
+        }).eq('user_id', session.data.session!.user.id).then(({ error }) => {
+          if (error) console.error('Failed to award XP:', error);
+        });
+        setUserRank(newRank);
+        return newXP;
+      });
+      showXPToast(total);
+    }, 50);
   };
 
   const startStudy = (eventName: string) => {
@@ -412,6 +454,16 @@ const App: React.FC = () => {
     localStorage.removeItem('prephub_activeEvent');
     window.history.pushState({ view: 'portfolio' }, '', '/dashboard');
     setView('portfolio');
+  };
+
+  const closeDivisionPicker = () => {
+    setDivisionPickerClosing(true);
+    setTimeout(() => { setDivisionPickerOpen(false); setDivisionPickerClosing(false); }, 260);
+  };
+
+  const closeEventModal = () => {
+    setEventModalClosing(true);
+    setTimeout(() => { setSelectedEventModal(null); setEventModalClosing(false); }, 230);
   };
 
   const incrementUsage = () => {
@@ -536,6 +588,7 @@ const App: React.FC = () => {
         onAwardXP={awardXPToUser}
         userXP={userXP}
         userRank={userRank}
+        isMobile={isMobile}
       />
     );
   }
@@ -632,11 +685,47 @@ const App: React.FC = () => {
           .ev-star { background:none;border:none;cursor:pointer;padding:2px 4px;color:#444;transition:color 0.15s,transform 0.15s;flex-shrink:0; }
           .ev-star:hover { color:#f59e0b;transform:scale(1.2); }
           .ev-star.starred { color:#f59e0b; }
+
+          /* Division picker sheet */
+          .division-sheet-backdrop { position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:200; animation:backdropFadeIn 0.25s ease forwards; }
+          .division-sheet-backdrop.closing { animation:backdropFadeOut 0.25s ease forwards; }
+          .division-sheet { position:fixed;bottom:0;left:0;right:0;background:#111; border-radius:20px 20px 0 0;z-index:201;padding:0 0 40px 0; animation:sheetSlideUp 0.3s cubic-bezier(0.32,0.72,0,1) forwards; }
+          .division-sheet.closing { animation:sheetSlideDown 0.26s cubic-bezier(0.32,0.72,0,1) forwards; }
+          .division-sheet-handle { width:40px;height:4px;background:#333;border-radius:4px;margin:12px auto 16px; }
+          .division-option { display:flex;align-items:center;gap:14px;padding:0 20px;height:62px; cursor:pointer;transition:background 0.12s;border-bottom:1px solid #1a1a1a; }
+          .division-option:last-child { border-bottom:none; }
+          .division-option:hover { background:#1a1a1a; }
+          .division-option:active { background:#222; }
+          @keyframes sheetSlideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+          @keyframes sheetSlideDown { from{transform:translateY(0)} to{transform:translateY(100%)} }
+          @keyframes backdropFadeIn { from{opacity:0} to{opacity:1} }
+          @keyframes backdropFadeOut { from{opacity:1} to{opacity:0} }
+
+          /* Event detail modal */
+          .event-modal-overlay { position:fixed;top:0;left:0;right:0;bottom:0;background:#0a0a0a;z-index:300; display:flex;flex-direction:column;overflow-y:auto; animation:modalSlideUp 0.28s cubic-bezier(0.32,0.72,0,1) forwards; }
+          .event-modal-overlay.closing { animation:modalSlideDown 0.23s cubic-bezier(0.32,0.72,0,1) forwards; }
+          @keyframes modalSlideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+          @keyframes modalSlideDown { from{transform:translateY(0)} to{transform:translateY(100%)} }
+
+          /* Mobile bottom nav */
+          .mobile-bottom-nav {
+            position:fixed;bottom:0;left:0;right:0;height:60px;background:#111;border-top:1px solid #222;
+            display:flex;align-items:center;justify-content:space-around;z-index:100;padding:8px 0;
+          }
+          .mobile-nav-item {
+            display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;
+            color:#666;transition:color 0.2s;padding:8px 12px;font-size:11px;font-weight:500;flex:1;height:100%;
+          }
+          .mobile-nav-item.active { color:#00ff6a; }
+          .mobile-nav-item svg { width:24px;height:24px;stroke-width:2; }
         `}</style>
-        <Sidebar isLoggedIn={isLoggedIn} onBack={() => setView('landing')} division={division} onDivisionChange={(d) => { setDivision(d); setHoveredEvent(getEventsList(d)[0]); }} theme={theme} userXP={userXP} userRank={userRank} isFounder={isFounder} username={username} />
-        <main style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', minWidth: 0 }}>
+        {!isMobile && <Sidebar isLoggedIn={isLoggedIn} onBack={() => setView('landing')} division={division} onDivisionChange={(d) => { setDivision(d); setHoveredEvent(getEventsList(d)[0]); }} theme={theme} userXP={userXP} userRank={userRank} isFounder={isFounder} username={username} />}
+        {isMobile && isMobileSidebarOpen && (
+          <div className="mobile-sb-overlay" onClick={() => setIsMobileSidebarOpen(false)}></div>
+        )}
+        <main style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', minWidth: 0, paddingBottom: isMobile ? 60 : 0 }}>
           {/* Topbar */}
-          <div style={{ height: 57, minHeight: 57, borderBottom: '1px solid #222', display: 'flex', alignItems: 'center', padding: '0 24px', gap: 14, background: '#111', flexShrink: 0 }}>
+          <div style={{ height: 57, minHeight: 57, borderBottom: '1px solid #222', display: 'flex', alignItems: 'center', padding: isMobile ? '0 12px' : '0 24px', gap: 14, background: '#111', flexShrink: 0 }}>
             <button onClick={() => { window.history.pushState({ view: 'portfolio' }, '', '/dashboard'); setView('portfolio'); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#666', display: 'flex', alignItems: 'center', padding: 0 }}>
               <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
             </button>
@@ -654,7 +743,7 @@ const App: React.FC = () => {
           {/* Two-column body */}
           <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
             {/* Left: events list */}
-            <div style={{ width: 300, minWidth: 300, borderRight: '1px solid #222', overflowY: 'auto', padding: '14px 10px' }}>
+            <div style={{ width: isMobile ? '100%' : 300, minWidth: isMobile ? 'unset' : 300, borderRight: isMobile ? 'none' : '1px solid #222', overflowY: 'auto', padding: '14px 10px' }}>
               {eventsList.map(evt => {
                 const prefixedEvt = `${division}:${evt}`;
                 const isFav = favorites.includes(prefixedEvt);
@@ -663,8 +752,8 @@ const App: React.FC = () => {
                   <div
                     key={evt}
                     className={`ev-row${isActive ? ' active' : ''}`}
-                    onMouseEnter={() => setHoveredEvent(evt)}
-                    onClick={() => setHoveredEvent(evt)}
+                    onMouseEnter={() => !isMobile && setHoveredEvent(evt)}
+                    onClick={() => { setHoveredEvent(evt); if (isMobile) setSelectedEventModal(evt); }}
                   >
                     <button
                       className={`ev-star${isFav ? ' starred' : ''}`}
@@ -677,12 +766,14 @@ const App: React.FC = () => {
                     </button>
                     <span style={{ fontSize: 13, fontWeight: isActive ? 500 : 400, color: isActive ? '#f0f0f0' : '#aaa', flex: 1, lineHeight: 1.35 }}>{evt}</span>
                     {isFav && <span style={{ fontSize: 9, background: 'rgba(245,158,11,0.1)', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.2)', borderRadius: 4, padding: '1px 5px', flexShrink: 0 }}>SAVED</span>}
+                    {isMobile && <svg width="14" height="14" fill="none" stroke="#444" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>}
                   </div>
                 );
               })}
             </div>
 
             {/* Right: event info */}
+            {!isMobile && (
             <div style={{ flex: 1, overflowY: 'auto', padding: '28px 32px' }}>
               {selectedInfo && hoveredEvent ? (
                 <div style={{ maxWidth: 640 }}>
@@ -720,8 +811,133 @@ const App: React.FC = () => {
                 </div>
               )}
             </div>
+            )}
           </div>
         </main>
+
+        {/* Mobile Bottom Navigation */}
+        {isMobile && (
+            <div className="mobile-bottom-nav">
+              <div className="mobile-nav-item" onClick={() => { window.history.pushState({ view: 'portfolio' }, '', '/dashboard'); setView('portfolio'); }}>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+                  <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+                </svg>
+                Dashboard
+              </div>
+              <div className={`mobile-nav-item${divisionPickerOpen ? ' active' : ''}`} onClick={() => divisionPickerOpen ? closeDivisionPicker() : setDivisionPickerOpen(true)}>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                Division
+              </div>
+              <div className="mobile-nav-item" onClick={() => { window.history.pushState({ view: 'events' }, '', '/dashboard/events'); setView('events'); }}>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292m0 0H8m4-5.292v12m0 0H8m4 0h4"/>
+                </svg>
+                Leaderboard
+              </div>
+              <div className="mobile-nav-item" onClick={() => isLoggedIn ? supabase.auth.signOut() : (setAuthInitialView('login'), setView('auth'))}>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+                {isLoggedIn ? 'Profile' : 'Sign In'}
+              </div>
+            </div>
+          )}
+
+        {isMobile && (divisionPickerOpen || divisionPickerClosing) && (
+          <>
+            <div className={`division-sheet-backdrop${divisionPickerClosing ? ' closing' : ''}`}
+              onClick={closeDivisionPicker} />
+            <div className={`division-sheet${divisionPickerClosing ? ' closing' : ''}`}>
+              <div className="division-sheet-handle" />
+              <div style={{padding:'4px 20px 12px',fontSize:11,fontWeight:700,letterSpacing:'1.2px',color:'#555',textTransform:'uppercase'}}>
+                Choose Division
+              </div>
+              {/* MS option */}
+              <div className="division-option" onClick={() => { setDivision('ms'); setHoveredEvent(getEventsList('ms')[0]); closeDivisionPicker(); }}>
+                <div style={{width:40,height:40,borderRadius:10,background:'rgba(0,255,106,0.08)',border:'1px solid rgba(0,255,106,0.2)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:20,flexShrink:0}}>🏫</div>
+                <div style={{flex:1}}>
+                  <div style={{fontWeight:700,fontSize:15,color:'#f0f0f0'}}>Middle School FBLA</div>
+                  <div style={{fontSize:12,color:'#555',marginTop:2}}>{getEventsList('ms').length} events</div>
+                </div>
+                {division === 'ms' && <svg width="18" height="18" fill="none" stroke="#00ff6a" strokeWidth="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>}
+              </div>
+              {/* HS option */}
+              <div className="division-option" onClick={() => { setDivision('hs'); setHoveredEvent(getEventsList('hs')[0]); closeDivisionPicker(); }}>
+                <div style={{width:40,height:40,borderRadius:10,background:'rgba(168,85,247,0.08)',border:'1px solid rgba(168,85,247,0.2)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:20,flexShrink:0}}>🎓</div>
+                <div style={{flex:1}}>
+                  <div style={{fontWeight:700,fontSize:15,color:'#f0f0f0'}}>High School FBLA</div>
+                  <div style={{fontSize:12,color:'#555',marginTop:2}}>{getEventsList('hs').length} events</div>
+                </div>
+                {division === 'hs' && <svg width="18" height="18" fill="none" stroke="#a855f7" strokeWidth="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>}
+              </div>
+            </div>
+          </>
+        )}
+
+        {isMobile && (selectedEventModal || eventModalClosing) && (() => {
+          const evInfo = division === 'ms' ? MS_EVENTS_INFO_DATA : HS_EVENTS_INFO_DATA;
+          const modalInfo = selectedEventModal ? evInfo[selectedEventModal] : null;
+          return (
+            <div className={`event-modal-overlay${eventModalClosing ? ' closing' : ''}`}
+                 style={{ paddingBottom: 80 }}>
+              {/* Sticky header with X */}
+              <div style={{position:'sticky',top:0,display:'flex',alignItems:'center',
+                justifyContent:'space-between',padding:'14px 16px',background:'#0a0a0a',
+                borderBottom:'1px solid #1a1a1a',zIndex:1}}>
+                <span style={{fontFamily:"'Instrument Sans',sans-serif",fontWeight:600,fontSize:15}}>
+                  Event Details
+                </span>
+                <button onClick={closeEventModal}
+                  style={{background:'#1a1a1a',border:'1px solid #2a2a2a',borderRadius:'50%',
+                    width:38,height:38,display:'flex',alignItems:'center',justifyContent:'center',
+                    cursor:'pointer',color:'#aaa',flexShrink:0}}>
+                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              </div>
+              {/* Content */}
+              {modalInfo && selectedEventModal && (
+                <div style={{padding:'24px 20px',maxWidth:640,width:'100%',margin:'0 auto'}}>
+                  <span style={{fontSize:11,background:'#181818',border:'1px solid #222',color:'#666',padding:'3px 10px',borderRadius:5}}>
+                    {modalInfo.type}
+                  </span>
+                  <h2 style={{fontFamily:"'Instrument Sans',sans-serif",fontWeight:600,fontSize:22,margin:'14px 0 10px',letterSpacing:'-0.3px'}}>
+                    {selectedEventModal}
+                  </h2>
+                  <p style={{fontSize:14,color:'#aaa',lineHeight:1.65,marginBottom:24}}>{modalInfo.desc}</p>
+                  <div style={{marginBottom:24}}>
+                    <div style={{fontSize:10,fontWeight:600,letterSpacing:'1.4px',color:'#555',textTransform:'uppercase',marginBottom:12}}>Knowledge Areas</div>
+                    <div style={{display:'flex',flexWrap:'wrap',gap:8}}>
+                      {modalInfo.knowledge.map(k => (
+                        <span key={k} style={{fontSize:12,background:'#181818',border:'1px solid #222',color:'#ddd',padding:'4px 12px',borderRadius:6}}>{k}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <div style={{marginBottom:28}}>
+                    <div style={{fontSize:10,fontWeight:600,letterSpacing:'1.4px',color:'#555',textTransform:'uppercase',marginBottom:10}}>NACE Competencies</div>
+                    <p style={{fontSize:13,color:'#888',lineHeight:1.55}}>{modalInfo.nace}</p>
+                  </div>
+                  <button
+                    onClick={() => { closeEventModal(); setTimeout(() => startStudy(selectedEventModal), 240); }}
+                    style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,
+                      background:'#00ff6a',color:'#000',fontWeight:700,fontSize:14,
+                      padding:'13px 24px',borderRadius:10,border:'none',cursor:'pointer',width:'100%',
+                      fontFamily:"'Instrument Sans',sans-serif"}}>
+                    Study this event
+                    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                      <path d="M5 12h14"/><path d="M12 5l7 7-7 7"/>
+                    </svg>
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+        })()}
       </div>
     );
   }
@@ -766,46 +982,82 @@ const App: React.FC = () => {
         .apex-input-ds { flex:1;background:${theme.bgTertiary};border:1px solid rgba(168,85,247,0.2);border-radius:9px;padding:9px 13px;font-size:13px;color:${theme.text};outline:none;font-family:'DM Sans',sans-serif;transition:border-color 0.15s; }
         .apex-input-ds:focus { border-color:rgba(168,85,247,0.5); }
         .apex-input-ds::placeholder { color:${theme.textMuted}; }
+        .mobile-bottom-nav {
+          position:fixed;bottom:0;left:0;right:0;height:60px;background:${theme.bgSecondary};border-top:1px solid ${theme.border};
+          display:flex;align-items:center;justify-content:space-around;z-index:100;padding:8px 0;
+        }
+        .mobile-nav-item {
+          display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;
+          color:#666;transition:color 0.2s;padding:8px 12px;font-size:11px;font-weight:500;flex:1;height:100%;
+        }
+        .mobile-nav-item.active { color:#00ff6a; }
+        .mobile-nav-item svg { width:24px;height:24px;stroke-width:2; }
+
+        /* Division picker sheet */
+        .division-sheet-backdrop { position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:200; animation:backdropFadeIn 0.25s ease forwards; }
+        .division-sheet-backdrop.closing { animation:backdropFadeOut 0.25s ease forwards; }
+        .division-sheet { position:fixed;bottom:0;left:0;right:0;background:#111; border-radius:20px 20px 0 0;z-index:201;padding:0 0 40px 0; animation:sheetSlideUp 0.3s cubic-bezier(0.32,0.72,0,1) forwards; }
+        .division-sheet.closing { animation:sheetSlideDown 0.26s cubic-bezier(0.32,0.72,0,1) forwards; }
+        .division-sheet-handle { width:40px;height:4px;background:#333;border-radius:4px;margin:12px auto 16px; }
+        .division-option { display:flex;align-items:center;gap:14px;padding:0 20px;height:62px; cursor:pointer;transition:background 0.12s;border-bottom:1px solid #1a1a1a; }
+        .division-option:last-child { border-bottom:none; }
+        .division-option:hover { background:#1a1a1a; }
+        .division-option:active { background:#222; }
+        @keyframes sheetSlideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+        @keyframes sheetSlideDown { from{transform:translateY(0)} to{transform:translateY(100%)} }
+        @keyframes backdropFadeIn { from{opacity:0} to{opacity:1} }
+        @keyframes backdropFadeOut { from{opacity:1} to{opacity:0} }
+
+        /* Event detail modal */
+        .event-modal-overlay { position:fixed;top:0;left:0;right:0;bottom:0;background:#0a0a0a;z-index:300; display:flex;flex-direction:column;overflow-y:auto; animation:modalSlideUp 0.28s cubic-bezier(0.32,0.72,0,1) forwards; }
+        .event-modal-overlay.closing { animation:modalSlideDown 0.23s cubic-bezier(0.32,0.72,0,1) forwards; }
+        @keyframes modalSlideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+        @keyframes modalSlideDown { from{transform:translateY(0)} to{transform:translateY(100%)} }
       `}</style>
-      <Sidebar isLoggedIn={isLoggedIn} onBack={() => setView('landing')} division={division} onDivisionChange={(d) => { setDivision(d); setHoveredEvent(getEventsList(d)[0]); }} theme={theme} />
-      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', minWidth: 0 }}>
+      {!isMobile && <Sidebar isLoggedIn={isLoggedIn} onBack={() => setView('landing')} division={division} onDivisionChange={(d) => { setDivision(d); setHoveredEvent(getEventsList(d)[0]); }} theme={theme} />}
+      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', minWidth: 0, paddingBottom: isMobile ? 60 : 0 }}>
         {/* Topbar */}
-        <div style={{ height: 57, minHeight: 57, borderBottom: `1px solid ${theme.border}`, display: 'flex', alignItems: 'center', padding: '0 24px', gap: 14, background: theme.bgSecondary, flexShrink: 0 }}>
-          <div style={{ fontFamily: "'Instrument Sans',sans-serif", fontWeight: 600, fontSize: 15 }}>Dashboard</div>
-          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ height: 57, minHeight: 57, borderBottom: `1px solid ${theme.border}`, display: 'flex', alignItems: 'center', padding: isMobile ? '0 12px' : '0 24px', gap: 14, background: theme.bgSecondary, flexShrink: 0 }}>
+          <div style={{ fontFamily: "'Instrument Sans',sans-serif", fontWeight: 600, fontSize: isMobile ? 13 : 15 }}>Dashboard</div>
+          <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.8px', textTransform: 'uppercase', background: division === 'ms' ? 'rgba(0,255,106,0.1)' : 'rgba(168,85,247,0.1)', border: `1px solid ${division === 'ms' ? 'rgba(0,255,106,0.25)' : 'rgba(168,85,247,0.25)'}`, color: division === 'ms' ? '#00ff6a' : '#a855f7', padding: '2px 8px', borderRadius: 5, flexShrink: 0 }}>
+            {division === 'ms' ? 'Middle School' : 'High School'}
+          </span>
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: isMobile ? 6 : 10 }}>
             {!isLoggedIn ? (
               <>
-                <button onClick={() => { setAuthInitialView('signup'); setView('auth'); }} style={{ fontSize: 13, fontWeight: 600, color: '#000', padding: '7px 16px', borderRadius: 8, background: '#00ff6a', border: 'none', cursor: 'pointer', fontFamily: "'Instrument Sans',sans-serif" }}>Sign up free</button>
-                <button onClick={() => { setAuthInitialView('login'); setView('auth'); }} style={{ fontSize: 13, color: '#aaa', padding: '7px 14px', borderRadius: 8, border: '1px solid #2a2a2a', background: 'transparent', cursor: 'pointer', fontFamily: "'Instrument Sans',sans-serif" }}>Log in</button>
+                <button onClick={() => { setAuthInitialView('signup'); setView('auth'); }} style={{ fontSize: isMobile ? 12 : 13, fontWeight: 600, color: '#000', padding: isMobile ? '5px 12px' : '7px 16px', borderRadius: 8, background: '#00ff6a', border: 'none', cursor: 'pointer', fontFamily: "'Instrument Sans',sans-serif" }}>Sign up</button>
+                {!isMobile && (
+                  <button onClick={() => { setAuthInitialView('login'); setView('auth'); }} style={{ fontSize: 13, color: '#aaa', padding: '7px 14px', borderRadius: 8, border: '1px solid #2a2a2a', background: 'transparent', cursor: 'pointer', fontFamily: "'Instrument Sans',sans-serif" }}>Log in</button>
+                )}
               </>
             ) : (
-              <button onClick={() => supabase.auth.signOut()} style={{ fontSize: 13, color: '#aaa', padding: '7px 14px', borderRadius: 8, border: '1px solid #2a2a2a', background: 'transparent', cursor: 'pointer', fontFamily: "'Instrument Sans',sans-serif" }}>Sign out</button>
+              <button onClick={() => supabase.auth.signOut()} style={{ fontSize: isMobile ? 12 : 13, color: '#aaa', padding: isMobile ? '5px 10px' : '7px 14px', borderRadius: 8, border: '1px solid #2a2a2a', background: 'transparent', cursor: 'pointer', fontFamily: "'Instrument Sans',sans-serif" }}>Sign out</button>
             )}
           </div>
         </div>
 
         {/* Content */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '22px 24px', display: 'flex', flexDirection: 'column', gap: 22 }}>
+        <div style={{ flex: 1, overflowY: 'auto', padding: isMobile ? '14px 12px' : '22px 24px', display: 'flex', flexDirection: 'column', gap: isMobile ? 16 : 22 }}>
 
           {/* Stats grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : 'repeat(4,1fr)', gap: 12 }}>
             {[
-              { label: 'Questions Answered', value: totalAnswered.toLocaleString(), color: '#00ff6a', delta: totalAnswered > 0 ? 'keep it up!' : 'start studying', deltaUp: totalAnswered > 0, iconColor: 'rgba(0,255,106,0.08)', iconStroke: '#00ff6a' },
-              { label: 'Accuracy Rate', value: eventsStudiedCount > 0 ? `${avgAccuracy}%` : '—', color: '#f0f0f0', delta: eventsStudiedCount > 0 ? 'avg across events' : 'no data yet', deltaUp: avgAccuracy >= 70, iconColor: 'rgba(59,130,246,0.08)', iconStroke: '#3b82f6' },
-              { label: 'Events Studied', value: `${eventsStudiedCount}/${MS_EVENTS.length}`, color: '#a855f7', delta: eventsStudiedCount > 0 ? 'events in progress' : 'none yet', deltaUp: eventsStudiedCount > 0, iconColor: 'rgba(168,85,247,0.08)', iconStroke: '#a855f7' },
+              { label: 'Questions Answered', value: totalAnswered.toLocaleString(), color: theme.accentGreen, delta: totalAnswered > 0 ? 'keep it up!' : 'start studying', deltaUp: totalAnswered > 0, iconColor: `${theme.accentGreen}14`, iconStroke: theme.accentGreen },
+              { label: 'Accuracy Rate', value: eventsStudiedCount > 0 ? `${avgAccuracy}%` : '—', color: division === 'ms' ? '#3b82f6' : '#a855f7', delta: eventsStudiedCount > 0 ? 'avg across events' : 'no data yet', deltaUp: avgAccuracy >= 70, iconColor: division === 'ms' ? 'rgba(59,130,246,0.08)' : 'rgba(168,85,247,0.08)', iconStroke: division === 'ms' ? '#3b82f6' : '#a855f7' },
+              { label: 'Events Studied', value: `${eventsStudiedCount}/${MS_EVENTS.length}`, color: division === 'ms' ? '#a855f7' : theme.accentGreen, delta: eventsStudiedCount > 0 ? 'events in progress' : 'none yet', deltaUp: eventsStudiedCount > 0, iconColor: division === 'ms' ? 'rgba(168,85,247,0.08)' : `${theme.accentGreen}14`, iconStroke: division === 'ms' ? '#a855f7' : theme.accentGreen },
               { label: 'Your Rank', value: userRank, color: getRankColor(userRank), delta: isLoggedIn ? `${userXP} XP` : 'sign in to rank up', deltaUp: userXP > 0, iconColor: `${getRankColor(userRank)}14`, iconStroke: getRankColor(userRank) },
             ].map((s, i) => (
               <div key={i} className="ds-stat-card" style={{ animationDelay: `${i * 0.05}s` }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: 12, color: '#666', fontWeight: 500 }}>{s.label}</span>
-                  <div style={{ width: 28, height: 28, borderRadius: 7, background: s.iconColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <svg width="14" height="14" fill="none" stroke={s.iconStroke} strokeWidth="2" viewBox="0 0 24 24">
+                  <span style={{ fontSize: isMobile ? 10 : 12, color: '#666', fontWeight: 500 }}>{s.label}</span>
+                  <div style={{ width: isMobile ? 24 : 28, height: isMobile ? 24 : 28, borderRadius: 7, background: s.iconColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <svg width={isMobile ? 11 : 14} height={isMobile ? 11 : 14} fill="none" stroke={s.iconStroke} strokeWidth="2" viewBox="0 0 24 24">
                       <circle cx="12" cy="12" r="10"/>
                     </svg>
                   </div>
                 </div>
-                <div style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 26, fontWeight: 600, lineHeight: 1, letterSpacing: '-0.5px', color: s.color }}>{s.value}</div>
-                <div style={{ fontSize: 11.5, color: '#666' }}>
+                <div style={{ fontFamily: "'DM Sans',sans-serif", fontSize: isMobile ? 20 : 26, fontWeight: 600, lineHeight: 1, letterSpacing: '-0.5px', color: s.color }}>{s.value}</div>
+                <div style={{ fontSize: isMobile ? 10 : 11.5, color: '#666' }}>
                   {s.deltaUp && <span style={{ color: '#00ff6a', fontWeight: 600 }}>↑ </span>}
                   {s.delta}
                 </div>
@@ -814,7 +1066,7 @@ const App: React.FC = () => {
           </div>
 
           {/* Content grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 370px', gap: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 370px', gap: 16 }}>
             {/* Left col */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 18, minWidth: 0 }}>
 
@@ -895,7 +1147,23 @@ const App: React.FC = () => {
                             <div
                               key={opt}
                               className={cls}
-                              onClick={() => { if (!quickAnswered && !isDailyAnswered) { localStorage.setItem(dailyAnsweredKey, opt); setQuickAnswered(opt); awardXPToUser(XP_REWARDS.DAILY_QUESTION); } }}
+                              onClick={() => {
+                if (!quickAnswered && !isDailyAnswered) {
+                  localStorage.setItem(dailyAnsweredKey, opt);
+                  setQuickAnswered(opt);
+                  awardXPToUser(XP_REWARDS.DAILY_QUESTION);
+                  // Streak tracking
+                  const today = new Date().toISOString().slice(0, 10);
+                  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+                  const streak = (() => { try { return JSON.parse(localStorage.getItem('prephub_streak') || '{"lastAnswered":"","count":0}'); } catch { return { lastAnswered: '', count: 0 }; } })();
+                  if (streak.lastAnswered !== today) {
+                    streak.count = streak.lastAnswered === yesterday ? streak.count + 1 : 1;
+                    streak.lastAnswered = today;
+                    localStorage.setItem('prephub_streak', JSON.stringify(streak));
+                    if (streak.count % 7 === 0) awardXPToUser(XP_REWARDS.STREAK_BONUS);
+                  }
+                }
+              }}
                             >
                               {opt}{quickAnswered && isCorrect ? ' ✓' : ''}
                             </div>
@@ -1045,13 +1313,76 @@ const App: React.FC = () => {
         </div>
       </main>
 
+      {/* Mobile Bottom Navigation */}
+      {isMobile && (
+        <div className="mobile-bottom-nav">
+          <div className="mobile-nav-item active" onClick={() => { }}>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+              <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+            </svg>
+            Dashboard
+          </div>
+          <div className={`mobile-nav-item${divisionPickerOpen ? ' active' : ''}`} onClick={() => divisionPickerOpen ? closeDivisionPicker() : setDivisionPickerOpen(true)}>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            Division
+          </div>
+          <div className="mobile-nav-item" onClick={() => { window.history.pushState({ view: 'events' }, '', '/dashboard/events'); setView('events'); }}>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292m0 0H8m4-5.292v12m0 0H8m4 0h4"/>
+            </svg>
+            Leaderboard
+          </div>
+          <div className="mobile-nav-item" onClick={() => isLoggedIn ? supabase.auth.signOut() : (setAuthInitialView('login'), setView('auth'))}>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            {isLoggedIn ? 'Profile' : 'Sign In'}
+          </div>
+        </div>
+      )}
+
+      {isMobile && (divisionPickerOpen || divisionPickerClosing) && (
+        <>
+          <div className={`division-sheet-backdrop${divisionPickerClosing ? ' closing' : ''}`}
+            onClick={closeDivisionPicker} />
+          <div className={`division-sheet${divisionPickerClosing ? ' closing' : ''}`}>
+            <div className="division-sheet-handle" />
+            <div style={{padding:'4px 20px 12px',fontSize:11,fontWeight:700,letterSpacing:'1.2px',color:'#555',textTransform:'uppercase'}}>
+              Choose Division
+            </div>
+            {/* MS option */}
+            <div className="division-option" onClick={() => { setDivision('ms'); setHoveredEvent(getEventsList('ms')[0]); closeDivisionPicker(); }}>
+              <div style={{width:40,height:40,borderRadius:10,background:'rgba(0,255,106,0.08)',border:'1px solid rgba(0,255,106,0.2)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:20,flexShrink:0}}>🏫</div>
+              <div style={{flex:1}}>
+                <div style={{fontWeight:700,fontSize:15,color:'#f0f0f0'}}>Middle School FBLA</div>
+                <div style={{fontSize:12,color:'#555',marginTop:2}}>{getEventsList('ms').length} events</div>
+              </div>
+              {division === 'ms' && <svg width="18" height="18" fill="none" stroke="#00ff6a" strokeWidth="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>}
+            </div>
+            {/* HS option */}
+            <div className="division-option" onClick={() => { setDivision('hs'); setHoveredEvent(getEventsList('hs')[0]); closeDivisionPicker(); }}>
+              <div style={{width:40,height:40,borderRadius:10,background:'rgba(168,85,247,0.08)',border:'1px solid rgba(168,85,247,0.2)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:20,flexShrink:0}}>🎓</div>
+              <div style={{flex:1}}>
+                <div style={{fontWeight:700,fontSize:15,color:'#f0f0f0'}}>High School FBLA</div>
+                <div style={{fontSize:12,color:'#555',marginTop:2}}>{getEventsList('hs').length} events</div>
+              </div>
+              {division === 'hs' && <svg width="18" height="18" fill="none" stroke="#a855f7" strokeWidth="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>}
+            </div>
+          </div>
+        </>
+      )}
+
       {/* XP Toast Notification */}
       {xpToast.visible && (
         <div
           style={{
             position: 'fixed',
-            bottom: 24,
-            right: 24,
+            bottom: isMobile ? 20 : 24,
+            right: isMobile ? 12 : 24,
             zIndex: 9999,
             background: '#111',
             border: '1px solid #00ff6a',
