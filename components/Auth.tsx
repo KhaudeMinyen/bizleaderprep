@@ -32,6 +32,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login', o
   const [newUserId, setNewUserId] = useState<string | null>(null);
   const [expiredLink, setExpiredLink] = useState(false);
   const [resendingEmail, setResendingEmail] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
 
   const supabaseUrl = (supabase as any).supabaseUrl || '';
 
@@ -51,25 +52,39 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login', o
       setErrorMsg('Please enter your email address');
       return;
     }
+    if (resendCooldown > 0) {
+      setErrorMsg(`Please wait ${resendCooldown} second${resendCooldown !== 1 ? 's' : ''} before resending.`);
+      return;
+    }
     setResendingEmail(true);
     setErrorMsg(null);
 
     try {
-      // Use the admin API to resend confirmation email
-      const { error } = await (supabase.auth as any).resendEnrollmentEmail(email);
-      if (error) {
-        // Fallback: Try signing up again (Supabase will resend if already exists)
-        const { error: signUpError } = await supabase.auth.signUp({
-          email,
-          password: Math.random().toString(36).slice(2),
-          options: {
-            emailRedirectTo: window.location.origin,
-          },
-        });
-        if (signUpError && !signUpError.message.includes('already registered')) throw signUpError;
-      }
+      // Resend verification email by attempting sign up again - Supabase will resend if already exists
+      const { error: signUpError } = await supabase.auth.signUp({
+        email,
+        password: Math.random().toString(36).slice(2),
+        options: {
+          emailRedirectTo: window.location.origin,
+        },
+      });
+      if (signUpError && !signUpError.message.includes('already registered')) throw signUpError;
+
       setSuccessMsg('Verification email sent! Check your inbox and click the link within 24 hours.');
       setExpiredLink(false);
+
+      // Start 1 minute cooldown
+      setResendCooldown(60);
+      const timer = setInterval(() => {
+        setResendCooldown(prev => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
       setTimeout(() => setSuccessMsg(null), 5000);
     } catch (error: any) {
       setErrorMsg(error.message || 'Failed to resend email. Please try again.');
@@ -300,10 +315,14 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login', o
                 <button
                   type="button"
                   onClick={handleResendVerificationEmail}
-                  disabled={resendingEmail}
-                  className="w-full bg-white/10 text-white font-bold uppercase tracking-[0.2em] text-[11px] py-4 rounded-2xl hover:bg-white/20 transition-all border border-white/20"
+                  disabled={resendingEmail || resendCooldown > 0}
+                  className={`w-full font-bold uppercase tracking-[0.2em] text-[11px] py-4 rounded-2xl transition-all border border-white/20 ${
+                    resendCooldown > 0
+                      ? 'bg-white/5 text-white/50 cursor-not-allowed'
+                      : 'bg-white/10 text-white hover:bg-white/20'
+                  }`}
                 >
-                  {resendingEmail ? 'Sending...' : 'Resend Verification Email'}
+                  {resendingEmail ? 'Sending...' : resendCooldown > 0 ? `Wait ${resendCooldown}s` : 'Resend Verification Email'}
                 </button>
               )}
             </form>
