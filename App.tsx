@@ -36,33 +36,17 @@ const HS_EVENTS_LIST = [
 
 const getEventsList = (div: Division) => div === 'ms' ? MS_EVENTS_LIST : HS_EVENTS_LIST;
 
-const getThemeColors = (div: Division) => {
-  if (div === 'hs') {
-    return {
-      bgPrimary: '#000000',
-      bgSecondary: '#0a0a0a',
-      bgTertiary: '#0f0f0f',
-      border: '#151515',
-      text: '#d0d0d0',
-      textMuted: '#666666',
-      accentGreen: '#004d1a',
-      accentPurple: '#a855f7',
-      accentBlue: '#1e3a5f',
-    };
-  }
-  // MS theme (lighter)
-  return {
-    bgPrimary: '#0a0a0a',
-    bgSecondary: '#111',
-    bgTertiary: '#181818',
-    border: '#222',
-    text: '#f0f0f0',
-    textMuted: '#aaa',
-    accentGreen: '#00ff6a',
-    accentPurple: '#a855f7',
-    accentBlue: '#3b82f6',
-  };
-};
+const getThemeColors = () => ({
+  bgPrimary: '#0a0a0a',
+  bgSecondary: '#111',
+  bgTertiary: '#181818',
+  border: '#222',
+  text: '#f0f0f0',
+  textMuted: '#aaa',
+  accentGreen: '#00ff6a',
+  accentPurple: '#a855f7',
+  accentBlue: '#3b82f6',
+});
 
 const App: React.FC = () => {
   const isOAuthRedirect = window.location.hash.includes('access_token');
@@ -79,7 +63,7 @@ const App: React.FC = () => {
     () => localStorage.getItem('prephub_activeEvent')
   );
   const [division, setDivision] = useState<Division>('ms');
-  const theme = getThemeColors(division);
+  const theme = getThemeColors();
   const orgType: OrgType = 'FBLA';
 
   // XP & Rank state
@@ -151,6 +135,13 @@ const App: React.FC = () => {
   });
   const [quickAnswered, setQuickAnswered] = useState<string | null>(() => localStorage.getItem(dailyAnsweredKey));
   const isDailyAnswered = !!quickAnswered;
+
+  // Reset quick question when division changes
+  useEffect(() => {
+    try { const s = localStorage.getItem(dailyQuestionKey); setQuickQ(s ? JSON.parse(s) : null); } catch { setQuickQ(null); }
+    setQuickAnswered(localStorage.getItem(dailyAnsweredKey));
+  }, [division]);
+
   const quickFetched = useRef(!!localStorage.getItem(dailyQuestionKey));
   const [hoveredEvent, setHoveredEvent] = useState<string | null>(() => getEventsList('ms')[0]);
 
@@ -287,8 +278,10 @@ const App: React.FC = () => {
     });
   }, [isLoggedIn]);
 
-  // Fetch daily question once per day
+  // Fetch daily question once per day from objective test questions
   useEffect(() => {
+    // Reset the fetch flag when division changes
+    quickFetched.current = !!localStorage.getItem(dailyQuestionKey);
     if (quickFetched.current) return;
     quickFetched.current = true;
     const eventsList = getEventsList(division);
@@ -300,8 +293,28 @@ const App: React.FC = () => {
       const favoritesForDivision = favorites.filter(f => f.startsWith(divisionPrefix)).map(f => f.substring(divisionPrefix.length));
       const pool = favoritesForDivision.length > 0 ? favoritesForDivision.filter(f => eventsList.includes(f)) : eventsList;
       const eventName = pool[seed % pool.length];
-      const { data } = await supabase.from(tableName).select('*').eq('event', eventName).limit(100);
-      if (!data || data.length === 0) return;
+
+      // Filter for objective test questions only
+      let q = supabase.from(tableName).select('*').eq('event', eventName);
+      q = q.eq('question_type', 'Objective Test').limit(100);
+      const { data } = await q;
+
+      // Fallback to all questions if no objective test questions found
+      if (!data || data.length === 0) {
+        const { data: fallbackData } = await supabase.from(tableName).select('*').eq('event', eventName).limit(100);
+        if (!fallbackData || fallbackData.length === 0) return;
+        const row = fallbackData[seed % fallbackData.length];
+        const opts = [row.answer_choice_1, row.answer_choice_2, row.answer_choice_3, row.answer_choice_4].filter(Boolean) as string[];
+        const ca = String(row.correct_answer ?? '').trim().toUpperCase();
+        const answerMap: Record<string, string> = { A: opts[0], B: opts[1], C: opts[2], D: opts[3], '1': opts[0], '2': opts[1], '3': opts[2], '4': opts[3] };
+        const answer = answerMap[ca] ?? ca;
+        const shuffled = [...opts].sort((a, b) => ((seed * opts.indexOf(a)) % 7) - ((seed * opts.indexOf(b)) % 7));
+        const question: QuickQ = { question: row.question, options: shuffled, answer, event: eventName, difficulty: row.difficulty ?? 'Beginner' };
+        localStorage.setItem(dailyQuestionKey, JSON.stringify(question));
+        setQuickQ(question);
+        return;
+      }
+
       const row = data[seed % data.length];
       const opts = [row.answer_choice_1, row.answer_choice_2, row.answer_choice_3, row.answer_choice_4].filter(Boolean) as string[];
       const ca = String(row.correct_answer ?? '').trim().toUpperCase();
@@ -309,9 +322,9 @@ const App: React.FC = () => {
       const answer = answerMap[ca] ?? ca;
       // Deterministic shuffle using seed
       const shuffled = [...opts].sort((a, b) => ((seed * opts.indexOf(a)) % 7) - ((seed * opts.indexOf(b)) % 7));
-      const q: QuickQ = { question: row.question, options: shuffled, answer, event: eventName, difficulty: row.difficulty ?? 'Beginner' };
-      localStorage.setItem(dailyQuestionKey, JSON.stringify(q));
-      setQuickQ(q);
+      const question: QuickQ = { question: row.question, options: shuffled, answer, event: eventName, difficulty: row.difficulty ?? 'Beginner' };
+      localStorage.setItem(dailyQuestionKey, JSON.stringify(question));
+      setQuickQ(question);
     };
     fetchDaily();
   }, [division]);

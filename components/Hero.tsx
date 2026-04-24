@@ -16,6 +16,7 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
   const [featuresOpen, setFeaturesOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const featuresRef = useRef<HTMLDivElement>(null);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -114,6 +115,14 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
     window.scrollTo({ top, behavior: 'smooth' });
   };
 
+  const startCloseTimer = () => {
+    closeTimerRef.current = setTimeout(() => setFeaturesOpen(false), 150);
+  };
+
+  const cancelCloseTimer = () => {
+    if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+  };
+
   return (
     <>
       <style>{`
@@ -134,6 +143,7 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
         @media (max-width: 768px) {
           .blp-nav { padding: 0 20px; }
         }
+        .blp-nav-logo { display: flex; align-items: center; }
         .blp-nav-logo img { height: 48px; width: auto; display: block; }
         .blp-nav-center { display: flex; align-items: center; gap: 4px; margin-left: 20px; }
         .blp-nav-right { display: flex; align-items: center; gap: 10px; }
@@ -252,7 +262,7 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
         .blp-why-header { text-align: center; margin-bottom: 52px; }
         .blp-section-label { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--blp-green); margin-bottom: 14px; }
         .blp-section-heading { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: clamp(28px, 3.5vw, 44px); letter-spacing: -1.5px; line-height: 1.1; }
-        .blp-bento-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: auto auto auto; gap: 14px; }
+        .blp-bento-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
         .blp-bento-card {
           background: var(--blp-surface); border: 1px solid var(--blp-border); border-radius: 18px; padding: 28px;
           position: relative; overflow: hidden; transition: border-color 0.2s, transform 0.2s; cursor: default;
@@ -369,10 +379,29 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
         @keyframes blpRevealDefault { to { opacity: 1; transform: translateY(0); } }
         @media (max-width: 768px) {
           .blp-nav { padding: 0 20px; }
+          .blp-nav-logo { flex-grow: 1; }
+          .blp-nav-logo img { height: 48px; width: auto; width: 100%; }
           .blp-hero { padding: 100px 24px 80px; }
           .blp-stats-bar { grid-template-columns: repeat(2,1fr); padding: 24px; }
-          .blp-bento-grid { grid-template-columns: 1fr; }
-          .blp-bento-card.big, .blp-bento-card.tall { grid-column: span 1; grid-row: span 1; }
+          .blp-bento-grid {
+            grid-template-columns: 1fr !important;
+            grid-template-rows: unset !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 12px !important;
+          }
+          .blp-bento-card,
+          .blp-bento-card.big,
+          .blp-bento-card.tall {
+            grid-column: unset !important;
+            grid-row: unset !important;
+            width: 100% !important;
+            min-height: unset !important;
+            height: auto !important;
+          }
+          .blp-bento-card[style] {
+            grid-column: unset !important;
+          }
           .blp-apex-showcase { grid-template-columns: 1fr; gap: 32px; }
           .blp-why-section, .blp-apex-section { padding: 48px 24px; }
           .blp-cta-section { padding: 64px 24px; }
@@ -394,8 +423,8 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
           <div className="blp-nav-right">
             {/* Features dropdown — hover on desktop, click on mobile */}
             <div ref={featuresRef} style={{ position: 'relative' }}
-              onMouseEnter={() => !isMobile && setFeaturesOpen(true)}
-              onMouseLeave={() => !isMobile && setFeaturesOpen(false)}
+              onMouseEnter={() => { if (!isMobile) { cancelCloseTimer(); setFeaturesOpen(true); } }}
+              onMouseLeave={() => { if (!isMobile) startCloseTimer(); }}
             >
               <button className={`blp-nav-btn${featuresOpen ? ' active' : ''}`}
                 onClick={() => isMobile && setFeaturesOpen(!featuresOpen)}
@@ -409,7 +438,10 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
               {featuresOpen && (
                 <>
                   {isMobile && <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 250, pointerEvents: 'auto' }} onClick={() => setFeaturesOpen(false)} />}
-                  <div className="blp-features-dropdown-wide" style={{ position: isMobile ? 'fixed' : 'absolute' }}>
+                  <div className="blp-features-dropdown-wide" style={{ position: isMobile ? 'fixed' : 'absolute' }}
+                    onMouseEnter={() => { if (!isMobile) cancelCloseTimer(); }}
+                    onMouseLeave={() => { if (!isMobile) startCloseTimer(); }}
+                  >
                     {[
                       { label: 'Apex AI Tutor', desc: 'Claude-powered explanations break down every right and wrong answer — so you actually understand the concept, not just memorize it.', onClick: () => { setFeaturesOpen(false); setHeroView('home'); setTimeout(() => scrollTo('apex'), 50); } },
                       { label: 'Practice Questions', desc: '850+ questions spanning all 17 FBLA Middle School events, organized by difficulty. Beginner to advanced — you choose how hard to push.', onClick: () => { setFeaturesOpen(false); setHeroView('home'); setTimeout(() => scrollTo('why'), 50); } },
@@ -435,8 +467,7 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
               <>
                 <button className="blp-btn-ghost" onClick={onLoginRequest}>Log In</button>
                 <button className="blp-btn-green" onClick={onSignupRequest}>
-                  Start Free
-                  <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                  Sign Up
                 </button>
               </>
             ) : (
@@ -556,7 +587,7 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
                 </div>
               </div>
             </div>
-            <div className="blp-bento-card tall green-accent blp-reveal">
+            <div className="blp-bento-card green-accent blp-reveal">
               <span className="blp-bento-tag blp-tag-green">Leaderboard</span>
               <div className="blp-bento-title">Compete with your chapter.</div>
               <div className="blp-bento-desc">See who's putting in the reps. Weekly rankings keep you motivated and accountable — just like competition day.</div>
@@ -590,7 +621,7 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted, onLoginRequest, onSignupReque
                 ))}
               </div>
             </div>
-            <div className="blp-bento-card blue-accent blp-reveal" style={{gridColumn:'span 3'}}>
+            <div className="blp-bento-card blue-accent blp-reveal" style={{gridColumn:'span 2'}}>
               <span className="blp-bento-tag blp-tag-blue">Progress</span>
               <div className="blp-bento-title">Track every event, every difficulty.</div>
               <div className="blp-bento-desc">Know exactly where you stand across all 17 MS events. Per-event accuracy shows what to focus on next.</div>

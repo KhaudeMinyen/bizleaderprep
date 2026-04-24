@@ -7,11 +7,8 @@ export default async function handler(req, res) {
     const { question, answer, options, selectedAnswer, eventName } = req.body || {};
     if (!question || !answer) return res.status(400).json({ error: 'Missing question or answer' });
 
-    const key1 = process.env.GEMINI_KEY_A;
-    const key2 = process.env.GEMINI_KEY_B;
-    const keys = [key1, key2].filter(Boolean);
-
-    if (keys.length === 0) return res.status(500).json({ error: 'Gemini API keys not configured' });
+    const anthropicKey = process.env.ANTHROPIC_API_KEY;
+    if (!anthropicKey) return res.status(500).json({ error: 'Anthropic API key not configured' });
 
     const letters = ['A', 'B', 'C', 'D'];
     const opts = Array.isArray(options) ? options : [];
@@ -40,29 +37,28 @@ Write a study explanation following this EXACT structure every time, no exceptio
 
 Always use simple language appropriate for a middle or high school student. Always follow all 3 sections — never skip any section. Never start your response by repeating the question.`;
 
-    const callGemini = (key) =>
-      fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { maxOutputTokens: 900, temperature: 0.4 },
-        }),
-      });
+    const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': anthropicKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-opus-4-7',
+        max_tokens: 900,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+    });
 
-    let geminiRes = await callGemini(keys[0]);
-    if (geminiRes.status === 429 && keys[1]) {
-      geminiRes = await callGemini(keys[1]);
+    if (!claudeRes.ok) {
+      const errText = await claudeRes.text();
+      console.error('Claude error:', claudeRes.status, errText);
+      return res.status(502).json({ error: `Claude error ${claudeRes.status}: ${errText.slice(0, 200)}` });
     }
 
-    if (!geminiRes.ok) {
-      const errText = await geminiRes.text();
-      console.error('Gemini error:', geminiRes.status, errText);
-      return res.status(502).json({ error: `Gemini error ${geminiRes.status}: ${errText.slice(0, 200)}` });
-    }
-
-    const data = await geminiRes.json();
-    const explanation = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No explanation available.';
+    const data = await claudeRes.json();
+    const explanation = data.content?.[0]?.text || 'No explanation available.';
     return res.status(200).json({ explanation });
 
   } catch (err) {

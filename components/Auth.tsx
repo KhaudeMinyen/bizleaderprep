@@ -296,7 +296,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login', o
                 {isLoading ? 'Processing...' : (view === 'login' ? 'Sign In' : (view === 'signup' ? 'Create Account' : 'Reset'))}
               </button>
 
-              {expiredLink && (
+              {(expiredLink || (errorMsg?.includes('confirm your email') ?? false)) && (
                 <button
                   type="button"
                   onClick={handleResendVerificationEmail}
