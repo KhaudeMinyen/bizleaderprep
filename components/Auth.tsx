@@ -10,7 +10,7 @@ interface AuthProps {
   orgType?: OrgType;
 }
 
-type AuthView = 'login' | 'signup' | 'forgot_password' | 'set_username';
+type AuthView = 'login' | 'signup' | 'forgot_password' | 'reset_password' | 'set_username';
 
 const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login', orgType = 'NONE' }) => {
   const [view, setView] = useState<AuthView>(defaultView);
@@ -36,18 +36,29 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login', o
 
   const supabaseUrl = (supabase as any).supabaseUrl || '';
 
-  const validatePassword = (pwd: string): { valid: boolean; errors: string[] } => {
-    const errors: string[] = [];
-    if (!/[a-z]/.test(pwd)) errors.push('Use lowercase letters');
-    if (!/[A-Z]/.test(pwd)) errors.push('Use uppercase letters');
-    if (!/[0-9]/.test(pwd)) errors.push('Use numbers');
-    if (!/[!@#$%^&*()_+\-=\[\]{};\':"|<>?,./`~]/.test(pwd)) errors.push('Use symbols (!@#$%^&*...)');
-    return { valid: errors.length === 0, errors };
+  const validatePassword = (pwd: string): { valid: boolean; errors: string[]; requirements: { label: string; met: boolean }[] } => {
+    const requirements = [
+      { label: 'At least 8 characters', met: pwd.length >= 8 },
+      { label: 'Use lowercase letters', met: /[a-z]/.test(pwd) },
+      { label: 'Use uppercase letters', met: /[A-Z]/.test(pwd) },
+      { label: 'Use numbers', met: /[0-9]/.test(pwd) },
+      { label: 'Use symbols (!@#$%^&*...)', met: /[!@#$%^&*()_+\-=\[\]{};\':"|<>?,./`~]/.test(pwd) },
+    ];
+    const errors = requirements.filter(r => !r.met).map(r => r.label);
+    return { valid: errors.length === 0, errors, requirements };
   };
 
-  // Check for email verification errors in URL
+  // Check for email verification and password recovery links
   useEffect(() => {
     const hash = window.location.hash;
+
+    // Password recovery link
+    if (hash.includes('type=recovery')) {
+      setView('reset_password');
+      return;
+    }
+
+    // Email verification errors
     if (hash.includes('error=access_denied') && hash.includes('otp_expired')) {
       setExpiredLink(true);
       setErrorMsg('Verification link expired. Please request a new one.');
@@ -206,6 +217,17 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login', o
         });
         if (error) throw error;
         setSuccessMsg("Instructions sent to your email.");
+      } else if (view === 'reset_password') {
+        const validation = validatePassword(password);
+        if (!validation.valid) {
+          setErrorMsg(validation.errors.join(' • '));
+          setIsLoading(false);
+          return;
+        }
+        const { error } = await supabase.auth.updateUser({ password });
+        if (error) throw error;
+        setSuccessMsg('Password updated successfully! Redirecting...');
+        setTimeout(() => onLogin(), 2000);
       }
     } catch (error: any) {
       setErrorMsg(error.message);
@@ -221,10 +243,10 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login', o
         <div className="text-center mb-10">
           <img src="/TransparentLogo.png" alt="BizLeaderPrep" className="h-16 w-auto mx-auto mb-8" style={{ filter: 'drop-shadow(0 0 20px rgba(0,200,5,0.25))' }} />
           <h1 className="text-4xl font-bold tracking-tighter text-white mb-3">
-            {view === 'login' ? 'Welcome Back' : view === 'signup' ? 'Join BizLeaderPrep' : 'Reset Password'}
+            {view === 'login' ? 'Welcome Back' : view === 'signup' ? 'Join BizLeaderPrep' : view === 'reset_password' ? 'Update Password' : 'Reset Password'}
           </h1>
           <p className="text-rh-gray text-sm font-medium tracking-wide">
-            {view === 'login' ? 'Log in to access your FBLA study dashboard.' : view === 'signup' ? 'Free forever. No credit card required.' : 'We\'ll send you a reset link.'}
+            {view === 'login' ? 'Log in to access your FBLA study dashboard.' : view === 'signup' ? 'Free forever. No credit card required.' : view === 'reset_password' ? 'Create a new password for your account.' : 'We\'ll send you a reset link.'}
           </p>
         </div>
 
@@ -232,7 +254,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login', o
         <div className="bg-rh-dark border border-white/5 rounded-[40px] p-8 md:p-12 shadow-2xl relative overflow-hidden">
 
           {/* Google Auth Button (Sign Up / Log In) */}
-          {view !== 'forgot_password' && view !== 'set_username' && (
+          {view !== 'forgot_password' && view !== 'reset_password' && view !== 'set_username' && (
             <>
               <button
                 onClick={handleGoogleAuth}
@@ -308,14 +330,16 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login', o
                 </div>
               )}
 
-              <div>
-                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-rh-gray mb-3 ml-1">Account Email</label>
-                <input
-                  type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-                  className={`w-full bg-black/40 border border-white/5 rounded-2xl px-5 py-4 text-white ${brandFocusClass} outline-none transition-all placeholder:text-gray-700`}
-                  placeholder="name@email.com"
-                />
-              </div>
+              {view !== 'reset_password' && (
+                <div>
+                  <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-rh-gray mb-3 ml-1">Account Email</label>
+                  <input
+                    type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
+                    className={`w-full bg-black/40 border border-white/5 rounded-2xl px-5 py-4 text-white ${brandFocusClass} outline-none transition-all placeholder:text-gray-700`}
+                    placeholder="name@email.com"
+                  />
+                </div>
+              )}
 
               {view !== 'forgot_password' && (
                 <div>
@@ -328,24 +352,25 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login', o
                     className={`w-full bg-black/40 border border-white/5 rounded-2xl px-5 py-4 text-white ${brandFocusClass} outline-none transition-all placeholder:text-gray-700`}
                     placeholder="••••••••"
                   />
-                  {view === 'signup' && password && (
-                    <div className="mt-3 space-y-1.5 text-[9px] text-rh-gray">
-                      {validatePassword(password).errors.length === 0 ? (
-                        <div className="text-rh-green font-bold">✓ Password meets requirements</div>
-                      ) : (
-                        validatePassword(password).errors.map(error => (
-                          <div key={error} className="flex items-center gap-2">
-                            <span className="text-red-400">•</span> {error}
+                  {(view === 'signup' || view === 'reset_password') && password && (
+                    <div className="mt-3 space-y-2 text-[9px]">
+                      {validatePassword(password).requirements.map(req => (
+                        <div key={req.label} className={`flex items-center gap-2 ${req.met ? 'text-rh-green' : 'text-rh-gray'}`}>
+                          <div className={`w-4 h-4 border rounded flex items-center justify-center text-[8px] font-bold transition-colors ${
+                            req.met ? 'bg-rh-green border-rh-green text-black' : 'border-white/20'
+                          }`}>
+                            {req.met && '✓'}
                           </div>
-                        ))
-                      )}
+                          {req.label}
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>
               )}
 
               <button type="submit" disabled={isLoading} className={`w-full ${brandBgClass} text-black font-black uppercase tracking-[0.2em] text-[11px] py-5 rounded-2xl hover:scale-[1.01] transition-all ${brandButtonShadowClass}`}>
-                {isLoading ? 'Processing...' : (view === 'login' ? 'Sign In' : (view === 'signup' ? 'Create Account' : 'Reset'))}
+                {isLoading ? 'Processing...' : (view === 'login' ? 'Sign In' : (view === 'signup' ? 'Create Account' : (view === 'reset_password' ? 'Update Password' : 'Reset')))}
               </button>
 
               {(expiredLink || (errorMsg?.includes('confirm your email') ?? false)) && (
