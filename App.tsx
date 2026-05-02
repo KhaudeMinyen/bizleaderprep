@@ -52,6 +52,7 @@ const App: React.FC = () => {
   const isOAuthRedirect = window.location.hash.includes('access_token');
   const [view, setView] = useState<ViewState>(() => {
     const path = window.location.pathname;
+    if (path === '/auth/reset') return 'auth';
     if (path === '/dashboard/events') return 'events';
     if (path === '/dashboard') return 'portfolio';
     if (window.location.hash.includes('access_token')) return 'portfolio';
