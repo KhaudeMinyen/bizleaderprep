@@ -85,7 +85,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login', o
         email,
         password: Math.random().toString(36).slice(2),
         options: {
-          emailRedirectTo: window.location.origin,
+          emailRedirectTo: `${window.location.origin}/#/auth`,
         },
       });
       if (signUpError && !signUpError.message.includes('already registered')) throw signUpError;
@@ -170,7 +170,13 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login', o
           setIsLoading(false);
           return;
         }
-        const { data, error } = await supabase.auth.signUp({ email, password });
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/#/auth`,
+          },
+        });
         if (error) {
           if (error.message.toLowerCase().includes('password')) {
             const validation = validatePassword(password);
@@ -213,7 +219,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onCancel, defaultView = 'login', o
         return;
       } else if (view === 'forgot_password') {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: window.location.origin,
+          redirectTo: `${window.location.origin}/#/auth`,
         });
         if (error) throw error;
         setSuccessMsg("Instructions sent to your email.");
